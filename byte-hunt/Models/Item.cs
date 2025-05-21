@@ -12,7 +12,6 @@ public class Item
     [Required]
     public string Nome { get; set; } //nome do item
     
-    
     public string Marca { get; set; } //marca do item
     
     [Required]
