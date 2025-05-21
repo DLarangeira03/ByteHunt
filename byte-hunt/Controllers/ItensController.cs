@@ -59,15 +59,17 @@ namespace byte_hunt.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Nome,Marca,Descricao,Preco,CategoriaId")] Item item)
         {
+            //====== DEBUG 
+            foreach (var kvp in ModelState)
+            {
+                Console.WriteLine($"{kvp.Key}: {string.Join(", ", kvp.Value.Errors.Select(e => e.ErrorMessage))}");
+            }
+            //====== DEBUG 
             if (ModelState.IsValid)
             {
                 _context.Add(item);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
-            }
-            else
-            {
-                Console.WriteLine(item.Preco);
             }
             ViewData["CategoriaId"] = new SelectList(_context.Categorias, "Id", "Nome", item.CategoriaId);
             return View(item);
