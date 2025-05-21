@@ -11,13 +11,25 @@ public class Contribuicao
     public int Id { get; set; } //identificador
     
     [Required]
-    public string Descricao_Contribuicao { get; set; } //descrição da contribuição feita
+    public string DetalhesContribuicao { get; set; } //descrição da contribuição feita
     
     [Required]
-    public DateTime Data { get; set; } //Data da contribuição
+    [RegularExpression("Pending|Approved|Rejected", ErrorMessage = "Invalid status")]
+    public string Status {get;set;} //Estado da Contribuição
+    
+    [Required]
+    public DateTime DataContribuicao { get; set; } //Data da contribuição
+    
+    public DateTime? DataReview { get; set; } //Data da validação
+    
+    public int? ResponsavelId { get; set; } //Responsável pela validação
     
     [Required]
     public int UtilizadorId { get; set; } //chave estrangeira
+    
+    [ForeignKey("ResponsavelId")]
+    [ValidateNever]
+    public Utilizador Responsavel { get; set; } //moderador responsável 
     
     [ForeignKey("UtilizadorId")]
     [ValidateNever]

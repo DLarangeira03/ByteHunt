@@ -1,7 +1,12 @@
 using byte_hunt.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("pt-PT");
+CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("pt-PT");
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
