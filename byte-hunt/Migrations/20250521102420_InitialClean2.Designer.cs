@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using byte_hunt.Data;
 
@@ -11,9 +12,11 @@ using byte_hunt.Data;
 namespace byte_hunt.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250521102420_InitialClean2")]
+    partial class InitialClean2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -86,20 +89,10 @@ namespace byte_hunt.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("DataContribuicao")
+                    b.Property<DateTime>("Data")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("DataReview")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("DetalhesContribuicao")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("ResponsavelId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Status")
+                    b.Property<string>("Descricao_Contribuicao")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -107,8 +100,6 @@ namespace byte_hunt.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ResponsavelId");
 
                     b.HasIndex("UtilizadorId");
 
@@ -130,10 +121,6 @@ namespace byte_hunt.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FotoItem")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Marca")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -142,7 +129,7 @@ namespace byte_hunt.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal?>("Preco")
+                    b.Property<decimal>("Preco")
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
@@ -159,10 +146,6 @@ namespace byte_hunt.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("FotoPerfil")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Nome")
                         .IsRequired()
@@ -205,18 +188,11 @@ namespace byte_hunt.Migrations
 
             modelBuilder.Entity("byte_hunt.Models.Contribuicao", b =>
                 {
-                    b.HasOne("byte_hunt.Models.Utilizador", "Responsavel")
-                        .WithMany()
-                        .HasForeignKey("ResponsavelId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("byte_hunt.Models.Utilizador", "Utilizador")
                         .WithMany("Contribuicoes")
                         .HasForeignKey("UtilizadorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Responsavel");
 
                     b.Navigation("Utilizador");
                 });
