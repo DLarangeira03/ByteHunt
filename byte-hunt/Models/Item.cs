@@ -20,6 +20,8 @@ public class Item
     
     public decimal Preco { get; set; } //preço do item
     
+    public string FotoItem {get;set;} //foto do item
+    
     [Required]
     public int CategoriaId { get; set; } //chave estrangeira
     
