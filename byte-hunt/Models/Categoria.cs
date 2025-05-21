@@ -11,7 +11,7 @@ public class Categoria
     [Required]
     public string Nome { get; set; } //nome da categoria
     
-    public string Descricao { get; set; } //Descrição da categoria (caso seja necessário)
+    public string? Descricao { get; set; } //Descrição da categoria (caso seja necessário)
     
     public ICollection<Item> Itens { get; set; } = new List<Item>();// Lista de itens associados a esta categoria
 }

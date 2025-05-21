@@ -32,6 +32,7 @@ public class Contribuicao
     public Utilizador Responsavel { get; set; } //moderador responsável 
     
     [ForeignKey("UtilizadorId")]
+    [ValidateNever]
     public Utilizador Utilizador { get; set; } //utilizador que realiza a contribuição
     
     
