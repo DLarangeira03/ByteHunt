@@ -13,6 +13,8 @@ public class Utilizador
     
     [Required]
     public string Tipo { get; set; } //especifica a função do utilizador na app
+    
+    public string FotoPerfil { get; set; } // foto de perfil do utilizador
 
     public ICollection<Contribuicao> Contribuicoes { get; set; } = new List<Contribuicao>(); // Uma coleção de contribuições feitas pelo utilizador
 

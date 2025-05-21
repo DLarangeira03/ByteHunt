@@ -16,5 +16,24 @@ namespace byte_hunt.Data
         public DbSet<Contribuicao> Contribuicoes { get; set; }
         public DbSet<Comparacao> Comparacoes { get; set; }
         
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // Configure relationship for Responsavel (moderator)
+            modelBuilder.Entity<Contribuicao>()
+                .HasOne(c => c.Responsavel)
+                .WithMany()  // No collection navigation in Utilizador for Responsavel
+                .HasForeignKey(c => c.ResponsavelId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Configure relationship for Utilizador (author of the contribution)
+            modelBuilder.Entity<Contribuicao>()
+                .HasOne(c => c.Utilizador)
+                .WithMany(u => u.Contribuicoes)  // Utilizador has collection Contribuicoes
+                .HasForeignKey(c => c.UtilizadorId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
+        
     }
 }
