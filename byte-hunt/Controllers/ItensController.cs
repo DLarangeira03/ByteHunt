@@ -21,10 +21,22 @@ namespace byte_hunt.Controllers
         }
 
         // GET: Itens
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 6)
         {
             var applicationDbContext = _context.Itens.Include(i => i.Categoria);
-            return View(await applicationDbContext.ToListAsync());
+            
+            int totalItems = await applicationDbContext.CountAsync();
+
+            var itens = await applicationDbContext
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            ViewData["CurrentPage"] = pageNumber;
+            ViewData["PageSize"] = pageSize;
+            ViewData["TotalItems"] = totalItems;
+            
+            return View(itens);
         }
 
         // GET: Itens/Details/5
