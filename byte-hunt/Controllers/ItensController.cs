@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using byte_hunt.Data;
 using byte_hunt.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace byte_hunt.Controllers
 {

@@ -1,0 +1,37 @@
+﻿.hero-section {
+    height: 700px;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    filter: brightness(0.6);
+}
+
+.overlay-text {
+    background-color: rgba(0, 0, 0, 0.9);
+    border-radius: 10px;
+    padding: 2rem;
+    max-width: 90%;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+.btn-preto {
+    background-color: rgba(0,0,0);
+    color: white;
+    border: none;
+    margin-left: 8px;
+    transition: transform 0.3s ease;
+}
+.btn-preto:hover {
+    background-color: rgba(0,0,0,1);
+    color: #fff;
+    transform: translateX(5px);
+
+}
