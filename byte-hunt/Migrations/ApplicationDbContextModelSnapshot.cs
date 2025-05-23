@@ -127,11 +127,9 @@ namespace byte_hunt.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Descricao")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FotoItem")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Marca")

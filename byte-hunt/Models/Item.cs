@@ -17,12 +17,11 @@ public class Item
     [Required]
     public string Marca { get; set; } //marca do item
     
-    [Required]
-    public string Descricao { get; set; } //descrição do item
+    public string? Descricao { get; set; } //descrição do item
     
     public decimal? Preco { get; set; } //preço do item
     
-    public string FotoItem {get;set;} //foto do item
+    public string? FotoItem {get;set;} //foto do item
     
     public int CategoriaId { get; set; } //chave estrangeira
     
