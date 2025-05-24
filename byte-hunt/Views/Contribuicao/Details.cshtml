@@ -1,36 +1,59 @@
 @model byte_hunt.Models.Contribuicao
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detalhes da Contribuição";
+    <link rel="stylesheet" href="~/css/contribuicoes_create.css" asp-append-version="true" />
 }
 
-<h1>Details</h1>
+<div class="form-container-wide">
+    <h1 class="text-center mb-4">Detalhes da Contribuição</h1>
+    <p class="text-center mb-4">Veja os detalhes e aprove ou rejeite esta contribuição.</p>
 
-<div>
-    <h4>Contribuicao</h4>
-    <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DetalhesContribuicao)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DetalhesContribuicao)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DataContribuicao)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DataContribuicao)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Utilizador)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Utilizador.Nome)
-        </dd>
+        <dt class="col-sm-3">Detalhes</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.DetalhesContribuicao)</dd>
+
+        <dt class="col-sm-3">Data da Contribuição</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.DataContribuicao)</dd>
+
+        <dt class="col-sm-3">Utilizador</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.Utilizador.Nome)</dd>
+
+        <dt class="col-sm-3">Estado Atual</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.Status)</dd>
+
+        @if (Model.Status != "Approved" && Model.Status != "Rejected")
+        {
+            <form asp-action="Revisar" method="post" class="w-100 mt-4">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="Id" value="@Model.Id" />
+
+                <div class="form-group mb-3">
+                    <label for="RevisorId">Selecionar Responsavel:</label>
+                    <select asp-for="Responsavel" class="form-control" asp-items="ViewBag.Utilizadores">
+                        <option disabled selected>-- Escolher Responsavel --</option>
+                    </select>
+                </div>
+
+                <div class="form-group text-center d-flex justify-content-center gap-3">
+                    <button  class="btn btn-success px-4">Aprovar</button>
+                    <button  class="btn btn-danger px-4">Rejeitar</button>
+                </div>
+            </form>
+        }
+        else
+        {
+            <dt class="col-sm-3">Data da Revisão</dt>
+            <dd class="col-sm-9">@Model.DataReview?.ToString("dd/MM/yyyy HH:mm")</dd>
+
+            <dt class="col-sm-3">Revisor</dt>
+            <dd class="col-sm-9">@Model.Responsavel?.Nome</dd>
+        }
     </dl>
+
+    <a asp-action="Index" class="back-link d-block mt-4">&larr; Voltar à lista</a>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

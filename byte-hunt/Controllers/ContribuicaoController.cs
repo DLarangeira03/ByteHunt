@@ -10,6 +10,7 @@ using byte_hunt.Models;
 
 namespace byte_hunt.Controllers
 {
+    // Atualizado: ContribuicaoController.cs
     public class ContribuicaoController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -20,28 +21,41 @@ namespace byte_hunt.Controllers
         }
 
         // GET: Contribuicao
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? utilizadorId)
         {
-            var applicationDbContext = _context.Contribuicoes.Include(c => c.Utilizador);
-            return View(await applicationDbContext.ToListAsync());
+            var query = _context.Contribuicoes
+                .Include(c => c.Utilizador)
+                .Include(c => c.Responsavel)
+                .AsQueryable();
+
+            if (utilizadorId.HasValue && utilizadorId.Value != 0)
+            {
+                query = query.Where(c => c.UtilizadorId == utilizadorId.Value);
+            }
+
+            var contribuicoes = await query.ToListAsync();
+
+            // Preparar lista de utilizadores para o dropdown
+            var utilizadores = await _context.Utilizadores
+                .Select(u => new SelectListItem { Value = u.Id.ToString(), Text = u.Nome })
+                .ToListAsync();
+
+            // Inserir opção "Todos" com valor 0 no topo
+            utilizadores.Insert(0, new SelectListItem { Value = "0", Text = "Todos Utilizadores" });
+
+            ViewData["Utilizadores"] = utilizadores;
+            ViewData["UtilizadorSelecionado"] = utilizadorId ?? 0;
+
+            return View(contribuicoes);
         }
 
         // GET: Contribuicao/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            var contribuicao = _context.Contribuicoes.Include(c => c.Utilizador).Include(c => c.Responsavel).FirstOrDefault(c => c.Id == id);
+            if (contribuicao == null) return NotFound();
 
-            var contribuicao = await _context.Contribuicoes
-                .Include(c => c.Utilizador)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (contribuicao == null)
-            {
-                return NotFound();
-            }
-
+            ViewBag.Utilizadores = new SelectList(_context.Utilizadores, "Id", "Nome");
             return View(contribuicao);
         }
 
@@ -49,54 +63,59 @@ namespace byte_hunt.Controllers
         public IActionResult Create()
         {
             ViewData["UtilizadorId"] = new SelectList(_context.Utilizadores, "Id", "Nome");
+            ViewData["ResponsavelId"] = new SelectList(_context.Utilizadores, "Id", "Nome");
             return View();
         }
 
         // POST: Contribuicao/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Descricao_Contribuicao,Data,UtilizadorId")] Contribuicao contribuicao)
+        public async Task<IActionResult> Create(Contribuicao contribuicao)
         {
+            // Define campos obrigatórios antes da validação
+            contribuicao.DataContribuicao = DateTime.Now;
+            contribuicao.Status = "Pending";
+
             if (ModelState.IsValid)
             {
                 _context.Add(contribuicao);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["UtilizadorId"] = new SelectList(_context.Utilizadores, "Id", "Nome", contribuicao.UtilizadorId);
+            else
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors);
+                foreach (var error in errors)
+                {
+                    Console.WriteLine(error.ErrorMessage); // Aqui podes usar log se preferires
+                }
+            }
+
+            ViewBag.UtilizadorId = new SelectList(_context.Utilizadores, "Id", "Nome", contribuicao.UtilizadorId);
             return View(contribuicao);
         }
 
         // GET: Contribuicao/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var contribuicao = await _context.Contribuicoes.FindAsync(id);
-            if (contribuicao == null)
-            {
-                return NotFound();
-            }
+            if (contribuicao == null) return NotFound();
+
             ViewData["UtilizadorId"] = new SelectList(_context.Utilizadores, "Id", "Nome", contribuicao.UtilizadorId);
+            ViewData["ResponsavelId"] = new SelectList(_context.Utilizadores, "Id", "Nome", contribuicao.ResponsavelId);
             return View(contribuicao);
         }
 
         // POST: Contribuicao/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Descricao_Contribuicao,Data,UtilizadorId")] Contribuicao contribuicao)
+        public async Task<IActionResult> Edit(int id,
+            [Bind("Id,DetalhesContribuicao,Status,DataContribuicao,DataReview,ResponsavelId,UtilizadorId")]
+            Contribuicao contribuicao)
         {
-            if (id != contribuicao.Id)
-            {
-                return NotFound();
-            }
+            if (id != contribuicao.Id) return NotFound();
 
             if (ModelState.IsValid)
             {
@@ -107,36 +126,28 @@ namespace byte_hunt.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ContribuicaoExists(contribuicao.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    if (!ContribuicaoExists(contribuicao.Id)) return NotFound();
+                    else throw;
                 }
+
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["UtilizadorId"] = new SelectList(_context.Utilizadores, "Id", "Nome", contribuicao.UtilizadorId);
+            ViewData["ResponsavelId"] = new SelectList(_context.Utilizadores, "Id", "Nome", contribuicao.ResponsavelId);
             return View(contribuicao);
         }
 
         // GET: Contribuicao/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var contribuicao = await _context.Contribuicoes
                 .Include(c => c.Utilizador)
+                .Include(c => c.Responsavel)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (contribuicao == null)
-            {
-                return NotFound();
-            }
+            if (contribuicao == null) return NotFound();
 
             return View(contribuicao);
         }
@@ -147,10 +158,7 @@ namespace byte_hunt.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var contribuicao = await _context.Contribuicoes.FindAsync(id);
-            if (contribuicao != null)
-            {
-                _context.Contribuicoes.Remove(contribuicao);
-            }
+            if (contribuicao != null) _context.Contribuicoes.Remove(contribuicao);
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
@@ -160,5 +168,7 @@ namespace byte_hunt.Controllers
         {
             return _context.Contribuicoes.Any(e => e.Id == id);
         }
+        
+        
     }
 }

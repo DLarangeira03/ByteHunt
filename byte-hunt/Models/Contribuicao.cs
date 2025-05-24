@@ -9,9 +9,8 @@ public class Contribuicao
     //Atributos da classe
     [Key]
     public int Id { get; set; } //identificador
-    
-    [Required]
-    public string DetalhesContribuicao { get; set; } //descrição da contribuição feita
+
+    [Required] public string DetalhesContribuicao { get; set; } = ""; //descrição da contribuição feita
     
     [Required]
     [RegularExpression("Pending|Approved|Rejected", ErrorMessage = "Invalid status")]
@@ -23,9 +22,8 @@ public class Contribuicao
     public DateTime? DataReview { get; set; } //Data da validação
     
     public int? ResponsavelId { get; set; } //Responsável pela validação
-    
-    [Required]
-    public int UtilizadorId { get; set; } //chave estrangeira
+
+    [Required] public int UtilizadorId { get; set; } //chave estrangeira
     
     [ForeignKey("ResponsavelId")]
     [ValidateNever]

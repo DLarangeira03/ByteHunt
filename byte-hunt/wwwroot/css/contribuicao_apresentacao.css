@@ -1,0 +1,34 @@
+﻿html, body {
+    height: 100%;  
+}
+
+.contribuicao-fundo {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: url('../images/background_byte_hunt.svg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    opacity: 0.9;
+    z-index: -1;
+}
+
+.contribuicao-conteudo {
+    position: relative;
+    z-index: 1;
+    background-color: rgba(255, 255, 255, 1);
+    padding: 30px;
+    border-radius: 15px;
+    margin-top: 30px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+}
+
+.contribuicao-tabela th {
+    background-color: #343a40;
+    color: white;
+}
+
+.contribuicao-botoes .btn {
+    margin-right: 5px;
+}
+
