@@ -1,4 +1,8 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<Utilizador> SignInManager
+@inject UserManager<Utilizador> UserManager
+
+@{
     ViewData["Title"] = "Home Page";
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="~/css/home_style.css" asp-append-version="true"/>
@@ -47,6 +51,16 @@
                     Comparar
                 </a>
             </div>
+            @if (SignInManager.IsSignedIn(User) && (User.IsInRole("Moderator") || User.IsInRole("Administrator"))) {
+                <div class="p-5 border rounded shadow" style="min-width: 300px; max-width: 350px; background: #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.1);">
+                    <i class="bi bi-columns-gap display-3 text-success"></i>
+                    <h3 class="mt-4 fw-bold" style="font-size: 1.8rem;">Painel de Adminitração</h3>
+                    <p style="font-size: 1.1rem; color: #94260d;">Gerir utilizadores, itens e permissões</p>
+                    <a class="btn btn-outline-success btn-lg px-5" asp-controller="Admin" asp-action="ManageRoles" style="transition: background-color 0.3s, color 0.3s;">
+                        Ir para o Painel
+                    </a>
+                </div>
+            }
         </div>
     </div>
 </div>

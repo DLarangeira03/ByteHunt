@@ -1,4 +1,7 @@
+@using Microsoft.AspNetCore.Identity
 @model IEnumerable<byte_hunt.Models.Item>
+@inject SignInManager<Utilizador> SignInManager
+@inject UserManager<Utilizador> UserManager
 
 @{
     ViewData["Title"] = "Produtos";
@@ -66,10 +69,11 @@
                         }
                     </ul>
                 </div>
-
-                <a asp-action="Create" class="btn btn-success w-100">
-                    <i class="bi bi-plus-lg"></i> Adicionar Novo Produto
-                </a>
+                @if (SignInManager.IsSignedIn(User) && (User.IsInRole("Moderator") || User.IsInRole("Administrator"))) {
+                    <a asp-action="Create" class="btn btn-success w-100">
+                        <i class="bi bi-plus-lg"></i> Adicionar Novo Produto
+                    </a>
+                }
             </div>
         </div>
     </div>
@@ -103,15 +107,16 @@
                         </a>
 
                         <!-- -->
-                        <div class="d-inline-flex gap-2">
-                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary btn-lg">
-                                <i class="bi bi-pencil-fill"></i> 
-                            </a>
-                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-lg">
-                                <i class="bi bi-trash-fill"></i> 
-                            </a>
-                        </div>
-
+                        @if (SignInManager.IsSignedIn(User) && (User.IsInRole("Moderator") || User.IsInRole("Administrator"))) {
+                            <div class="d-inline-flex gap-2">
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary btn-lg">
+                                    <i class="bi bi-pencil-fill"></i>
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-lg">
+                                    <i class="bi bi-trash-fill"></i>
+                                </a>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>
