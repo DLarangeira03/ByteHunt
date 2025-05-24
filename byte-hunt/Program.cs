@@ -7,6 +7,19 @@ using Microsoft.AspNetCore.Identity;
 var builder = WebApplication.CreateBuilder(args);
 
 
+// metodo para definir roles
+// isso garante que as roles existam na base de dados
+async Task SeedRoles(IServiceProvider serviceProvider) {
+    var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    string[] roleNames = {"User", "Moderator", "Administrator"};
+    foreach (var roleName in roleNames) {
+        if(!await roleManager.RoleExistsAsync(roleName)) {
+            await roleManager.CreateAsync(new IdentityRole(roleName));
+        }
+    }
+}
+
+
 CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("pt-PT");
 CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("pt-PT");
 
@@ -23,7 +36,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     ));
 
 builder.Services.AddDefaultIdentity<Utilizador>(options => {
-    options.SignIn.RequireConfirmedAccount = true;
+    options.SignIn.RequireConfirmedAccount = true; // email deve ser confirmado para login
+    options.Password.RequireUppercase = false; 
+    options.Password.RequireNonAlphanumeric = false; 
 }).AddRoles<IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddRazorPages();
@@ -51,4 +66,10 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+using (var scope = app.Services.CreateScope()) {
+    var services = scope.ServiceProvider;
+    await SeedRoles(services);
+}
+
+// run the app
 app.Run();
