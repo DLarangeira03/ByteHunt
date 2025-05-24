@@ -14,7 +14,7 @@ public class Comparacao
     public DateTime Data { get; set; } //Data da comparação
     
     [Required]
-    public int UtilizadorId { get; set; }// Chave estrangeira
+    public string UtilizadorId { get; set; } = string.Empty; //chave estrangeira
     
     [ForeignKey("UtilizadorId")]
     [ValidateNever]

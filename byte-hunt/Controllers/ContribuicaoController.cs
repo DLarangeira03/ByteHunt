@@ -7,16 +7,19 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using byte_hunt.Data;
 using byte_hunt.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace byte_hunt.Controllers
 {
     public class ContribuicaoController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<Utilizador> _userManager;
 
-        public ContribuicaoController(ApplicationDbContext context)
+        public ContribuicaoController(ApplicationDbContext context, UserManager<Utilizador> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Contribuicao
@@ -48,7 +51,7 @@ namespace byte_hunt.Controllers
         // GET: Contribuicao/Create
         public IActionResult Create()
         {
-            ViewData["UtilizadorId"] = new SelectList(_context.Utilizadores, "Id", "Nome");
+            ViewData["UtilizadorId"] = new SelectList(_userManager.Users, "Id", "Nome");
             return View();
         }
 
@@ -65,7 +68,7 @@ namespace byte_hunt.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["UtilizadorId"] = new SelectList(_context.Utilizadores, "Id", "Nome", contribuicao.UtilizadorId);
+            ViewData["UtilizadorId"] = new SelectList(_userManager.Users, "Id", "Nome", contribuicao.UtilizadorId);
             return View(contribuicao);
         }
 
@@ -82,7 +85,7 @@ namespace byte_hunt.Controllers
             {
                 return NotFound();
             }
-            ViewData["UtilizadorId"] = new SelectList(_context.Utilizadores, "Id", "Nome", contribuicao.UtilizadorId);
+            ViewData["UtilizadorId"] = new SelectList(_userManager.Users, "Id", "Nome", contribuicao.UtilizadorId);
             return View(contribuicao);
         }
 
@@ -118,7 +121,7 @@ namespace byte_hunt.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["UtilizadorId"] = new SelectList(_context.Utilizadores, "Id", "Nome", contribuicao.UtilizadorId);
+            ViewData["UtilizadorId"] = new SelectList(_userManager.Users, "Id", "Nome", contribuicao.UtilizadorId);
             return View(contribuicao);
         }
 

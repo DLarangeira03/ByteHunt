@@ -1,6 +1,8 @@
 using byte_hunt.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
+using byte_hunt.Models;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +22,12 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
         sqlOptions => sqlOptions.EnableRetryOnFailure()
     ));
 
+builder.Services.AddDefaultIdentity<Utilizador>(options => {
+    options.SignIn.RequireConfirmedAccount = true;
+}).AddRoles<IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
+
+builder.Services.AddRazorPages();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -34,7 +42,10 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapRazorPages(); // Identity UI
 
 app.MapControllerRoute(
     name: "default",

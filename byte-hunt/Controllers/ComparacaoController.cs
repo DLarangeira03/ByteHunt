@@ -7,16 +7,19 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using byte_hunt.Data;
 using byte_hunt.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace byte_hunt.Controllers
 {
     public class ComparacaoController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<Utilizador> _userManager;
 
-        public ComparacaoController(ApplicationDbContext context)
+        public ComparacaoController(ApplicationDbContext context, UserManager<Utilizador> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Comparacao
@@ -48,7 +51,7 @@ namespace byte_hunt.Controllers
         // GET: Comparacao/Create
         public IActionResult Create()
         {
-            ViewData["UtilizadorId"] = new SelectList(_context.Utilizadores, "Id", "Nome");
+            ViewData["UtilizadorId"] = new SelectList(_userManager.Users, "Id", "Nome");
             return View();
         }
 
@@ -65,7 +68,7 @@ namespace byte_hunt.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["UtilizadorId"] = new SelectList(_context.Utilizadores, "Id", "Nome", comparacao.UtilizadorId);
+            ViewData["UtilizadorId"] = new SelectList(_userManager.Users, "Id", "Nome", comparacao.UtilizadorId);
             return View(comparacao);
         }
 
@@ -82,7 +85,7 @@ namespace byte_hunt.Controllers
             {
                 return NotFound();
             }
-            ViewData["UtilizadorId"] = new SelectList(_context.Utilizadores, "Id", "Nome", comparacao.UtilizadorId);
+            ViewData["UtilizadorId"] = new SelectList(_userManager.Users, "Id", "Nome", comparacao.UtilizadorId);
             return View(comparacao);
         }
 
@@ -118,7 +121,7 @@ namespace byte_hunt.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["UtilizadorId"] = new SelectList(_context.Utilizadores, "Id", "Nome", comparacao.UtilizadorId);
+            ViewData["UtilizadorId"] = new SelectList(_userManager.Users, "Id", "Nome", comparacao.UtilizadorId);
             return View(comparacao);
         }
 
