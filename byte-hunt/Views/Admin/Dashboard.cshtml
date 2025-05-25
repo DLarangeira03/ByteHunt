@@ -12,22 +12,52 @@
 
 <div class="d-flex flex-wrap gap-4">
     @if (SignInManager.IsSignedIn(User) && (User.IsInRole("Moderator") || User.IsInRole("Administrator"))) {
+        //Itens (Galeria simplificada)
         <div class="p-5 border rounded shadow" style="min-width: 300px; max-width: 350px; background: #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.1);">
-            <i class="bi bi-people-fill display-3 text-primary"></i>
-            <h3 class="mt-4 fw-bold" style="font-size: 1.8rem;">Utilizadores</h3>
-            <p style="font-size: 1.1rem; color: #000;">Ver, remover e criar novos utilizadores.</p>
-            <a class="btn btn-outline-primary btn-lg px-5" asp-controller="Utilizador" asp-action="Index" style="transition: background-color 0.3s, color 0.3s;">
-                Gerir Utilizadores
+            <i class="bi bi-list-check display-3 text-secondary"></i>
+            <h3 class="mt-4 fw-bold" style="font-size: 1.8rem;">Itens</h3>
+            <p style="font-size: 1.1rem; color: #000;">Ver, remover e criar novos Items.</p>
+            <a class="btn btn-secondary btn-sm px-5" asp-controller="Itens" asp-action="Index" style="transition: background-color 0.3s, color 0.3s;">
+                <i class="bi bi-arrow-right"></i>
             </a>
         </div>
+        //Contribuicoes
+        <div class="p-5 border rounded shadow" style="min-width: 300px; max-width: 350px; background: #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.1);">
+            <i class="bi bi-list-check display-3 text-info"></i>
+            <h3 class="mt-4 fw-bold" style="font-size: 1.8rem;">Contribuições</h3>
+            <p style="font-size: 1.1rem; color: #000;">Revisar, editar, aprovar e reprovar contribuições</p>
+            <a class="btn btn-info btn-sm px-5" asp-controller="Categoria" asp-action="Index" style="transition: background-color 0.3s, color 0.3s;">
+                <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+        //Utilizadores
+        <div class="p-5 border rounded shadow" style="min-width: 300px; max-width: 350px; background: #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.1);">
+            <i class="bi bi-people-fill display-3 text-success"></i>
+            <h3 class="mt-4 fw-bold" style="font-size: 1.8rem;">Utilizadores</h3>
+            <p style="font-size: 1.1rem; color: #000;">Ver, remover e criar novos utilizadores.</p>
+            <a class="btn btn-success btn-sm px-5" asp-controller="Utilizador" asp-action="Index" style="transition: background-color 0.3s, color 0.3s;">
+                <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+        //Categorias
+        <div class="p-5 border rounded shadow" style="min-width: 300px; max-width: 350px; background: #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.1);">
+            <i class="bi bi-bar-chart-steps display-3 text-primary"></i>
+            <h3 class="mt-4 fw-bold" style="font-size: 1.8rem;">Categorias</h3>
+            <p style="font-size: 1.1rem; color: #000;">Criar, Editar e remover categorias.</p>
+            <a class="btn btn-primary btn-sm px-5" asp-controller="Categoria" asp-action="Index" style="transition: background-color 0.3s, color 0.3s;">
+                <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+        
     }
     @if (SignInManager.IsSignedIn(User) && User.IsInRole("Administrator")) {
+        //Roles
         <div class="p-5 border rounded shadow" style="min-width: 300px; max-width: 350px; background: #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.1);">
             <i class="bi bi-columns-gap display-3 text-warning"></i>
             <h3 class="mt-4 fw-bold" style="font-size: 1.8rem;">Permissões</h3>
             <p style="font-size: 1.1rem; color: #000;">Adicionar e remover permissões dos utilizadores</p>
-            <a class="btn btn-outline-warning btn-lg px-5" asp-controller="Admin" asp-action="ManageRoles" style="transition: background-color 0.3s, color 0.3s;">
-                Gerir Permissões
+            <a class="btn btn-warning btn-sm px-5" asp-controller="Admin" asp-action="ManageRoles" style="transition: background-color 0.3s, color 0.3s;">
+                <i class="bi bi-arrow-right"></i>
             </a>
         </div>
     }
