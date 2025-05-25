@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace byte_hunt.Controllers;
 
-[Authorize(Roles = "Administrator")]
+[Authorize(Roles = "Moderator,Administrator")]
 public class AdminController : Controller {
     
     private readonly UserManager<Utilizador> _userManager;
@@ -15,8 +15,20 @@ public class AdminController : Controller {
         _userManager = userManager;
         _roleManager = roleManager;
     }
+    
+    //===========================================\\
+    //============ PAINEL PRINCIPAL =============\\
+    //===========================================\\
+    public IActionResult Dashboard()
+    {
+        return View();
+    }
 
+    //===========================================\\
+    //======== PAGINA DE GESTAO DE ROLES ========\\
+    //===========================================\\
     // listar todos os utilizadores e suas roles
+    [Authorize(Roles = "Administrator")]
     public async Task<IActionResult> ManageRoles() {
         var users = _userManager.Users.ToList();
         var model = new List<UserRolesViewModel>();
@@ -36,6 +48,7 @@ public class AdminController : Controller {
     
     //adicionar uma role nova
     [HttpPost]
+    [Authorize(Roles = "Administrator")]
     public async Task<IActionResult> AddRole(string userId, string role) {
         var user = await _userManager.FindByIdAsync(userId);
         if (user != null) {
@@ -46,6 +59,7 @@ public class AdminController : Controller {
     
     //remover uma role
     [HttpPost]
+    [Authorize(Roles = "Administrator")]
     public async Task<IActionResult> RemoveRole(string userId, string role) {
         var user = await _userManager.FindByIdAsync(userId);
         if (user != null && await _roleManager.RoleExistsAsync(role)) {
@@ -53,6 +67,11 @@ public class AdminController : Controller {
         }
         return RedirectToAction("ManageRoles");
     }
+    
+    //===========================================\\
+    //============== PLACEHOLDER  ===============\\
+    //===========================================\\
+    
 }
 
 public class UserRolesViewModel {

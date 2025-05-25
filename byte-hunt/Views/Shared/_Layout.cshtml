@@ -28,9 +28,6 @@
                         <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Utilizador" asp-action="Index">Utilizadores</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="" asp-controller="Itens" asp-action="Index">Galeria</a>
                     </li>
                     <li class="nav-item">
@@ -42,9 +39,9 @@
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="" asp-controller="Categoria" asp-action="Index">Categoria</a>
                     </li>
-                    @if (SignInManager.IsSignedIn(User) && User.IsInRole("Administrator")) {
+                    @if (SignInManager.IsSignedIn(User) && (User.IsInRole("Moderator") || User.IsInRole("Administrator"))) {
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="ManageRoles">Gerir Permissões</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Dashboard">Painel de Administração</a>
                         </li>
                     }
                 </ul>
