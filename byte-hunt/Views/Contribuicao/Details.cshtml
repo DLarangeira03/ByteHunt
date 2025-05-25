@@ -7,7 +7,6 @@
 
 <div class="form-container-wide">
     <h1 class="text-center mb-4">Detalhes da Contribuição</h1>
-    <p class="text-center mb-4">Veja os detalhes e aprove ou rejeite esta contribuição.</p>
 
     <dl class="row">
         <dt class="col-sm-3">Detalhes</dt>
@@ -24,20 +23,20 @@
 
         @if (Model.Status != "Approved" && Model.Status != "Rejected")
         {
-            <form asp-action="Revisar" method="post" class="w-100 mt-4">
+            <form asp-action="UpdateStatus" method="post" class="w-100 mt-4">
                 @Html.AntiForgeryToken()
                 <input type="hidden" name="Id" value="@Model.Id" />
 
                 <div class="form-group mb-3">
-                    <label for="RevisorId">Selecionar Responsavel:</label>
-                    <select asp-for="Responsavel" class="form-control" asp-items="ViewBag.Utilizadores">
-                        <option disabled selected>-- Escolher Responsavel --</option>
+                    <label for="Responsavel">Selecionar Responsável:</label>
+                    <select name="Responsavel" class="form-control" asp-items="ViewBag.Utilizadores" required>
+                        <option disabled selected>-- Escolher Responsável --</option>
                     </select>
                 </div>
 
                 <div class="form-group text-center d-flex justify-content-center gap-3">
-                    <button  class="btn btn-success px-4">Aprovar</button>
-                    <button  class="btn btn-danger px-4">Rejeitar</button>
+                    <button name="status" value="Approved" class="btn btn-success px-4">Aprovar</button>
+                    <button name="status" value="Rejected" class="btn btn-danger px-4">Rejeitar</button>
                 </div>
             </form>
         }
@@ -47,7 +46,11 @@
             <dd class="col-sm-9">@Model.DataReview?.ToString("dd/MM/yyyy HH:mm")</dd>
 
             <dt class="col-sm-3">Revisor</dt>
-            <dd class="col-sm-9">@Model.Responsavel?.Nome</dd>
+            <dd class="col-sm-9">
+                @(Model.Responsavel != null && !string.IsNullOrWhiteSpace(Model.Responsavel.Nome)
+                    ? Model.Responsavel.Nome
+                    : "—")
+            </dd>
         }
     </dl>
 

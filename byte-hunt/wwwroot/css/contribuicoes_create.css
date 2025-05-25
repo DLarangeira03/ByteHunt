@@ -32,7 +32,8 @@ label {
 
 textarea.form-control,
 select.form-select,
-select.form-control {
+select.form-control,
+input.form-control{
     background-color: #2a2a2a;
     border: 1px solid #555;
     color: #eee;
@@ -45,7 +46,8 @@ select.form-control {
 }
 
 textarea.form-control:focus,
-select.form-control:focus {
+select.form-control:focus,
+input.form-control:focus {
     outline: none;
     border-color: #f0f0f0;
     background-color: #333;

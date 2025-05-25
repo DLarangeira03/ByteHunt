@@ -35,12 +35,10 @@ namespace byte_hunt.Controllers
 
             var contribuicoes = await query.ToListAsync();
 
-            // Preparar lista de utilizadores para o dropdown
             var utilizadores = await _context.Utilizadores
                 .Select(u => new SelectListItem { Value = u.Id.ToString(), Text = u.Nome })
                 .ToListAsync();
 
-            // Inserir opção "Todos" com valor 0 no topo
             utilizadores.Insert(0, new SelectListItem { Value = "0", Text = "Todos Utilizadores" });
 
             ViewData["Utilizadores"] = utilizadores;
@@ -52,7 +50,13 @@ namespace byte_hunt.Controllers
         // GET: Contribuicao/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            var contribuicao = _context.Contribuicoes.Include(c => c.Utilizador).Include(c => c.Responsavel).FirstOrDefault(c => c.Id == id);
+            if (id == null) return NotFound();
+
+            var contribuicao = await _context.Contribuicoes
+                .Include(c => c.Utilizador)
+                .Include(c => c.Responsavel)
+                .FirstOrDefaultAsync(c => c.Id == id);
+
             if (contribuicao == null) return NotFound();
 
             ViewBag.Utilizadores = new SelectList(_context.Utilizadores, "Id", "Nome");
@@ -70,25 +74,30 @@ namespace byte_hunt.Controllers
         // POST: Contribuicao/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Contribuicao contribuicao)
+        public async Task<IActionResult> Create(IFormCollection form)
         {
-            // Define campos obrigatórios antes da validação
-            contribuicao.DataContribuicao = DateTime.Now;
-            contribuicao.Status = "Pending";
+            var nome = form["Nome"];
+            var marca = form["Marca"];
+            var preco = form["Preco"];
+            var descricao = form["Descricao"];
+            var utilizadorIdStr = form["UtilizadorId"];
+            int.TryParse(utilizadorIdStr, out var utilizadorId);
+
+            string detalhes = $"Nome: {nome}\nMarca: {marca}\nPreço: {preco}\nDescrição: {descricao}";
+
+            var contribuicao = new Contribuicao
+            {
+                DetalhesContribuicao = detalhes,
+                DataContribuicao = DateTime.Now,
+                Status = "Pending",
+                UtilizadorId = utilizadorId
+            };
 
             if (ModelState.IsValid)
             {
                 _context.Add(contribuicao);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
-            }
-            else
-            {
-                var errors = ModelState.Values.SelectMany(v => v.Errors);
-                foreach (var error in errors)
-                {
-                    Console.WriteLine(error.ErrorMessage); // Aqui podes usar log se preferires
-                }
             }
 
             ViewBag.UtilizadorId = new SelectList(_context.Utilizadores, "Id", "Nome", contribuicao.UtilizadorId);
@@ -103,8 +112,10 @@ namespace byte_hunt.Controllers
             var contribuicao = await _context.Contribuicoes.FindAsync(id);
             if (contribuicao == null) return NotFound();
 
-            ViewData["UtilizadorId"] = new SelectList(_context.Utilizadores, "Id", "Nome", contribuicao.UtilizadorId);
-            ViewData["ResponsavelId"] = new SelectList(_context.Utilizadores, "Id", "Nome", contribuicao.ResponsavelId);
+            ViewData["UtilizadorId"] =
+                new SelectList(_context.Utilizadores, "Id", "Nome", contribuicao.UtilizadorId);
+            ViewData["ResponsavelId"] =
+                new SelectList(_context.Utilizadores, "Id", "Nome", contribuicao.ResponsavelId);
             return View(contribuicao);
         }
 
@@ -133,8 +144,10 @@ namespace byte_hunt.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewData["UtilizadorId"] = new SelectList(_context.Utilizadores, "Id", "Nome", contribuicao.UtilizadorId);
-            ViewData["ResponsavelId"] = new SelectList(_context.Utilizadores, "Id", "Nome", contribuicao.ResponsavelId);
+            ViewData["UtilizadorId"] =
+                new SelectList(_context.Utilizadores, "Id", "Nome", contribuicao.UtilizadorId);
+            ViewData["ResponsavelId"] =
+                new SelectList(_context.Utilizadores, "Id", "Nome", contribuicao.ResponsavelId);
             return View(contribuicao);
         }
 
@@ -168,7 +181,22 @@ namespace byte_hunt.Controllers
         {
             return _context.Contribuicoes.Any(e => e.Id == id);
         }
-        
-        
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateStatus(int Id, int Responsavel, string status)
+        {
+            var contribuicao = await _context.Contribuicoes.FindAsync(Id);
+            if (contribuicao == null) return NotFound();
+
+            contribuicao.ResponsavelId = Responsavel;
+            contribuicao.Status = status;
+            contribuicao.DataReview = DateTime.Now;
+
+            _context.Update(contribuicao);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

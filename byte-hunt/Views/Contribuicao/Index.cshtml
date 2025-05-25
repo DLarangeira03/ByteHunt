@@ -50,7 +50,7 @@
                 <th>Detalhes</th>
                 <th>Estado</th>
                 <th>Data</th>
-                <th>Revisor</th>
+                <th>Responsável</th>
                 <th>Utilizador</th>
                 <th>Ações</th>
             </tr>
@@ -70,12 +70,13 @@
                         })">@item.Status</span>
                     </td>
                     <td>@item.DataContribuicao.ToShortDateString()</td>
-                    <td>@item.Responsavel?.Nome ?? "—"</td>
+                    <td>@item.Responsavel?.Nome </td>
                     <td>@item.Utilizador?.Nome</td>
                     <td class="contribuicao-botoes">
                         <a class="btn btn-sm btn-info" asp-action="Details" asp-route-id="@item.Id">Ver</a>
                         <a class="btn btn-sm btn-warning" asp-action="Edit" asp-route-id="@item.Id">Editar</a>
                         <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@item.Id">Remover</a>
+                        <a class="btn btn-sm btn-success" asp-action="Details" asp-route-id="@item.Id">Requisitar</a>
                     </td>
                 </tr>
             }
