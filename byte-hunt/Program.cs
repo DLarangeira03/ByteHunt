@@ -1,8 +1,23 @@
 using byte_hunt.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
+using byte_hunt.Models;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+// metodo para definir roles
+// isso garante que as roles existam na base de dados
+async Task SeedRoles(IServiceProvider serviceProvider) {
+    var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    string[] roleNames = {"User", "Moderator", "Administrator"};
+    foreach (var roleName in roleNames) {
+        if(!await roleManager.RoleExistsAsync(roleName)) {
+            await roleManager.CreateAsync(new IdentityRole(roleName));
+        }
+    }
+}
 
 
 CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("pt-PT");
@@ -20,6 +35,14 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
         sqlOptions => sqlOptions.EnableRetryOnFailure()
     ));
 
+builder.Services.AddDefaultIdentity<Utilizador>(options => {
+    options.SignIn.RequireConfirmedAccount = true; // email deve ser confirmado para login
+    options.Password.RequireUppercase = false; 
+    options.Password.RequireNonAlphanumeric = false; 
+}).AddRoles<IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
+
+builder.Services.AddRazorPages();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -34,10 +57,19 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapRazorPages(); // Identity UI
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+using (var scope = app.Services.CreateScope()) {
+    var services = scope.ServiceProvider;
+    await SeedRoles(services);
+}
+
+// run the app
 app.Run();

@@ -1,0 +1,45 @@
+﻿@model List<byte_hunt.Controllers.UserRolesViewModel>
+
+@{
+    ViewData["Title"] = "Painel de Administração | Gerir Utilizadores";
+    var allRoles = ViewBag.AllRoles as List<string> ?? new List<string>();
+}
+
+<h1>Gerir Permissões</h1>
+
+<table class="table table-borderless">
+    <thead>
+        <th>Utilizador</th>
+        <th>Cargos</th>
+        <th class="text-end" >Gerir</th>
+    </thead>
+    <tbody>
+    @foreach (var user in Model) {
+        <tr>
+            <td> @user.UserName </td>
+            <td>
+                @foreach (var role in user.Roles) {
+                <form method="post" asp-action="RemoveRole" style="display:inline" onsubmit="return confirm('Tem a certeza que pretende remover a role @role de @user.UserName?');">
+                    <input type="hidden" name="userId" value="@user.UserId"/>
+                    <input type="hidden" name="role" value="@role"/>
+                    <button type="submit" class="btn btn-sm btn-outline-danger">@role</button>
+                </form>
+                }
+            </td>
+            <td class="text-end">
+                <form asp-action="AddRole" method="post" class="d-inline-flex gap-2 align-items-center justify-content-end">
+                    <input type="hidden" name="userId" value="@user.UserId" />
+                    <select name="role" class="form-select form-select-sm w-auto" required>
+                        <option value="" disabled selected>Selecione uma role</option>
+                        @foreach (var roleName in allRoles.Except(user.Roles))
+                        {
+                            <option value="@roleName">@roleName</option>
+                        }
+                    </select>
+                    <button type="submit" class="btn btn-sm btn-primary">Add</button>
+                </form>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

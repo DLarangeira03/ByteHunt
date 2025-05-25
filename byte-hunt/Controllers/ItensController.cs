@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using byte_hunt.Data;
 using byte_hunt.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace byte_hunt.Controllers
 {
@@ -20,10 +21,40 @@ namespace byte_hunt.Controllers
         }
 
         // GET: Itens
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchTerm, int? categoriaId, int pageNumber = 1, int pageSize = 6)
         {
-            var applicationDbContext = _context.Itens.Include(i => i.Categoria);
-            return View(await applicationDbContext.ToListAsync());
+            var query = _context.Itens.Include(i => i.Categoria).AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                searchTerm = searchTerm.ToLower();
+                query = query.Where(i =>
+                    i.Nome.ToLower().Contains(searchTerm) ||
+                    i.Marca.ToLower().Contains(searchTerm) ||
+                    i.Categoria.Nome.ToLower().Contains(searchTerm));
+            }
+
+            if (categoriaId.HasValue && categoriaId.Value > 0)
+            {
+                query = query.Where(i => i.CategoriaId == categoriaId.Value);
+            }
+
+            int totalItems = await query.CountAsync();
+
+            var itens = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            ViewData["CurrentPage"] = pageNumber;
+            ViewData["PageSize"] = pageSize;
+            ViewData["TotalItems"] = totalItems;
+
+            ViewData["SearchTerm"] = searchTerm ?? "";
+            ViewData["CategoriaId"] = categoriaId ?? 0;
+            ViewData["Categorias"] = new SelectList(await _context.Categorias.ToListAsync(), "Id", "Nome");
+
+            return View(itens);
         }
 
         // GET: Itens/Details/5

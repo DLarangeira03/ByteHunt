@@ -22,18 +22,19 @@ public class Contribuicao
     
     public DateTime? DataReview { get; set; } //Data da validação
     
-    public int? ResponsavelId { get; set; } //Responsável pela validação
+   
+    [ForeignKey("UtilizadorId")]
+    [ValidateNever]
+    public Utilizador Utilizador { get; set; } //utilizador que realiza a contribuição
+    [Required] 
+    public string UtilizadorId { get; set; } = string.Empty;
     
-    [Required]
-    public int UtilizadorId { get; set; } //chave estrangeira
-    
+    public string? ResponsavelId { get; set; } //Responsável pela validação
     [ForeignKey("ResponsavelId")]
     [ValidateNever]
     public Utilizador Responsavel { get; set; } //moderador responsável 
     
-    [ForeignKey("UtilizadorId")]
-    [ValidateNever]
-    public Utilizador Utilizador { get; set; } //utilizador que realiza a contribuição
+
     
     
     
