@@ -4,14 +4,21 @@
     ViewData["Title"] = "Painel de Administração | Gerir Utilizadores";
     var allRoles = ViewBag.AllRoles as List<string> ?? new List<string>();
 }
+@if (TempData["RoleRemovalConfirmation"] != null) {
+    var infoModel = new byte_hunt.Models.Popups.InfoPopupViewModel {
+        Titulo = "Permissão Removida",
+        Mensagem = TempData["RoleRemovalConfirmation"].ToString()
+    };
+    @Html.Partial("_InfoPopup", infoModel)
+}
 
 <h1>Gerir Permissões</h1>
 
 <table class="table table-borderless">
     <thead>
-        <th>Utilizador</th>
-        <th>Cargos</th>
-        <th class="text-end" >Gerir</th>
+    <th>Utilizador</th>
+    <th>Cargos</th>
+    <th class="text-end">Gerir</th>
     </thead>
     <tbody>
     @foreach (var user in Model) {
@@ -19,20 +26,23 @@
             <td> @user.UserName </td>
             <td>
                 @foreach (var role in user.Roles) {
-                <form method="post" asp-action="RemoveRole" style="display:inline" onsubmit="return confirm('Tem a certeza que pretende remover a role @role de @user.UserName?');">
-                    <input type="hidden" name="userId" value="@user.UserId"/>
-                    <input type="hidden" name="role" value="@role"/>
-                    <button type="submit" class="btn btn-sm btn-outline-danger">@role</button>
-                </form>
+                    <form method="post" asp-action="RemoveRole" style="display:inline" class="remove-role-form">
+                        <input type="hidden" name="userId" value="@user.UserId"/>
+                        <input type="hidden" name="role" value="@role"/>
+                        <button type="button" class="btn btn-sm btn-outline-danger remove-role-btn"
+                                data-user="@user.UserName" data-role="@role">
+                            @role
+                        </button>
+                    </form>
                 }
             </td>
             <td class="text-end">
-                <form asp-action="AddRole" method="post" class="d-inline-flex gap-2 align-items-center justify-content-end">
-                    <input type="hidden" name="userId" value="@user.UserId" />
+                <form asp-action="AddRole" method="post"
+                      class="d-inline-flex gap-2 align-items-center justify-content-end">
+                    <input type="hidden" name="userId" value="@user.UserId"/>
                     <select name="role" class="form-select form-select-sm w-auto" required>
                         <option value="" disabled selected>Selecione uma role</option>
-                        @foreach (var roleName in allRoles.Except(user.Roles))
-                        {
+                        @foreach (var roleName in allRoles.Except(user.Roles)) {
                             <option value="@roleName">@roleName</option>
                         }
                     </select>
@@ -43,3 +53,68 @@
     }
     </tbody>
 </table>
+
+@section Scripts {
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            const modalEl = document.getElementById('infoModal');
+            if (modalEl) {
+                const modal = new bootstrap.Modal(modalEl);
+                modal.show();
+            }
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const confirmModalEl = document.getElementById('confirmModal');
+            const confirmModal = new bootstrap.Modal(confirmModalEl);
+            const form = confirmModalEl.querySelector('form');
+            const questionEl = confirmModalEl.querySelector('.modal-body p');
+
+            document.querySelectorAll('.remove-role-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const user = button.getAttribute('data-user');
+                    const role = button.getAttribute('data-role');
+                    const userId = button.getAttribute('data-userid');
+
+                    // atualizar pergunta
+                    questionEl.textContent = `Tem a certeza que pretende remover a role "${role}" do utilizador ${user}?`;
+
+                    // fazer update do form 
+                    form.action = '@Url.Action("RemoveRole")';
+
+                    // limpar inputs caso existam
+                    form.querySelectorAll('input[name]').forEach(input => input.remove());
+                    
+                    // adicionar datas das inputs para a submissao
+                    const inputUserId = document.createElement('input');
+                    inputUserId.type = 'hidden';
+                    inputUserId.name = 'userId';
+                    inputUserId.value = userId;
+                    form.appendChild(inputUserId);
+
+                    const inputRole = document.createElement('input');
+                    inputRole.type = 'hidden';
+                    inputRole.name = 'role';
+                    inputRole.value = role;
+                    form.appendChild(inputRole);
+
+                    // mostrar popup
+                    confirmModal.show();
+                });
+            });
+        });
+    </script>
+}
+
+@{
+    var confirmModel = new byte_hunt.Models.Popups.ConfirmPopupViewModel {
+        Titulo = "Confirmar Remoção",
+        Pergunta = "",
+        ConfirmBtnText = "Remover",
+        CancelBtnText = "Cancelar",
+        ActionUrl = "",
+        FormMethod = "post"
+    };
+    @Html.Partial("_ConfirmPopup", confirmModel)
+}
