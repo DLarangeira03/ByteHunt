@@ -2,51 +2,60 @@
 
 @{
     ViewData["Title"] = "Nova Contribuição";
-    <link rel="stylesheet" href="~/css/contribuicoes_create.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/contribuicoes_crud.css" asp-append-version="true" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
 }
 
-<div class="form-container-wide">
-    <h1 class="form-title">📥 Submeta a sua Contribuição</h1>
-    <p>Preencha os detalhes abaixo para submeter a sua sugestão à plataforma.</p>
+<div class="background-image"></div>
+
+<div class="form-container-wide shadow rounded p-4 mx-auto">
+    <h1 class="text-center mb-4">
+        <i class="bi bi-upload me-2"></i> Submeta a sua Contribuição
+    </h1>
+    <p class="text-center mb-4">Preencha os detalhes abaixo para submeter a sua sugestão à plataforma.</p>
 
     <form asp-action="Create" method="post">
         @Html.AntiForgeryToken()
 
-        <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+        <div asp-validation-summary="ModelOnly" class="validation-summary-errors mb-3"></div>
 
-        <div class="form-group">
-            <label>Nome:</label>
-            <input type="text" name="Nome" class="form-control" />
+        <div class="mb-3">
+            <label class="form-label">Nome:*</label>
+            <input type="text" name="Nome" class="form-control rounded-pill shadow-sm" />
         </div>
 
-        <div class="form-group">
-            <label>Marca:</label>
-            <input type="text" name="Marca" class="form-control" />
+        <div class="mb-3">
+            <label class="form-label">Marca:*</label>
+            <input type="text" name="Marca" class="form-control rounded-pill shadow-sm" />
         </div>
 
-        <div class="form-group">
-            <label>Preço:</label>
-            <input type="text" name="Preco" class="form-control" />
+        <div class="mb-3">
+            <label class="form-label">Preço:</label>
+            <input type="text" name="Preco" class="form-control rounded-pill shadow-sm" />
         </div>
 
-        <div class="form-group">
-            <label>Descrição:</label>
-            <textarea name="Descricao" class="form-control"></textarea>
+        <div class="mb-3">
+            <label class="form-label">Descrição:</label>
+            <textarea name="Descricao" class="form-control rounded shadow-sm" rows="3"></textarea>
         </div>
 
-        <div class="form-group">
-            <label asp-for="UtilizadorId" class="control-label"></label>
-            <select asp-for="UtilizadorId" class="form-control" asp-items="ViewBag.UtilizadorId"></select>
+        <div class="mb-3">
+            <label asp-for="UtilizadorId" class="form-label"></label>
+            <select asp-for="UtilizadorId" class="form-select rounded-pill shadow-sm" asp-items="ViewBag.UtilizadorId"></select>
             <span asp-validation-for="UtilizadorId" class="text-danger"></span>
         </div>
-        
-        
-        <div class="form-group">
+
+        <div class="mb-3 text-muted">
             <p>*Campos obrigatórios</p>
         </div>
-        
-        <input type="submit" value="Adicionar Contribuição" class="btn-submit" />
-        <a asp-action="Index" class="back-link">&larr; Voltar à lista</a>
+
+        <button type="submit" class="btn btn-dark rounded-pill px-5 shadow-sm mt-3">
+            <i class="bi bi-check-lg me-2"></i> Criar
+        </button>
+
+        <a asp-action="Index" class="btn btn-secondary rounded-pill px-4 shadow-sm mt-3 ms-3">
+            <i class="bi bi-x-circle me-2"></i> Cancelar
+        </a>
     </form>
 </div>
 

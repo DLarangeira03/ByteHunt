@@ -7,7 +7,7 @@
     
     var utilizadores = ViewData["Utilizadores"] as List<SelectListItem>;
     var utilizadorSelecionado = (int)ViewData["UtilizadorSelecionado"];
-    var currentSearch = ""; // pode adicionar se tiver filtro de pesquisa
+    var currentSearch = ""; 
 }
 
 
@@ -47,7 +47,7 @@
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Detalhes</th>
+                <th>Contribuição</th>
                 <th>Estado</th>
                 <th>Data</th>
                 <th>Responsável</th>
@@ -60,7 +60,21 @@
             {
                 <tr>
                     <td>@item.Id</td>
-                    <td>@item.DetalhesContribuicao</td>
+                    <td>
+                        @{
+                            var detalhes = item.DetalhesContribuicao ?? "";
+                            var nome = "";
+                            var prefix = "Nome:";
+                            if (detalhes.Contains(prefix))
+                            {
+                                int start = detalhes.IndexOf(prefix) + prefix.Length;
+                                int end = detalhes.IndexOf("Marca:", start);
+                                if (end == -1) end = detalhes.Length;
+                                nome = detalhes.Substring(start, end - start).Trim();
+                            }
+                        }
+                        @nome
+                    </td>
                     <td>
                         <span class="badge @(item.Status switch {
                             "Approved" => "bg-success",
