@@ -29,8 +29,14 @@
                     <form method="post" asp-action="RemoveRole" style="display:inline" class="remove-role-form">
                         <input type="hidden" name="userId" value="@user.UserId"/>
                         <input type="hidden" name="role" value="@role"/>
-                        <button type="button" class="btn btn-sm btn-outline-danger remove-role-btn"
-                                data-user="@user.UserName" data-role="@role">
+                        <button type="button" class="btn btn-sm btn-outline-danger confirm-action-btn"
+                                data-user="@user.UserName"
+                                data-role="@role"
+                                data-userid="@user.UserId"
+                                data-question="Tem a certeza que pretende remover a role '@role' do utilizador @user.UserName?"
+                                data-action="@Url.Action("RemoveRole")"
+                                data-title="Confirmar Remoção"
+                                data-confirmtext="Remover">
                             @role
                         </button>
                     </form>
@@ -55,6 +61,7 @@
 </table>
 
 @section Scripts {
+    @* modal de informacao *@
     <script>
         window.addEventListener('DOMContentLoaded', () => {
             const modalEl = document.getElementById('infoModal');
@@ -64,42 +71,47 @@
             }
         });
     </script>
+
+    @* script de confimacar generalizado *@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const confirmModalEl = document.getElementById('confirmModal');
             const confirmModal = new bootstrap.Modal(confirmModalEl);
             const form = confirmModalEl.querySelector('form');
             const questionEl = confirmModalEl.querySelector('.modal-body p');
+            const titleEl = confirmModalEl.querySelector('.modal-title');
+            const confirmBtn = form.querySelector('button[type="submit"]');
 
-            document.querySelectorAll('.remove-role-btn').forEach(button => {
+            const createHiddenInput = (name, value) => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = name;
+                input.value = value;
+                return input;
+            };
+
+            document.querySelectorAll('.confirm-action-btn').forEach(button => {
                 button.addEventListener('click', () => {
-                    const user = button.getAttribute('data-user');
-                    const role = button.getAttribute('data-role');
-                    const userId = button.getAttribute('data-userid');
+                    const dataset = button.dataset;
 
-                    // atualizar pergunta
-                    questionEl.textContent = `Tem a certeza que pretende remover a role "${role}" do utilizador ${user}?`;
-
-                    // fazer update do form 
-                    form.action = '@Url.Action("RemoveRole")';
-
-                    // limpar inputs caso existam
-                    form.querySelectorAll('input[name]').forEach(input => input.remove());
+                    // definir conteudo
+                    titleEl.textContent = dataset.title || "Confirmar Ação";
+                    questionEl.textContent = dataset.question || "Tem a certeza?";
+                    confirmBtn.textContent = dataset.confirmtext || "Confirmar";
                     
-                    // adicionar datas das inputs para a submissao
-                    const inputUserId = document.createElement('input');
-                    inputUserId.type = 'hidden';
-                    inputUserId.name = 'userId';
-                    inputUserId.value = userId;
-                    form.appendChild(inputUserId);
+                    // definir action e method
+                    form.action = dataset.action || "#";
+                    form.method = dataset.method || "post";
 
-                    const inputRole = document.createElement('input');
-                    inputRole.type = 'hidden';
-                    inputRole.name = 'role';
-                    inputRole.value = role;
-                    form.appendChild(inputRole);
+                    // remover inputs ja existentes
+                    form.querySelectorAll('input[name]').forEach(i => i.remove());
 
-                    // mostrar popup
+                    // adicinar inputs para as entrys do dataset
+                    for (const [key, value] of Object.entries(dataset)) {
+                        if (["title", "question", "confirmtext", "action", "method"].includes(key)) continue;
+                        form.appendChild(createHiddenInput(key, value));
+                    }
+                    
                     confirmModal.show();
                 });
             });
@@ -109,10 +121,10 @@
 
 @{
     var confirmModel = new byte_hunt.Models.Popups.ConfirmPopupViewModel {
-        Titulo = "Confirmar Remoção",
+        Titulo = "Confirmar",  // altera com js
         Pergunta = "",
-        ConfirmBtnText = "Remover",
-        CancelBtnText = "Cancelar",
+        ConfirmBtnText = "Confirmar", // altera com js
+        CancelBtnText = "Cancelar", // altera com js
         ActionUrl = "",
         FormMethod = "post"
     };
