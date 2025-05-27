@@ -21,7 +21,7 @@ namespace byte_hunt.Controllers
         }
 
         // GET: Contribuicao
-        public async Task<IActionResult> Index(int? utilizadorId)
+        public async Task<IActionResult> Index(int? utilizadorId, int page = 1, int pageSize = 10)
         {
             var query = _context.Contribuicoes
                 .Include(c => c.Utilizador)
@@ -33,7 +33,15 @@ namespace byte_hunt.Controllers
                 query = query.Where(c => c.UtilizadorId == utilizadorId.Value);
             }
 
-            var contribuicoes = await query.ToListAsync();
+            query = query.OrderByDescending(c => c.DataContribuicao); // Ordenar por data
+
+            int totalCount = await query.CountAsync();
+            var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+
+            var contribuicoes = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
 
             var utilizadores = await _context.Utilizadores
                 .Select(u => new SelectListItem { Value = u.Id.ToString(), Text = u.Nome })
@@ -43,6 +51,8 @@ namespace byte_hunt.Controllers
 
             ViewData["Utilizadores"] = utilizadores;
             ViewData["UtilizadorSelecionado"] = utilizadorId ?? 0;
+            ViewData["CurrentPage"] = page;
+            ViewData["TotalPages"] = totalPages;
 
             return View(contribuicoes);
         }
