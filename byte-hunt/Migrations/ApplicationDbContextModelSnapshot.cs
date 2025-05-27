@@ -89,6 +89,9 @@ namespace byte_hunt.Migrations
                     b.Property<DateTime>("DataContribuicao")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime?>("DataEditada")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime?>("DataReview")
                         .HasColumnType("datetime2");
 

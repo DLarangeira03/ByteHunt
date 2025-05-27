@@ -21,6 +21,8 @@ public class Contribuicao
     
     public DateTime? DataReview { get; set; } //Data da validação
     
+    public DateTime? DataEditada { get; set; } //Data de Edição
+    
     public int? ResponsavelId { get; set; } //Responsável pela validação
 
     [Required] public int UtilizadorId { get; set; } //chave estrangeira
