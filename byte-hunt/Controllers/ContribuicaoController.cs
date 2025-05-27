@@ -112,6 +112,13 @@ namespace byte_hunt.Controllers
             var contribuicao = await _context.Contribuicoes.FindAsync(id);
             if (contribuicao == null) return NotFound();
 
+            // Separar os campos da string DetalhesContribuicao
+            var partes = contribuicao.DetalhesContribuicao?.Split(", ");
+            ViewBag.Nome = partes != null && partes.Length > 0 ? partes[0].Replace("Nome: ", "") : "";
+            ViewBag.Marca = partes != null && partes.Length > 1 ? partes[1].Replace("Marca: ", "") : "";
+            ViewBag.Preco = partes != null && partes.Length > 2 ? partes[2].Replace("Preço: ", "") : "";
+            ViewBag.Descricao = partes != null && partes.Length > 3 ? partes[3].Replace("Descrição: ", "") : "";
+
             ViewData["UtilizadorId"] =
                 new SelectList(_context.Utilizadores, "Id", "Nome", contribuicao.UtilizadorId);
             ViewData["ResponsavelId"] =
@@ -122,32 +129,27 @@ namespace byte_hunt.Controllers
         // POST: Contribuicao/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id,
-            [Bind("Id,DetalhesContribuicao,Status,DataContribuicao,DataReview,ResponsavelId,UtilizadorId")]
-            Contribuicao contribuicao)
+        public async Task<IActionResult> Edit(int id, IFormCollection form)
         {
-            if (id != contribuicao.Id) return NotFound();
+            var contribuicao = await _context.Contribuicoes.FindAsync(id);
+            if (contribuicao == null) return NotFound();
+
+            // Atualiza DetalhesContribuicao com os novos valores
+            var nome = form["Nome"];
+            var marca = form["Marca"];
+            var preco = form["Preco"];
+            var descricao = form["Descricao"];
+
+            contribuicao.DetalhesContribuicao = $"Nome: {nome}Marca: {marca}Preço: {preco}Descrição: {descricao}";
+            contribuicao.DataEditada = DateTime.Now;
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(contribuicao);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ContribuicaoExists(contribuicao.Id)) return NotFound();
-                    else throw;
-                }
-
+                _context.Update(contribuicao);
+                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewData["UtilizadorId"] =
-                new SelectList(_context.Utilizadores, "Id", "Nome", contribuicao.UtilizadorId);
-            ViewData["ResponsavelId"] =
-                new SelectList(_context.Utilizadores, "Id", "Nome", contribuicao.ResponsavelId);
             return View(contribuicao);
         }
 

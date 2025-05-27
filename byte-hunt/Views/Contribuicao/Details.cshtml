@@ -2,8 +2,25 @@
 
 @{
     ViewData["Title"] = "Detalhes da Contribuição";
-    <link rel="stylesheet" href="~/css/contribuicoes_crud.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/contribuicoes_crud.css" asp-append-version="true"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    var detalhes = Model.DetalhesContribuicao ?? "";
+
+    string nome = "", marca = "", preco = "", descricao = "";
+
+    string Extract(string source, string startTag, string nextTag)
+    {
+        if (!source.Contains(startTag)) return "";
+        int start = source.IndexOf(startTag) + startTag.Length;
+        int end = nextTag != null && source.Contains(nextTag) ? source.IndexOf(nextTag, start) : source.Length;
+        return source.Substring(start, end - start).Trim();
+    }
+
+    nome = Extract(detalhes, "Nome:", "Marca:");
+    marca = Extract(detalhes, "Marca:", "Preço:");
+    preco = Extract(detalhes, "Preço:", "Descrição:");
+    descricao = Extract(detalhes, "Descrição:", null);
 }
 
 <div class="background-image"></div>
@@ -11,23 +28,50 @@
     <h1 class="text-center mb-4">Detalhes da Contribuição</h1>
 
     <dl class="row">
-        <dt class="col-sm-3">Detalhes</dt>
-        <dd class="col-sm-9">@Html.DisplayFor(model => model.DetalhesContribuicao)</dd>
+        <span class="d-block text-center fw-bold fs-5 text-muted my-2">---- Contribuição ----</span>
+        <dt class="col-sm-3">Nome</dt>
+        <dd class="col-sm-9">@nome</dd>
+        <dt class="col-sm-3">Marca</dt>
+        <dd class="col-sm-9">@marca</dd>
+        <dt class="col-sm-3">Preço</dt>
+        <dd class="col-sm-9">@preco</dd>
+        <dt class="col-sm-3">Descrição</dt>
+        <dd class="col-sm-9">@descricao</dd>
 
-        <dt class="col-sm-3">Data da Contribuição</dt>
-        <dd class="col-sm-9">@Html.DisplayFor(model => model.DataContribuicao)</dd>
+        <span class="d-block text-center fw-bold fs-5 text-muted my-2 mb-3">---- Detalhes da Contribuição ----</span><br/>
 
-        <dt class="col-sm-3">Utilizador</dt>
-        <dd class="col-sm-9">@Html.DisplayFor(model => model.Utilizador.Nome)</dd>
+        <div class="row text-center fw-bold mb-2">
+            <div class="col-md-4">Utilizador</div>
+            <div class="col-md-4">Data da Contribuição</div>
+            @if (Model.DataEditada != null)
+            {
+                <div class="col-md-4">Data Última Edição</div>
+            }
+        </div>
+        <div class="row text-center mb-4">
+            <div class="col-md-4">@Html.DisplayFor(model => model.Utilizador.Nome)</div>
+            <div class="col-md-4">@Html.DisplayFor(model => model.DataContribuicao)</div>
+            @if (Model.DataEditada != null)
+            {
+                <div class="col-md-4">@Html.DisplayFor(model => model.DataEditada)</div>
+            }
+        </div>
 
-        <dt class="col-sm-3">Estado Atual</dt>
-        <dd class="col-sm-9">@Html.DisplayFor(model => model.Status)</dd>
+        
 
         @if (Model.Status != "Approved" && Model.Status != "Rejected")
         {
+            <div class="row text-center fw-bold mb-2">
+                <div class="col-sm-4">Estado Atual</div>
+            </div>
+
+            <div class="row text-center">
+                <div class="col-sm-4">@Html.DisplayFor(model => model.Status)</div>
+
+            </div>
             <form asp-action="UpdateStatus" method="post" class="w-100 mt-4">
                 @Html.AntiForgeryToken()
-                <input type="hidden" name="Id" value="@Model.Id" />
+                <input type="hidden" name="Id" value="@Model.Id"/>
 
                 <div class="form-group mb-3">
                     <label for="Responsavel">Selecionar Responsável:</label>
@@ -44,15 +88,20 @@
         }
         else
         {
-            <dt class="col-sm-3">Data de Averiguação</dt>
-            <dd class="col-sm-9">@Model.DataReview?.ToString("dd/MM/yyyy HH:mm")</dd>
+            <div class="row text-center fw-bold mb-2">
+                <div class="col-sm-4">Responável</div>
+                <div class="col-sm-4">Estado Atual</div>
+                <div class="col-sm-4">Data de Revisão</div>
+            </div>
 
-            <dt class="col-sm-3">Responsável</dt>
-            <dd class="col-sm-9">
-                @(Model.Responsavel != null && !string.IsNullOrWhiteSpace(Model.Responsavel.Nome)
-                    ? Model.Responsavel.Nome
-                    : "—")
-            </dd>
+            <div class="row text-center">
+                <div class="col-sm-4">@(Model.Responsavel != null && !string.IsNullOrWhiteSpace(Model.Responsavel.Nome)
+                        ? Model.Responsavel.Nome
+                        : "—")</div>
+                <div class="col-sm-4">@Html.DisplayFor(model => model.Status)</div>
+                <div class="col-sm-4">@Model.DataReview?.ToString("dd/MM/yyyy HH:mm")</div>
+
+            </div>
         }
     </dl>
 
@@ -62,5 +111,5 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 }
