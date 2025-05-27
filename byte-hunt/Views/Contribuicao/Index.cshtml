@@ -61,13 +61,13 @@
         </tr>
         </thead>
         <tbody>
-        @foreach (var item in Model)
+        @foreach (var contribuicao in Model)
         {
             <tr>
-                <td>@item.Id</td>
+                <td>@contribuicao.Id</td>
                 <td>
                     @{
-                        var detalhes = item.DetalhesContribuicao ?? "";
+                        var detalhes = contribuicao.DetalhesContribuicao ?? "";
                         var nome = "";
                         var prefix = "Nome:";
                         if (detalhes.Contains(prefix))
@@ -81,23 +81,26 @@
                     @nome
                 </td>
                 <td>
-                    <span class="badge @(item.Status switch
+                    <span class="badge @(contribuicao.Status switch
                                        {
                                            "Approved" => "bg-success",
                                            "Pending" => "bg-warning text-dark",
                                            "Rejected" => "bg-danger",
                                            _ => "bg-secondary"
-                                       })">@item.Status</span>
+                                       })">@contribuicao.Status</span>
                 </td>
-                <td>@item.DataContribuicao.ToShortDateString()</td>
-                <td>@item.Responsavel?.Nome </td>
-                <td>@item.DataReview?.ToShortDateString()</td>
-                <td>@item.Utilizador?.Nome</td>
+                <td>@contribuicao.DataContribuicao.ToShortDateString()</td>
+                <td>@contribuicao.Responsavel?.Nome </td>
+                <td>@contribuicao.DataReview?.ToShortDateString()</td>
+                <td>@contribuicao.Utilizador?.Nome</td>
                 <td class="contribuicao-botoes">
-                    <a class="btn btn-sm btn-info" asp-action="Details" asp-route-id="@item.Id">Ver</a>
-                    <a class="btn btn-sm btn-warning" asp-action="Edit" asp-route-id="@item.Id">Editar</a>
-                    <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@item.Id">Remover</a>
-                    <a class="btn btn-sm btn-success" asp-action="Details" asp-route-id="@item.Id">Requisitar</a>
+                    <a class="btn btn-sm btn-info" asp-action="Details" asp-route-id="@contribuicao.Id">Ver</a>
+                    @if (contribuicao.Status != "Approved" && contribuicao.Status != "Rejected")
+                    {
+                        <a class="btn btn-sm btn-warning" asp-action="Edit" asp-route-id="@contribuicao.Id">Editar</a>
+                    }
+                    <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@contribuicao.Id">Remover</a>
+                    <a class="btn btn-sm btn-success" asp-action="Details" asp-route-id="@contribuicao.Id">Requisitar</a>
                 </td>
             </tr>
         }
