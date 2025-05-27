@@ -41,21 +41,23 @@
         <table class="table table-hover table-striped categoria-tabela">
             <thead>
             <tr>
-                <th>@Html.DisplayNameFor(model => model.First().Nome)</th>
-                <th>@Html.DisplayNameFor(model => model.First().Descricao)</th>
+                <th>ID</th>
+                <th>Nome da Categoria</th>
+                <th>Descrição</th>
                 <th>Ações</th>
             </tr>
             </thead>
             <tbody>
-            @foreach (var item in Model)
+            @foreach (var categoria in Model)
             {
                 <tr>
-                    <td>@item.Nome</td>
-                    <td>@item.Descricao</td>
+                    <td>@categoria.Id</td>
+                    <td>@categoria.Nome</td>
+                    <td>@categoria.Descricao</td>
                     <td class="categoria-botoes">
-                        <a class="btn btn-sm btn-info" asp-action="Details" asp-route-id="@item.Id">Ver</a>
-                        <a class="btn btn-sm btn-warning" asp-action="Edit" asp-route-id="@item.Id">Editar</a>
-                        <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@item.Id">Remover</a>
+                        <a class="btn btn-sm btn-info" asp-action="Details" asp-route-id="@categoria.Id">Ver</a>
+                        <a class="btn btn-sm btn-warning" asp-action="Edit" asp-route-id="@categoria.Id">Editar</a>
+                        <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@categoria.Id">Remover</a>
                     </td>
                 </tr>
             }
