@@ -1,0 +1,27 @@
+﻿@model byte_hunt.Models.ItemComparisonViewModel
+
+<h2>Comparison</h2>
+
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th>Attribute</th>
+        @foreach (var item in Model.Items)
+        {
+            <th>@item.Nome</th>
+        }
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var row in Model.AttrRows)
+    {
+        <tr>
+            <td>@row.Key</td>
+            @foreach (var val in row.Values)
+            {
+                <td>@val</td>
+            }
+        </tr>
+    }
+    </tbody>
+</table>
