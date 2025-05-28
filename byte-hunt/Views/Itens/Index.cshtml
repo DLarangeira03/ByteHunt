@@ -91,27 +91,33 @@
                                  class="img-fluid rounded" style="max-height: 200px;"/>
                         }
 
-                        <div class="card-body">
-                            <h5 class="card-title">@item.Nome</h5>
-                            <p class="fw-bold mb-1">@item.Preco?.ToString("C")</p>
-                            <span class="badge bg-primary">@item.Categoria?.Nome</span>
+                        <div class="card-body d-flex flex-row justify-content-between">
+                            <div>
+                                <h5 class="card-title fs-4">@item.Nome</h5>
+                                <h5 class="card-tille fs-6">@item.Marca</h5>
+                                <p class="fw-bold mb-1 fs-4">@item.Preco?.ToString("C")</p>
+                            </div>
+                            
+                            <div class="text-end d-flex flex-column justify-content-between" style="width: 4.38rem;">
+                                <span class="badge bg-secondary fs-7">@item.Categoria?.Nome</span>
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-dark btn-sm "
+                                   title="Ver detalhes">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </div>
                         </div>
+                        
                         <div class="card-footer d-flex justify-content-between">
-                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-dark btn-md"
-                               title="Ver detalhes">
-                                <i class="bi bi-eye fs-5"></i>
-                            </a>
-
+                            <div class="d-inline-flex gap-1"></div>
                             <!-- -->
                             <div class="d-inline-flex gap-2">
-                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary btn-lg">
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary btn-md">
                                     <i class="bi bi-pencil-fill"></i>
                                 </a>
-                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-lg">
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-md">
                                     <i class="bi bi-trash-fill"></i>
                                 </a>
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -124,27 +130,81 @@
                 <ul class="pagination justify-content-center">
                     <li class="page-item @(currentPage == 1 ? "disabled" : "")">
                         <a class="page-link bg-dark text-white border-dark" asp-action="Index"
-                           asp-route-pageNumber="@(currentPage - 1)" asp-route-pageSize="@pageSize" aria-label="Previous">
-                            <span aria-hidden="true">&laquo;</span>
+                           asp-route-pageNumber="1" asp-route-pageSize="@pageSize" aria-label="Previous">
+                            <span aria-hidden="true"><i class="bi bi-chevron-double-left"></i></span>
                         </a>
                     </li>
-
-                    @for (int i = 1; i <= totalPages; i++)
+                    <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                        <a class="page-link bg-dark text-white border-dark" asp-action="Index"
+                           asp-route-pageNumber="@(currentPage - 1)" asp-route-pageSize="@pageSize"
+                           aria-label="Previous">
+                            <span aria-hidden="true"><i class="bi bi-chevron-left"></i></span>
+                        </a>
+                    </li>
+                    
+                    @if (totalPages < 10)
                     {
-                        <li class="page-item @(i == currentPage ? "active" : "")">
-                            <a class="page-link @(i == currentPage ? "bg-black text-white border-dark" : "bg-dark text-white border-dark")"
+                        @for (int i = 1; i <= totalPages; i++)
+                        {
+                            <li class="page-item @(i == currentPage ? "active" : "")">
+                                <a class="page-link @(i == currentPage ? "bg-black text-white border-dark" : "bg-dark text-white border-dark")"
+                                   asp-action="Index"
+                                   asp-route-pageNumber="@i"
+                                   asp-route-pageSize="@pageSize">
+                                    @i
+                                </a>
+                            </li>
+                        }
+                    }
+                    else
+                    {
+                        @if (currentPage != 1)
+                        {
+                            <li class="page-item active">
+                                <a class="page-link bg-dark text-white border-dark"
+                                   asp-action="Index"
+                                   asp-route-pageNumber="@(currentPage - 1)"
+                                   asp-route-pageSize="@pageSize">
+                                    @(currentPage - 1)
+                                </a>
+                            </li>
+                        }
+                        <li class="page-item active">
+                            <a class="page-link bg-black text-white border-dark"
                                asp-action="Index"
-                               asp-route-pageNumber="@i"
+                               asp-route-pageNumber="@currentPage"
                                asp-route-pageSize="@pageSize">
-                                @i
+                                @currentPage
                             </a>
                         </li>
+                        @if (currentPage != totalPages)
+                        {
+                            <li class="page-item active">
+                                <a class="page-link bg-dark text-white border-dark"
+                                   asp-action="Index"
+                                   asp-route-pageNumber="@(currentPage + 1)"
+                                   asp-route-pageSize="@pageSize">
+                                    @(currentPage + 1)
+                                </a>
+                            </li>
+                        }
                     }
+                        
+                    
+
+                   
+
 
                     <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
                         <a class="page-link bg-dark text-white border-dark" asp-action="Index"
                            asp-route-pageNumber="@(currentPage + 1)" asp-route-pageSize="@pageSize" aria-label="Next">
-                            <span aria-hidden="true">&raquo;</span>
+                            <span aria-hidden="true"><i class="bi bi-chevron-right"></i></span>
+                        </a>
+                    </li>
+                    <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                        <a class="page-link bg-dark text-white border-dark" asp-action="Index"
+                           asp-route-pageNumber="@totalPages" asp-route-pageSize="@pageSize" aria-label="Previous">
+                            <span aria-hidden="true"><i class="bi bi-chevron-double-right"></i></span>
                         </a>
                     </li>
                 </ul>
@@ -152,7 +212,9 @@
         }
         else
         {
-            <div class="alert alert-info text-center my-4" role="alert" style="font-size: 1.2rem;">Não existem itens para serem apresentados.</div>
+            <div class="alert alert-info text-center my-4" role="alert" style="font-size: 1.2rem;">Não existem itens
+                para serem apresentados.
+            </div>
         }
     </div>
 </div>

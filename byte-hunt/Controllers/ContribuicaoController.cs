@@ -30,7 +30,15 @@ namespace byte_hunt.Controllers
 
             if (utilizadorId.HasValue && utilizadorId.Value != 0)
             {
-                query = query.Where(c => c.UtilizadorId == utilizadorId.Value);
+                // if (User.IsInRole("admin"))
+                // {
+                //     
+                // }
+                // else
+                // {
+                //     query = query.Where(c => c.UtilizadorId == utilizadorId.Value);    
+                // }
+                query = query.Where(c => c.UtilizadorId == utilizadorId.Value); 
             }
 
             query = query.OrderByDescending(c => c.DataContribuicao); // Ordenar por data
@@ -133,6 +141,10 @@ namespace byte_hunt.Controllers
                 new SelectList(_context.Utilizadores, "Id", "Nome", contribuicao.UtilizadorId);
             ViewData["ResponsavelId"] =
                 new SelectList(_context.Utilizadores, "Id", "Nome", contribuicao.ResponsavelId);
+            
+            
+            // return RedirectToAction("Index")
+            
             return View(contribuicao);
         }
 

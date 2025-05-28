@@ -4,6 +4,7 @@
     ViewData["Title"] = "Contribuições";
 
     <link rel="stylesheet" href="~/css/contribuicao_apresentacao.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
     var utilizadores = ViewData["Utilizadores"] as List<SelectListItem>;
     var utilizadorSelecionado = (int)ViewData["UtilizadorSelecionado"];
@@ -112,27 +113,75 @@
             <ul class="pagination justify-content-center">
                 <li class="page-item @(currentPage == 1 ? "disabled" : "")">
                     <a class="page-link bg-dark text-white border-dark" asp-action="Index"
-                       asp-route-page="@(currentPage - 1)" asp-route-utilizadorId="@utilizadorId" aria-label="Previous">
-                        <span aria-hidden="true">&laquo;</span>
+                       asp-route-page="1" asp-route-pageSize="10" aria-label="Previous">
+                        <span aria-hidden="true"><i class="bi bi-chevron-double-left"></i></span>
                     </a>
                 </li>
-
-                @for (int i = 1; i <= totalPages; i++)
+                <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                    <a class="page-link bg-dark text-white border-dark" asp-action="Index"
+                       asp-route-page="@(currentPage - 1)" asp-route-utilizadorId="@utilizadorId" aria-label="Previous">
+                        <span aria-hidden="true"><i class="bi bi-chevron-left"></i></span>
+                    </a>
+                </li>
+                
+                @if (totalPages < 10)
                 {
-                    <li class="page-item @(i == currentPage ? "active" : "")">
-                        <a class="page-link @(i == currentPage ? "bg-black text-white border-dark" : "bg-dark text-white border-dark")"
+                    @for (int i = 1; i <= totalPages; i++)
+                    {
+                        <li class="page-item @(i == currentPage ? "active" : "")">
+                            <a class="page-link @(i == currentPage ? "bg-black text-white border-dark" : "bg-dark text-white border-dark")"
+                               asp-action="Index"
+                               asp-route-page="@i"
+                               asp-route-utilizadorId="@utilizadorId">
+                                @i
+                            </a>
+                        </li>
+                    }
+                }
+                else
+                {
+                    @if (currentPage != 1)
+                    {
+                        <li class="page-item active">
+                            <a class="page-link bg-dark text-white border-dark"
+                               asp-action="Index"
+                               asp-route-page="@(currentPage - 1)"
+                               asp-route-pageSize="10">
+                                @(currentPage - 1)
+                            </a>
+                        </li>
+                    }
+                    <li class="page-item active">
+                        <a class="page-link bg-black text-white border-dark"
                            asp-action="Index"
-                           asp-route-page="@i"
-                           asp-route-utilizadorId="@utilizadorId">
-                            @i
+                           asp-route-page="@currentPage"
+                           asp-route-pageSize="10">
+                            @currentPage
                         </a>
                     </li>
+                    @if (currentPage != totalPages)
+                    {
+                        <li class="page-item active">
+                            <a class="page-link bg-dark text-white border-dark"
+                               asp-action="Index"
+                               asp-route-page="@(currentPage + 1)"
+                               asp-route-pageSize="10">
+                                @(currentPage + 1)
+                            </a>
+                        </li>
+                    }
                 }
 
                 <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
                     <a class="page-link bg-dark text-white border-dark" asp-action="Index"
                        asp-route-page="@(currentPage + 1)" asp-route-utilizadorId="@utilizadorId" aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
+                        <span aria-hidden="true"><i class="bi bi-chevron-right"></i></span>
+                    </a>
+                </li>
+                <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                    <a class="page-link bg-dark text-white border-dark" asp-action="Index"
+                       asp-route-page="@totalPages" asp-route-pageSize="10" aria-label="Previous">
+                        <span aria-hidden="true"><i class="bi bi-chevron-double-right"></i></span>
                     </a>
                 </li>
             </ul>

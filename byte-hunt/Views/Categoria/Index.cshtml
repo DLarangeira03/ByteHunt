@@ -14,15 +14,16 @@
 
 
 <div class="categoria-fundo"></div>
+
 <div class="container categoria-container">
     <h2 class="mb-4">Categorias</h2>
 
     <form asp-action="Index" method="get" class="categoria-pesquisa-form mb-3 d-flex align-items-center">
         <input type="search" name="searchString" value="@searchString"
                class="form-control rounded-pill shadow-sm"
-               placeholder="Pesquisar nome ou descrição..." 
+               placeholder="Pesquisar nome ou descrição..."
                style="width: 500px;"/>
-    
+
         <button class="btn btn-dark ms-2 rounded-pill px-4 shadow-sm" type="submit"
                 style="white-space: nowrap;">
             <i class="bi bi-search"></i>
@@ -63,39 +64,90 @@
             }
             </tbody>
         </table>
+        
         @if (totalPages > 1)
         {
             <nav aria-label="Page navigation" class="mt-4">
                 <ul class="pagination justify-content-center">
+                    <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                        <a class="page-link bg-dark text-white border-dark" asp-action="Index"
+                           asp-route-page="1" asp-route-pageSize="10" aria-label="Previous">
+                            <span aria-hidden="true"><i class="bi bi-chevron-double-left"></i></span>
+                        </a>
+                    </li>
                     <li class="page-item @(currentPage == 1 ? "disabled" : "")">
                         <a class="page-link bg-dark text-white border-dark"
                            asp-action="Index"
                            asp-route-page="@(currentPage - 1)"
                            asp-route-searchString="@searchString"
                            aria-label="Previous">
-                            <span aria-hidden="true">&laquo;</span>
+                            <span aria-hidden="true"><i class="bi bi-chevron-left"></i></span>
                         </a>
                     </li>
 
-                    @for (int i = 1; i <= totalPages; i++)
+                    @if (totalPages < 10)
                     {
-                        <li class="page-item @(i == currentPage ? "active" : "")">
-                            <a class="page-link @(i == currentPage ? "bg-black text-white border-dark" : "bg-dark text-white border-dark")"
+                        @for (int i = 1; i <= totalPages; i++)
+                        {
+                            <li class="page-item @(i == currentPage ? "active" : "")">
+                                <a class="page-link @(i == currentPage ? "bg-black text-white border-dark" : "bg-dark text-white border-dark")"
+                                   asp-action="Index"
+                                   asp-route-page="@i"
+                                   asp-route-searchString="@searchString">
+                                    @i
+                                </a>
+                            </li>
+                        }
+                    }
+                    else
+                    {
+                        @if (currentPage != 1)
+                        {
+                            <li class="page-item active">
+                                <a class="page-link bg-dark text-white border-dark"
+                                   asp-action="Index"
+                                   asp-route-page="@(currentPage - 1)"
+                                   asp-route-pageSize="10">
+                                    @(currentPage - 1)
+                                </a>
+                            </li>
+                        }
+
+                        <li class="page-item active">
+                            <a class="page-link bg-black text-white border-dark"
                                asp-action="Index"
-                               asp-route-page="@i"
-                               asp-route-searchString="@searchString">
-                                @i
+                               asp-route-page="@currentPage"
+                               asp-route-pageSize="10">
+                                @currentPage
                             </a>
                         </li>
+                        <li class="page-item active">...</li>
+                        @if (currentPage != totalPages)
+                        {
+                            <li class="page-item active">
+                                <a class="page-link bg-dark text-white border-dark"
+                                   asp-action="Index"
+                                   asp-route-page="@(currentPage + 1)"
+                                   asp-route-pageSize="10">
+                                    @(currentPage + 1)
+                                </a>
+                            </li>
+                        }
                     }
-
+                    
                     <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
                         <a class="page-link bg-dark text-white border-dark"
                            asp-action="Index"
                            asp-route-page="@(currentPage + 1)"
                            asp-route-searchString="@searchString"
                            aria-label="Next">
-                            <span aria-hidden="true">&raquo;</span>
+                            <span aria-hidden="true"><i class="bi bi-chevron-right"></i></span>
+                        </a>
+                    </li>
+                    <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                        <a class="page-link bg-dark text-white border-dark" asp-action="Index"
+                           asp-route-page="@totalPages" asp-route-pageSize="10" aria-label="Previous">
+                            <span aria-hidden="true"><i class="bi bi-chevron-double-right"></i></span>
                         </a>
                     </li>
                 </ul>
