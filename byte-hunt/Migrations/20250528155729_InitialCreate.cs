@@ -203,6 +203,7 @@ namespace byte_hunt.Migrations
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DataContribuicao = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DataReview = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DataEditada = table.Column<DateTime>(type: "datetime2", nullable: true),
                     UtilizadorId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ResponsavelId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },

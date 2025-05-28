@@ -12,7 +12,7 @@ using byte_hunt.Data;
 namespace byte_hunt.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250524113014_InitialCreate")]
+    [Migration("20250528155729_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -228,6 +228,9 @@ namespace byte_hunt.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("DataContribuicao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DataEditada")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("DataReview")

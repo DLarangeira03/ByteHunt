@@ -20,9 +20,29 @@ namespace byte_hunt.Controllers
         }
 
         // GET: Categoria
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchString, int page = 1, int pageSize = 10)
         {
-            return View(await _context.Categorias.ToListAsync());
+            var query = _context.Categorias.AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                query = query.Where(c =>
+                    c.Nome.Contains(searchString) ||
+                    c.Descricao.Contains(searchString));
+            }
+
+            int totalItems = await query.CountAsync();
+            var categorias = await query
+                .OrderBy(c => c.Nome)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            ViewData["CurrentPage"] = page;
+            ViewData["TotalPages"] = (int)Math.Ceiling((double)totalItems / pageSize);
+            ViewData["SearchString"] = searchString;
+
+            return View(categorias);
         }
 
         // GET: Categoria/Details/5
