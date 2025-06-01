@@ -81,8 +81,8 @@
                     <div class="card h-100 shadow-sm">
                         @if (!string.IsNullOrEmpty(item.FotoItem))
                         {
-                            <img src="~/images/@item.FotoItem" class="card-img-top" alt="@item.Nome"
-                                 style="object-fit: cover; height: 200px;">
+                            <img src="~/itens_Imagens/@item.FotoItem" class="card-img-top" alt="@item.Nome"
+                                 style="height: 200px; width: 100%; object-fit: contain;" />
                         }
                         else
                         {
@@ -142,7 +142,7 @@
                         </a>
                     </li>
                     
-                    @if (totalPages < 10)
+                    @if (totalPages < 5)
                     {
                         @for (int i = 1; i <= totalPages; i++)
                         {
