@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="~/css/itens_style.css" asp-append-version="true"/>
 
     int currentPage = ViewData["CurrentPage"] != null ? (int)ViewData["CurrentPage"] : 1;
-    int pageSize = ViewData["PageSize"] != null ? (int)ViewData["PageSize"] : 6;
+    int pageSize = ViewData["PageSize"] != null ? (int)ViewData["PageSize"] : 9;
     int totalItems = ViewData["TotalItems"] != null ? (int)ViewData["TotalItems"] : 0;
     int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
 
@@ -82,7 +82,7 @@
                         @if (!string.IsNullOrEmpty(item.FotoItem))
                         {
                             <img src="~/itens_Imagens/@item.FotoItem" class="card-img-top" alt="@item.Nome"
-                                 style="height: 200px; width: 100%; object-fit: contain;" />
+                                 style="height: 200px; width: 100%; object-fit: contain;"/>
                         }
                         else
                         {
@@ -97,16 +97,18 @@
                                 <h5 class="card-tille fs-6">@item.Marca</h5>
                                 <p class="fw-bold mb-1 fs-4">@item.Preco?.ToString("C")</p>
                             </div>
-                            
-                            <div class="text-end d-flex flex-column justify-content-between" style="width: 4.38rem;">
+
+                            <div class="text-end d-flex flex-column justify-content-between" style="width: 6rem;">
                                 <span class="badge bg-secondary fs-7">@item.Categoria?.Nome</span>
-                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-dark btn-sm "
+                                <a asp-action="Details" asp-route-id="@item.Id"
+                                   class="btn btn-dark btn-sm  ms-auto"
+                                   style="width: 3rem; height: 2rem;"
                                    title="Ver detalhes">
                                     <i class="bi bi-eye"></i>
                                 </a>
                             </div>
                         </div>
-                        
+
                         <div class="card-footer d-flex justify-content-between">
                             <div class="d-inline-flex gap-1"></div>
                             <!-- -->
@@ -128,20 +130,23 @@
         {
             <nav class="mt-5" aria-label="Page navigation">
                 <ul class="pagination justify-content-center">
-                    <li class="page-item @(currentPage == 1 ? "disabled" : "")">
-                        <a class="page-link bg-dark text-white border-dark" asp-action="Index"
-                           asp-route-pageNumber="1" asp-route-pageSize="@pageSize" aria-label="Previous">
-                            <span aria-hidden="true"><i class="bi bi-chevron-double-left"></i></span>
-                        </a>
-                    </li>
-                    <li class="page-item @(currentPage == 1 ? "disabled" : "")">
-                        <a class="page-link bg-dark text-white border-dark" asp-action="Index"
-                           asp-route-pageNumber="@(currentPage - 1)" asp-route-pageSize="@pageSize"
-                           aria-label="Previous">
-                            <span aria-hidden="true"><i class="bi bi-chevron-left"></i></span>
-                        </a>
-                    </li>
-                    
+                    @if (currentPage != 1)
+                    {
+                        <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                            <a class="page-link bg-dark text-white border-dark" asp-action="Index"
+                               asp-route-pageNumber="1" asp-route-pageSize="@pageSize" aria-label="Previous">
+                                <span aria-hidden="true"><i class="bi bi-chevron-double-left"></i></span>
+                            </a>
+                        </li>
+                        <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                            <a class="page-link bg-dark text-white border-dark" asp-action="Index"
+                               asp-route-pageNumber="@(currentPage - 1)" asp-route-pageSize="@pageSize"
+                               aria-label="Previous">
+                                <span aria-hidden="true"><i class="bi bi-chevron-left"></i></span>
+                            </a>
+                        </li>
+                    }
+
                     @if (totalPages < 5)
                     {
                         @for (int i = 1; i <= totalPages; i++)
@@ -169,6 +174,7 @@
                                 </a>
                             </li>
                         }
+
                         <li class="page-item active">
                             <a class="page-link bg-black text-white border-dark"
                                asp-action="Index"
@@ -189,24 +195,24 @@
                             </li>
                         }
                     }
-                        
-                    
-
-                   
 
 
-                    <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
-                        <a class="page-link bg-dark text-white border-dark" asp-action="Index"
-                           asp-route-pageNumber="@(currentPage + 1)" asp-route-pageSize="@pageSize" aria-label="Next">
-                            <span aria-hidden="true"><i class="bi bi-chevron-right"></i></span>
-                        </a>
-                    </li>
-                    <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
-                        <a class="page-link bg-dark text-white border-dark" asp-action="Index"
-                           asp-route-pageNumber="@totalPages" asp-route-pageSize="@pageSize" aria-label="Previous">
-                            <span aria-hidden="true"><i class="bi bi-chevron-double-right"></i></span>
-                        </a>
-                    </li>
+                    @if (currentPage != totalPages)
+                    {
+                        <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                            <a class="page-link bg-dark text-white border-dark" asp-action="Index"
+                               asp-route-pageNumber="@(currentPage + 1)" asp-route-pageSize="@pageSize"
+                               aria-label="Next">
+                                <span aria-hidden="true"><i class="bi bi-chevron-right"></i></span>
+                            </a>
+                        </li>
+                        <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                            <a class="page-link bg-dark text-white border-dark" asp-action="Index"
+                               asp-route-pageNumber="@totalPages" asp-route-pageSize="@pageSize" aria-label="Previous">
+                                <span aria-hidden="true"><i class="bi bi-chevron-double-right"></i></span>
+                            </a>
+                        </li>
+                    }
                 </ul>
             </nav>
         }

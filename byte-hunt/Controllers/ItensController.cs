@@ -22,7 +22,7 @@ namespace byte_hunt.Controllers
 
         // GET: Itens
         public async Task<IActionResult> Index(string searchTerm, int? categoriaId, int pageNumber = 1,
-            int pageSize = 6)
+            int pageSize = 9)
         {
             var query = _context.Itens.Include(i => i.Categoria).AsQueryable();
 
