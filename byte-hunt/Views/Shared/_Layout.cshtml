@@ -22,22 +22,24 @@
             <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                 <ul class="navbar-nav flex-grow-1">
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        <a class="nav-link text-dark fs-5" asp-area="" asp-controller="Home" asp-action="Index">
+                            <i class="bi bi-house-door-fill"></i>
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Itens" asp-action="Index">Galeria</a>
+                        <a class="nav-link text-dark fs-5" asp-area="" asp-controller="Itens" asp-action="Index">Galeria</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Comparacao" asp-action="Index">Comparar</a>
+                        <a class="nav-link text-dark fs-5" asp-area="" asp-controller="Comparacao" asp-action="Index">Comparar</a>
                     </li>
                     @if (SignInManager.IsSignedIn(User)) {
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Contribuicao" asp-action="Index">Contribuir</a>
+                            <a class="nav-link text-dark fs-5" asp-area="" asp-controller="Contribuicao" asp-action="Index">Contribuir</a>
                         </li>
                     }
                     @if (SignInManager.IsSignedIn(User) && (User.IsInRole("Moderator") || User.IsInRole("Administrator"))) {
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Dashboard">Painel de Administração</a>
+                            <a class="nav-link text-dark fs-5" asp-area="" asp-controller="Admin" asp-action="Dashboard">Painel de Administração</a>
                         </li>
                     }
                 </ul>

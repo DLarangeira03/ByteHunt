@@ -12,7 +12,7 @@ using byte_hunt.Data;
 namespace byte_hunt.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250528155729_InitialCreate")]
+    [Migration("20250603201335_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

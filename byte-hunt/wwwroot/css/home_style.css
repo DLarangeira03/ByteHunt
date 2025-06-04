@@ -35,3 +35,27 @@ html {
     transform: translateX(5px);
 
 }
+
+
+.btn-purple {
+    background-color: #6f42c1;
+    color: #fff;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.btn-purple:hover {
+    background-color: #523291;
+}
+
+.btn-purple-outline {
+    color: #6f42c1;
+    border: 2px solid #6f42c1;
+    background-color: transparent;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+.btn-purple-outline:hover {
+    background-color: #6f42c1;
+    color: #fff;
+    border-color: #6f42c1;
+}
