@@ -6,16 +6,18 @@
     <title>@ViewData["Title"] - byte_hunt</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
-    <link rel="icon" type="image/svg" href="~/images/icon_byte_hunt.svg" />
+    <link rel="icon" type="image/svg" href="~/images/icon_byte_hunt.svg"/>
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
 @using Microsoft.AspNetCore.Identity
 @inject SignInManager<byte_hunt.Models.Utilizador> SignInManager
 <header>
     <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
         <div class="container-fluid">
-            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index"><img src="~/images/logo_byte_hunt.svg" alt="Byte Hunt Logo" height="70"></a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index"><img
+                    src="~/images/logo_byte_hunt.svg" alt="Byte Hunt Logo" height="70"></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+                    aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -27,19 +29,22 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark fs-5" asp-area="" asp-controller="Itens" asp-action="Index">Galeria</a>
+                        <a class="nav-link text-dark fs-5" asp-area="" asp-controller="Itens"
+                           asp-action="Index">Galeria</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link text-dark fs-5" asp-area="" asp-controller="Comparacao" asp-action="Index">Comparar</a>
                     </li>
                     @if (SignInManager.IsSignedIn(User)) {
                         <li class="nav-item">
-                            <a class="nav-link text-dark fs-5" asp-area="" asp-controller="Contribuicao" asp-action="Index">Contribuir</a>
+                            <a class="nav-link text-dark fs-5" asp-area="" asp-controller="Contribuicao"
+                               asp-action="Index">Contribuir</a>
                         </li>
                     }
                     @if (SignInManager.IsSignedIn(User) && (User.IsInRole("Moderator") || User.IsInRole("Administrator"))) {
                         <li class="nav-item">
-                            <a class="nav-link text-dark fs-5" asp-area="" asp-controller="Admin" asp-action="Dashboard">Painel de Administração</a>
+                            <a class="nav-link text-dark fs-5" asp-area="" asp-controller="Admin"
+                               asp-action="Dashboard">Painel de Administração</a>
                         </li>
                     }
                 </ul>
@@ -50,15 +55,18 @@
         </div>
     </nav>
 </header>
-<div class="container">
-    <main role="main" class="pb-3">
-        @RenderBody()
-    </main>
-</div>
 
-<footer class="footer bg-dark text-white py-3">
+<main class="flex-fill">
+    <div class="container">
+        @RenderBody()
+    </div>
+</main>
+
+
+<footer class="bg-dark text-white py-3">
     <div class="container text-center">
-        &copy; @DateTime.Now.Year - Byte Hunt | Desenvolvido por: André Benquerer & Diogo Larangeira | <a asp-area="" asp-controller="Home" asp-action="Privacy" class="text-white">Política de Privacidade</a>
+        &copy; @DateTime.Now.Year - Byte Hunt | Desenvolvido por: André Benquerer & Diogo Larangeira |
+        <a asp-area="" asp-controller="Home" asp-action="Privacy" class="text-white">Política de Privacidade</a>
     </div>
 </footer>
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
