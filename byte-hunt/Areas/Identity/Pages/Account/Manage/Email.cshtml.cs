@@ -70,7 +70,7 @@ namespace byte_hunt.Areas.Identity.Pages.Account.Manage
             /// </summary>
             [Required]
             [EmailAddress]
-            [Display(Name = "New email")]
+            [Display(Name = "Novo Email")]
             public string NewEmail { get; set; }
         }
 
@@ -124,16 +124,34 @@ namespace byte_hunt.Areas.Identity.Pages.Account.Manage
                     pageHandler: null,
                     values: new { area = "Identity", userId = userId, email = Input.NewEmail, code = code },
                     protocol: Request.Scheme);
+                
+                var subject = "Confirmação de Conta - ByteHunt";
+                var body = $@"<div style='font-family:Arial; font-size:14px;'>
+                                      <p>Olá <strong>{user.UserName}</strong>,</p>
+                                      <p>Obrigado por se registrar no ByteHunt!</p>
+                                      <p>Por favor confirme seu email clicando no botão abaixo:</p>
+                                      <p style='margin-top:20px;'>
+                                          <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'
+                                             style='display:inline-block;padding:10px 20px;background-color:#007bff;color:#fff;
+                                                    text-decoration:none;border-radius:4px;'>
+                                              Confirmar Conta
+                                          </a>
+                                      </p>
+                                      <p>Se você não solicitou isso, ignore este email.</p>
+                                      <br/>
+                                      <p>— Equipe ByteHunt</p>
+                                  </div>";
+                
                 await _emailSender.SendEmailAsync(
                     Input.NewEmail,
-                    "Confirm your email",
-                    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    subject,
+                    body);
 
-                StatusMessage = "Confirmation link to change email sent. Please check your email.";
+                StatusMessage = "Enviamos para seu email a verificação de conta. Verifique sua caixa de entrada por favor";
                 return RedirectToPage();
             }
 
-            StatusMessage = "Your email is unchanged.";
+            StatusMessage = "Seu email não foi alterado.";
             return RedirectToPage();
         }
 
@@ -160,12 +178,30 @@ namespace byte_hunt.Areas.Identity.Pages.Account.Manage
                 pageHandler: null,
                 values: new { area = "Identity", userId = userId, code = code },
                 protocol: Request.Scheme);
+            
+            var subject = "Confirmação de Conta - ByteHunt";
+            var body = $@"<div style='font-family:Arial; font-size:14px;'>
+                                      <p>Olá <strong>{user.UserName}</strong>,</p>
+                                      <p>Obrigado por se registrar no ByteHunt!</p>
+                                      <p>Por favor confirme seu email clicando no botão abaixo:</p>
+                                      <p style='margin-top:20px;'>
+                                          <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'
+                                             style='display:inline-block;padding:10px 20px;background-color:#007bff;color:#fff;
+                                                    text-decoration:none;border-radius:4px;'>
+                                              Confirmar Conta
+                                          </a>
+                                      </p>
+                                      <p>Se você não solicitou isso, ignore este email.</p>
+                                      <br/>
+                                      <p>— Equipe ByteHunt</p>
+                                  </div>";
+            
             await _emailSender.SendEmailAsync(
                 email,
-                "Confirm your email",
-                $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                subject,
+                body);
 
-            StatusMessage = "Verification email sent. Please check your email.";
+            StatusMessage = "Enviamos para seu email a verificação de conta. Verifique sua caixa de entrada por favor";
             return RedirectToPage();
         }
     }
