@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using byte_hunt.Data;
 using byte_hunt.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace byte_hunt.Controllers.API
 {
@@ -23,28 +24,40 @@ namespace byte_hunt.Controllers.API
 
         // GET: api/ComparacaoApi
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<Comparacao>>> GetComparacoes()
         {
-            return await _context.Comparacoes.ToListAsync();
+            var userName = User.Identity.Name;
+            
+            var comparacoesDoUser = await _context.Comparacoes
+                .Where(c => c.Utilizador.Nome == userName)
+                .ToListAsync();
+            
+            return Ok(comparacoesDoUser);
         }
 
         // GET: api/ComparacaoApi/5
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<Comparacao>> GetComparacao(int id)
         {
-            var comparacao = await _context.Comparacoes.FindAsync(id);
+            var userName = User.Identity.Name;
 
-            if (comparacao == null)
-            {
+            var comapracao = await _context.Contribuicoes.FindAsync(id);
+
+            if (comapracao == null)
                 return NotFound();
-            }
 
-            return comparacao;
+            if (comapracao.Utilizador.Nome != userName)
+                return Forbid();  // Se não for do utilizador autenticado, nega acesso
+
+            return Ok(comapracao);
         }
 
         // PUT: api/ComparacaoApi/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
+        [Authorize(Roles = "Administrator,Moderator")]
         public async Task<IActionResult> PutComparacao(int id, Comparacao comparacao)
         {
             if (id != comparacao.Id)
@@ -76,6 +89,7 @@ namespace byte_hunt.Controllers.API
         // POST: api/ComparacaoApi
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [Authorize(Roles = "Administrator,Moderator")]
         public async Task<ActionResult<Comparacao>> PostComparacao(Comparacao comparacao)
         {
             _context.Comparacoes.Add(comparacao);
@@ -86,6 +100,7 @@ namespace byte_hunt.Controllers.API
 
         // DELETE: api/ComparacaoApi/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> DeleteComparacao(int id)
         {
             var comparacao = await _context.Comparacoes.FindAsync(id);
