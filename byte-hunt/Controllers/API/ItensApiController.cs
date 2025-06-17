@@ -23,7 +23,7 @@ namespace byte_hunt.Controllers.API
         }
         
         // GET: api/ItensApi
-        [HttpGet("public")]
+        [HttpGet("publico")]
         public async Task<ActionResult<IEnumerable<Item>>> GetItensPublic()
         {
             var itensPublicos = await _context.Itens
