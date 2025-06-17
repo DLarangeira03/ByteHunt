@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using byte_hunt.Data;
 using byte_hunt.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace byte_hunt.Controllers.API
 {
@@ -23,28 +24,40 @@ namespace byte_hunt.Controllers.API
 
         // GET: api/ContribuicaoApi
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<Contribuicao>>> GetContribuicoes()
         {
-            return await _context.Contribuicoes.ToListAsync();
+            var userName = User.Identity.Name; // Obtém o nome do utilizador autenticado
+
+            var contribsDoUser = await _context.Contribuicoes
+                .Where(c => c.Utilizador.Nome == userName)  // Filtra só as contribuições do utilizador atual
+                .ToListAsync();
+
+            return Ok(contribsDoUser);
         }
 
         // GET: api/ContribuicaoApi/5
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<Contribuicao>> GetContribuicao(int id)
         {
+            var userName = User.Identity.Name;
+
             var contribuicao = await _context.Contribuicoes.FindAsync(id);
 
             if (contribuicao == null)
-            {
                 return NotFound();
-            }
 
-            return contribuicao;
+            if (contribuicao.Utilizador.Nome != userName)
+                return Forbid();  // Se não for do utilizador autenticado, nega acesso
+
+            return Ok(contribuicao);
         }
 
         // PUT: api/ContribuicaoApi/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
+        [Authorize(Roles = "Administrator,Moderator")]
         public async Task<IActionResult> PutContribuicao(int id, Contribuicao contribuicao)
         {
             if (id != contribuicao.Id)
@@ -76,6 +89,7 @@ namespace byte_hunt.Controllers.API
         // POST: api/ContribuicaoApi
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [Authorize(Roles = "Administrator,Moderator")]
         public async Task<ActionResult<Contribuicao>> PostContribuicao(Contribuicao contribuicao)
         {
             _context.Contribuicoes.Add(contribuicao);
@@ -86,6 +100,7 @@ namespace byte_hunt.Controllers.API
 
         // DELETE: api/ContribuicaoApi/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> DeleteContribuicao(int id)
         {
             var contribuicao = await _context.Contribuicoes.FindAsync(id);
