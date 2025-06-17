@@ -54,22 +54,6 @@ public class AuthController : ControllerBase
         return Unauthorized("Credenciais inválidas");
     }
     
-    [HttpGet("ChangeRole")]
-    public async Task<IActionResult> ChangeRole([FromQuery] string email)
-    {
-        var user = await _userManager.FindByEmailAsync(email);
-        if (user == null)
-            return NotFound("Utilizador não encontrado");
-
-        var roles = await _userManager.GetRolesAsync(user);
-
-        return Ok(new
-        {
-            Email = user.Email,
-            Roles = roles
-        });
-    }
-    
 }
 
 //classe
