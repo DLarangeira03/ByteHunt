@@ -23,39 +23,93 @@ namespace byte_hunt.Controllers.API
         }
 
         // GET: api/ComparacaoApi
+        /// <summary>
+        /// Obtém todas as comparações disponíveis para o utilizador que realizou o request.
+        /// Obtém todas as comparação disponíveis caso seja um Admin ou um Mod.
+        /// </summary>
+        /// <returns>Lista de comparações</returns>
         [HttpGet]
         [Authorize]
         public async Task<ActionResult<IEnumerable<Comparacao>>> GetComparacoes()
         {
             var userName = User.Identity.Name;
-            
-            var comparacoesDoUser = await _context.Comparacoes
-                .Where(c => c.Utilizador.Nome == userName)
-                .ToListAsync();
-            
-            return Ok(comparacoesDoUser);
+            var isAdmin = User.IsInRole("Administrator");
+            var isMod = User.IsInRole("Moderator");
+
+            var query = _context.Comparacoes
+                .Include(c => c.Utilizador)
+                .AsQueryable();
+
+            if (!isAdmin && !isMod)
+            {
+                query = query.Where(c => c.Utilizador.Nome == userName);
+            }
+
+            var comparacoes = await query.ToListAsync();
+
+            var comparacoesDto = comparacoes.Select(c => new ComparacaoDto
+            {
+                Id = c.Id,
+                data = c.Data,
+                Utilizador = new UtilizadorDtoComparacao
+                {
+                    Id = c.Utilizador.Id,
+                    Nome = c.Utilizador.Nome
+                }
+            }).ToList();
+
+            return Ok(comparacoesDto);
         }
 
         // GET: api/ComparacaoApi/5
+        /// <summary>
+        /// Obtém a comparação por id caso tenha sido o utilizador que a realizou se for um utiliazdor autenticado.
+        /// Obtém a comparação por id caso seja um Admin ou um Mod.
+        /// </summary>
+        /// <returns>Comparação</returns>
         [HttpGet("{id}")]
         [Authorize]
         public async Task<ActionResult<Comparacao>> GetComparacao(int id)
         {
+            
             var userName = User.Identity.Name;
 
-            var comapracao = await _context.Contribuicoes.FindAsync(id);
+            var comparacao = await _context.Comparacoes.Include(c => c.Utilizador)
+                .FirstOrDefaultAsync(c => c.Id == id);
 
-            if (comapracao == null)
+            if (comparacao == null)
                 return NotFound();
+            
+            var isAdmin = User.IsInRole("Administrator");
+            var isMod = User.IsInRole("Moderator");
+            
+            //verifica se é um user normal autenticado
+            if (!isAdmin && !isMod)
+            {
+                //verifica se a comparacao pertence ao utilizador que fez request 
+                if (comparacao.Utilizador.Nome != userName)
+                    return Forbid();  // Se não for do utilizador autenticado, nega acesso
+            }
+            
+            var comparacaoDto = new ComparacaoDto
+            {
+                Id = comparacao.Id,
+                data = comparacao.Data,
+                Utilizador = new UtilizadorDtoComparacao
+                {
+                    Id = comparacao.Utilizador.Id,
+                    Nome = comparacao.Utilizador.Nome
+                }
+            };
 
-            if (comapracao.Utilizador.Nome != userName)
-                return Forbid();  // Se não for do utilizador autenticado, nega acesso
-
-            return Ok(comapracao);
+            return Ok(comparacaoDto);
         }
 
         // PUT: api/ComparacaoApi/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /// <summary>
+        /// Atualiza a comparação com base no ID.
+        /// </summary>
+        /// <returns></returns>
         [HttpPut("{id}")]
         [Authorize(Roles = "Administrator,Moderator")]
         public async Task<IActionResult> PutComparacao(int id, Comparacao comparacao)
@@ -87,18 +141,36 @@ namespace byte_hunt.Controllers.API
         }
 
         // POST: api/ComparacaoApi
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /// <summary>
+        /// Cria uma nova comparação.
+        /// </summary>
+        /// <returns>Nova comparação</returns>
         [HttpPost]
         [Authorize(Roles = "Administrator,Moderator")]
         public async Task<ActionResult<Comparacao>> PostComparacao(Comparacao comparacao)
         {
             _context.Comparacoes.Add(comparacao);
             await _context.SaveChangesAsync();
+            
+            var comparacaoDto = new ComparacaoDto
+            {
+                Id = comparacao.Id,
+                data = comparacao.Data,
+                Utilizador = new UtilizadorDtoComparacao
+                {
+                    Id = comparacao.Utilizador.Id,
+                    Nome = comparacao.Utilizador.Nome
+                }
+            };
 
-            return CreatedAtAction("GetComparacao", new { id = comparacao.Id }, comparacao);
+            return CreatedAtAction("GetComparacao", new { id = comparacao.Id }, comparacaoDto);
         }
 
         // DELETE: api/ComparacaoApi/5
+        /// <summary>
+        /// Elimina uma comparação.
+        /// </summary>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> DeleteComparacao(int id)
@@ -120,4 +192,16 @@ namespace byte_hunt.Controllers.API
             return _context.Comparacoes.Any(e => e.Id == id);
         }
     }
+}
+
+public class ComparacaoDto
+{
+    public int Id { get; set; }
+    public DateTime data { get; set; }  
+    public UtilizadorDtoComparacao Utilizador { get; set; }
+}
+public class UtilizadorDtoComparacao
+{
+    public String Id { get; set; }
+    public string Nome { get; set; }
 }

@@ -23,6 +23,11 @@ namespace byte_hunt.Controllers.API
         }
         
         // GET: api/CategoriaApi
+        /// <summary>
+        /// Obtém o nome e a descrição de cada categoria.
+        /// Apenas utilizadores não autenticados
+        /// </summary>
+        /// <returns>Categoria com nome e descrição</returns>
         [HttpGet("publico")]
         public async Task<ActionResult<IEnumerable<Categoria>>> GetCategoriasPublic()
         {
@@ -38,6 +43,11 @@ namespace byte_hunt.Controllers.API
         }
         
         // GET: api/CategoriaApi
+        /// <summary>
+        /// Obtém uma lista de todas as categorias com todas as informações.
+        /// Apenas utiliazdores autenticados têm acesso a este endpoint.
+        /// </summary>
+        /// <returns>Lista de Categorias</returns>
         [HttpGet]
         [Authorize]
         public async Task<ActionResult<IEnumerable<Categoria>>> GetCategorias()
@@ -46,6 +56,11 @@ namespace byte_hunt.Controllers.API
         }
 
         // GET: api/CategoriaApi/5
+        /// <summary>
+        /// Obtém uma categoria filtrada por ID.
+        /// Apenas utiliazdores autenticados têm acesso a este endpoint.
+        /// </summary>
+        /// <returns>Categoria</returns>
         [HttpGet("{id}")]
         [Authorize]
         public async Task<ActionResult<Categoria>> GetCategoria(int id)
@@ -61,7 +76,11 @@ namespace byte_hunt.Controllers.API
         }
 
         // PUT: api/CategoriaApi/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /// <summary>
+        /// Edita uma categoria com base no seu ID.
+        /// Apenas utiliazdores autenticados e com estatuto de Admin ou Mod.
+        /// </summary>
+        /// <returns></returns>
         [HttpPut("{id}")]
         [Authorize(Roles = "Administrator,Moderator")]
         public async Task<IActionResult> PutCategoria(int id, Categoria categoria)
@@ -93,7 +112,11 @@ namespace byte_hunt.Controllers.API
         }
 
         // POST: api/CategoriaApi
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /// <summary>
+        /// Cria uma nova categoria.
+        /// Apenas utiliazdores autenticados e com estatuto de Admin ou Mod.
+        /// </summary>
+        /// <returns>Nova Categoria</returns>
         [HttpPost]
         [Authorize(Roles = "Administrator,Moderator")]
         public async Task<ActionResult<Categoria>> PostCategoria(Categoria categoria)
@@ -105,6 +128,11 @@ namespace byte_hunt.Controllers.API
         }
 
         // DELETE: api/CategoriaApi/5
+        /// <summary>
+        /// Elimina uma categoria.
+        /// Apenas utiliazdores autenticados e com estatuto de Admin.
+        /// </summary>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> DeleteCategoria(int id)

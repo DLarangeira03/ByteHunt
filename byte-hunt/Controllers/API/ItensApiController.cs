@@ -23,6 +23,11 @@ namespace byte_hunt.Controllers.API
         }
         
         // GET: api/ItensApi
+        /// <summary>
+        /// Obtém o nome, marca, preço e categoria de cada item.
+        /// Apenas utilizadores não autenticados
+        /// </summary>
+        /// <returns>Item com nome, marca, preço e categoria</returns>
         [HttpGet("publico")]
         public async Task<ActionResult<IEnumerable<Item>>> GetItensPublic()
         {
@@ -40,6 +45,11 @@ namespace byte_hunt.Controllers.API
         }
         
         // GET: api/ItensApi
+        /// <summary>
+        /// Obtém uma lista de todos os itens com todas as informações.
+        /// Apenas utiliazdores autenticados têm acesso a este endpoint.
+        /// </summary>
+        /// <returns>Lista de Itens</returns>
         [HttpGet]
         [Authorize]
         public async Task<ActionResult<IEnumerable<Item>>> GetItens()
@@ -48,6 +58,11 @@ namespace byte_hunt.Controllers.API
         }
 
         // GET: api/ItensApi/5
+        /// <summary>
+        /// Obtém um item filtrado por ID.
+        /// Apenas utiliazdores autenticados têm acesso a este endpoint.
+        /// </summary>
+        /// <returns>Item</returns>
         [HttpGet("{id}")]
         [Authorize]
         public async Task<ActionResult<Item>> GetItem(int id)
@@ -63,7 +78,11 @@ namespace byte_hunt.Controllers.API
         }
 
         // PUT: api/ItensApi/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /// <summary>
+        /// Edita um item com base no seu ID.
+        /// Apenas utiliazdores autenticados e com estatuto de Admin ou Mod.
+        /// </summary>
+        /// <returns></returns>
         [HttpPut("{id}")]
         [Authorize(Roles = "Administrator,Moderator")]
         public async Task<IActionResult> PutItem(int id, Item item)
@@ -95,7 +114,11 @@ namespace byte_hunt.Controllers.API
         }
 
         // POST: api/ItensApi
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /// <summary>
+        /// Cria um novo item.
+        /// Apenas utiliazdores autenticados e com estatuto de Admin ou Mod.
+        /// </summary>
+        /// <returns>Novo Item</returns>
         [HttpPost]
         [Authorize(Roles = "Administrator,Moderator")]
         public async Task<ActionResult<Item>> PostItem(Item item)
@@ -107,6 +130,11 @@ namespace byte_hunt.Controllers.API
         }
 
         // DELETE: api/ItensApi/5
+        /// <summary>
+        /// Elimina um item.
+        /// Apenas utiliazdores autenticados e com estatuto de Admin.
+        /// </summary>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> DeleteItem(int id)

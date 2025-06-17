@@ -18,7 +18,13 @@ public class AuthController : ControllerBase
         _userManager = userManager;
         _configuration = configuration;
     }
-
+    
+    // POST: api/Auth/login
+    /// <summary>
+    /// Permite realizar o login para receber o token que permite autenticar na API.
+    /// Todos os utilizadores autenticados e não autenticados podem aceder a este endpoint.
+    /// </summary>
+    /// <returns>Token JWT</returns>
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] Login dto)
     {

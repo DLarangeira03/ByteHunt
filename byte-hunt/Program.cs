@@ -1,6 +1,7 @@
 using byte_hunt.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
+using System.Reflection;
 using System.Security.Claims;
 using byte_hunt.Models;
 using Microsoft.AspNetCore.Identity;
@@ -76,6 +77,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
+        var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+        c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+
     // Configurar Swagger para JWT
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
