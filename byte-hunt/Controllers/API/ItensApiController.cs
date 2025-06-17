@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using byte_hunt.Data;
 using byte_hunt.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace byte_hunt.Controllers.API
 {
@@ -20,9 +21,27 @@ namespace byte_hunt.Controllers.API
         {
             _context = context;
         }
+        
+        // GET: api/ItensApi
+        [HttpGet("public")]
+        public async Task<ActionResult<IEnumerable<Item>>> GetItensPublic()
+        {
+            var itensPublicos = await _context.Itens
+                .Include(i => i.Categoria)
+                .Select(i => new ItemPublicDTO {
+                    Nome = i.Nome,
+                    Marca = i.Marca,
+                    Preco = i.Preco,
+                    Categoria = i.Categoria.Nome
+                })
+                .ToListAsync();
 
+            return Ok(itensPublicos);
+        }
+        
         // GET: api/ItensApi
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<Item>>> GetItens()
         {
             return await _context.Itens.ToListAsync();
@@ -30,6 +49,7 @@ namespace byte_hunt.Controllers.API
 
         // GET: api/ItensApi/5
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<Item>> GetItem(int id)
         {
             var item = await _context.Itens.FindAsync(id);
@@ -45,6 +65,7 @@ namespace byte_hunt.Controllers.API
         // PUT: api/ItensApi/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
+        [Authorize(Roles = "Administrator,Moderator")]
         public async Task<IActionResult> PutItem(int id, Item item)
         {
             if (id != item.Id)
@@ -76,6 +97,7 @@ namespace byte_hunt.Controllers.API
         // POST: api/ItensApi
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [Authorize(Roles = "Administrator,Moderator")]
         public async Task<ActionResult<Item>> PostItem(Item item)
         {
             _context.Itens.Add(item);
@@ -86,6 +108,7 @@ namespace byte_hunt.Controllers.API
 
         // DELETE: api/ItensApi/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> DeleteItem(int id)
         {
             var item = await _context.Itens.FindAsync(id);
@@ -105,4 +128,13 @@ namespace byte_hunt.Controllers.API
             return _context.Itens.Any(e => e.Id == id);
         }
     }
+}
+
+//Classe que permite transformar os dados de um item noutro item para mostrar
+public class ItemPublicDTO
+{
+    public string Nome { get; set; }
+    public string Marca { get; set; }
+    public decimal? Preco { get; set; }
+    public string Categoria { get; set; }
 }
