@@ -32,6 +32,9 @@
                     </li>
                     @if (SignInManager.IsSignedIn(User)) {
                         <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Comparacao" asp-action="HistoricoComparacao">Histórico de Comparações</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Contribuicao" asp-action="Index">Contribuir</a>
                         </li>
                     }
