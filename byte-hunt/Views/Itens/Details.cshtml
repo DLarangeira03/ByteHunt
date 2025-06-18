@@ -18,7 +18,7 @@
         <div class="col-md-6">
             @if (!string.IsNullOrEmpty(Model.FotoItem))
             {
-                <img src="~/images/@Model.FotoItem" alt="@Model.Nome" class="produto-img">
+                <img src="~/itens_Imagens/@Model.FotoItem" alt="@Model.Nome" class="produto-img" style=" width: 100%; object-fit: contain;" />
             }
             else
             {

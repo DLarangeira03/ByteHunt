@@ -12,7 +12,7 @@
 <div class="container my-5 py-5">
     <div class="form-card shadow rounded p-4 mx-auto">
         <h1 class="text-center mb-4">Editar Produto</h1>
-        <form asp-action="Edit" enctype="multipart/form-data" method="post">
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
             <input type="hidden" asp-for="Id" />
             <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
@@ -47,17 +47,18 @@
             </div>
 
             <div class="mb-3">
-                <label asp-for="FotoItem" class="form-label">Foto atual</label><br />
+                <label class="form-label">Foto atual</label><br />
                 @if (!string.IsNullOrEmpty(Model.FotoItem))
                 {
-                    <img src="~/images/@Model.FotoItem" alt="Foto do produto" class="img-thumbnail mb-3" style="max-width: 200px;" />
+                    <img src="~/itens_Imagens/@Model.FotoItem" alt="Foto do produto" class="img-thumbnail mb-3" style="max-width: 200px;" />
                 }
                 else
                 {
                     <p>Sem foto disponível.</p>
                 }
-                <input asp-for="FotoItem" type="file" class="form-control" />
-                <span asp-validation-for="FotoItem" class="text-danger"></span>
+
+                <label class="form-label">Nova foto</label>
+                <input name="imagem" type="file" class="form-control" />
             </div>
 
             <button type="submit" class="btn btn-dark rounded-pill px-5 shadow-sm mt-3">
