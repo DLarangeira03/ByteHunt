@@ -5,6 +5,7 @@
     ViewData["Title"] = "Painel de Administração";
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="~/css/home_style.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="~/css/bl-buttons.css" asp-append-version="true"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 }
 
@@ -23,10 +24,10 @@
         </div>
         //Contribuicoes
         <div class="p-5 border rounded shadow" style="min-width: 300px; max-width: 350px; background: #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.1);">
-            <i class="bi bi-list-check display-3 text-info"></i>
+            <i class="bi bi-patch-plus display-3" style="color: #6f42c1;"></i>
             <h3 class="mt-4 fw-bold" style="font-size: 1.8rem;">Contribuições</h3>
             <p style="font-size: 1.1rem; color: #000;">Revisar, editar, aprovar e reprovar contribuições</p>
-            <a class="btn btn-info btn-sm px-5" asp-controller="Categoria" asp-action="Index" style="transition: background-color 0.3s, color 0.3s;">
+            <a class="btn btn-purple btn-sm px-5" asp-controller="Categoria" asp-action="Index">
                 <i class="bi bi-arrow-right"></i>
             </a>
         </div>
@@ -57,7 +58,7 @@
             <h3 class="mt-4 fw-bold" style="font-size: 1.8rem;">Permissões</h3>
             <p style="font-size: 1.1rem; color: #000;">Adicionar e remover permissões dos utilizadores</p>
             <a class="btn btn-warning btn-sm px-5" asp-controller="Admin" asp-action="ManageRoles" style="transition: background-color 0.3s, color 0.3s;">
-                <i class="bi bi-arrow-right"></i>
+                <i class="bi bi-arrow-right text-white"></i>
             </a>
         </div>
     }

@@ -22,6 +22,7 @@ public class Contribuicao
     
     public DateTime? DataReview { get; set; } //Data da validação
     
+    public DateTime? DataEditada { get; set; } //Data de Edição
    
     [ForeignKey("UtilizadorId")]
     [ValidateNever]
@@ -34,7 +35,6 @@ public class Contribuicao
     [ValidateNever]
     public Utilizador Responsavel { get; set; } //moderador responsável 
     
-
     
     
     

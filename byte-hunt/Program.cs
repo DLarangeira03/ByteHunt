@@ -3,9 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using byte_hunt.Models;
 using Microsoft.AspNetCore.Identity;
+using byte_hunt.Services;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-
 
 // metodo para definir roles
 // isso garante que as roles existam na base de dados
@@ -31,8 +32,8 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        sqlOptions => sqlOptions.EnableRetryOnFailure()
+        builder.Configuration.GetConnectionString("DefaultConnection")
+        //sqlOptions => sqlOptions.EnableRetryOnFailure()
     ));
 
 builder.Services.AddDefaultIdentity<Utilizador>(options => {
@@ -42,6 +43,8 @@ builder.Services.AddDefaultIdentity<Utilizador>(options => {
 }).AddRoles<IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddRazorPages();
+//email
+builder.Services.AddTransient<IEmailSender, SmtpEmailSender>();
 
 var app = builder.Build();
 

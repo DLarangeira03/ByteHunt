@@ -1,0 +1,64 @@
+﻿html, body {
+    height: 100%;
+    margin: 0;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    color: #000;
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    flex: 1;
+}
+
+.background-image {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: url('../images/background_byte_hunt.svg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    opacity: 1; 
+    z-index: -1;
+}
+
+.form-container-wide {
+    background-color: #fff;
+    max-width: 650px;
+    margin: 4rem auto;
+    padding: 2.5rem 3rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    color: #000;
+}
+
+h1 {
+    font-weight: 700;
+    color: #222;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #222;
+}
+
+input.form-control,
+textarea.form-control,
+select.form-select {
+    border-radius: 50px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border: 1px solid #ccc;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    color: #000;
+}
+
+input.form-control:focus,
+textarea.form-control:focus,
+select.form-select:focus {
+    border-color: #333;
+    box-shadow: 0 0 8px rgba(0,0,0,0.3);
+    outline: none;
+    color: #000;
+    background-color: #fff;
+}
+

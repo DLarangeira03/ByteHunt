@@ -1,5 +1,6 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
+
 #nullable disable
 
 using System;
@@ -20,10 +21,8 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 
-namespace byte_hunt.Areas.Identity.Pages.Account
-{
-    public class RegisterModel : PageModel
-    {
+namespace byte_hunt.Areas.Identity.Pages.Account {
+    public class RegisterModel : PageModel {
         private readonly SignInManager<Utilizador> _signInManager;
         private readonly UserManager<Utilizador> _userManager;
         private readonly IUserStore<Utilizador> _userStore;
@@ -36,8 +35,7 @@ namespace byte_hunt.Areas.Identity.Pages.Account
             IUserStore<Utilizador> userStore,
             SignInManager<Utilizador> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
-        {
+            IEmailSender emailSender) {
             _userManager = userManager;
             _userStore = userStore;
             _emailStore = GetEmailStore();
@@ -46,62 +44,30 @@ namespace byte_hunt.Areas.Identity.Pages.Account
             _emailSender = emailSender;
         }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
-        [BindProperty]
-        public InputModel Input { get; set; }
+        [BindProperty] public InputModel Input { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         public string ReturnUrl { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
-        public class InputModel
-        {
+        public class InputModel {
             [Required]
             [Display(Name = "Nome de Utilizador")]
             public string UserName { get; set; }
-            
-            [Required]
-            [Display(Name = "Nome")]
-            public string Nome { get; set; }
-            
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
+
+            [Required] [Display(Name = "Nome")] public string Nome { get; set; }
+
             [Required]
             [EmailAddress]
             [Display(Name = "Email")]
             public string Email { get; set; }
 
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
             [Required]
             [StringLength(100, ErrorMessage = "A {0} deve ter entre {2} e {1} caracteres.", MinimumLength = 6)]
             [DataType(DataType.Password)]
             [Display(Name = "Senha")]
             public string Password { get; set; }
 
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
             [DataType(DataType.Password)]
             [Display(Name = "Confirme sua Senha")]
             [Compare("Password", ErrorMessage = "A senha e a confirmação devem ser iguais!")]
@@ -109,20 +75,17 @@ namespace byte_hunt.Areas.Identity.Pages.Account
         }
 
 
-        public async Task OnGetAsync(string returnUrl = null)
-        {
+        public async Task OnGetAsync(string returnUrl = null) {
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
 
-        public async Task<IActionResult> OnPostAsync(string returnUrl = null)
-        {
+        public async Task<IActionResult> OnPostAsync(string returnUrl = null) {
             returnUrl ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-            if (ModelState.IsValid)
-            {
+            if (ModelState.IsValid) {
                 var user = CreateUser();
-                
+
                 //campos extras
                 user.Nome = Input.Nome;
                 user.Tipo = "User";
@@ -131,10 +94,9 @@ namespace byte_hunt.Areas.Identity.Pages.Account
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
-                if (result.Succeeded)
-                {
+                if (result.Succeeded) {
                     _logger.LogInformation("User created a new account with password.");
-                    
+
                     //adicionar role de user basica
                     await _userManager.AddToRoleAsync(user, "User");
 
@@ -147,21 +109,38 @@ namespace byte_hunt.Areas.Identity.Pages.Account
                         values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
                         protocol: Request.Scheme);
 
-                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
-                    if (_userManager.Options.SignIn.RequireConfirmedAccount)
-                    {
-                        return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
+                    var subject = "Confirmação de Conta - ByteHunt";
+
+                    var body = $@"<div style='font-family:Arial; font-size:14px;'>
+                                      <p>Olá <strong>{user.UserName}</strong>,</p>
+                                      <p>Obrigado por se registrar no ByteHunt!</p>
+                                      <p>Por favor confirme seu email clicando no botão abaixo:</p>
+                                      <p style='margin-top:20px;'>
+                                          <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'
+                                             style='display:inline-block;padding:10px 20px;background-color:#007bff;color:#fff;
+                                                    text-decoration:none;border-radius:4px;'>
+                                              Confirmar Conta
+                                          </a>
+                                      </p>
+                                      <p>Se você não solicitou isso, ignore este email.</p>
+                                      <br/>
+                                      <p>— Equipe ByteHunt</p>
+                                  </div>";
+
+                    await _emailSender.SendEmailAsync(Input.Email, subject, body);
+
+                    if (_userManager.Options.SignIn.RequireConfirmedAccount) {
+                        return RedirectToPage("RegisterConfirmation",
+                            new { email = Input.Email, returnUrl = returnUrl });
                     }
-                    else
-                    {
+                    else {
                         await _signInManager.SignInAsync(user, isPersistent: false);
                         return LocalRedirect(returnUrl);
                     }
                 }
-                foreach (var error in result.Errors)
-                {
+
+                foreach (var error in result.Errors) {
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
@@ -170,26 +149,22 @@ namespace byte_hunt.Areas.Identity.Pages.Account
             return Page();
         }
 
-        private Utilizador CreateUser()
-        {
-            try
-            {
+        private Utilizador CreateUser() {
+            try {
                 return Activator.CreateInstance<Utilizador>();
             }
-            catch
-            {
+            catch {
                 throw new InvalidOperationException($"Can't create an instance of '{nameof(Utilizador)}'. " +
-                    $"Ensure that '{nameof(Utilizador)}' is not an abstract class and has a parameterless constructor, or alternatively " +
-                    $"override the register page in /Areas/Identity/Pages/Account/Register.cshtml");
+                                                    $"Ensure that '{nameof(Utilizador)}' is not an abstract class and has a parameterless constructor, or alternatively " +
+                                                    $"override the register page in /Areas/Identity/Pages/Account/Register.cshtml");
             }
         }
 
-        private IUserEmailStore<Utilizador> GetEmailStore()
-        {
-            if (!_userManager.SupportsUserEmail)
-            {
+        private IUserEmailStore<Utilizador> GetEmailStore() {
+            if (!_userManager.SupportsUserEmail) {
                 throw new NotSupportedException("The default UI requires a user store with email support.");
             }
+
             return (IUserEmailStore<Utilizador>)_userStore;
         }
     }
