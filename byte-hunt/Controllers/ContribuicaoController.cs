@@ -151,7 +151,7 @@ namespace byte_hunt.Controllers
             var contribuicao = await _context.Contribuicoes.FindAsync(id);
             if (contribuicao == null) return NotFound();
 
-            var partes = contribuicao.DetalhesContribuicao?.Split(", ");
+            var partes = contribuicao.DetalhesContribuicao?.Split("\n");
             ViewBag.Nome = partes?.FirstOrDefault(p => p.StartsWith("Nome: "))?.Replace("Nome: ", "") ?? "";
             ViewBag.Marca = partes?.FirstOrDefault(p => p.StartsWith("Marca: "))?.Replace("Marca: ", "") ?? "";
             ViewBag.Preco = partes?.FirstOrDefault(p => p.StartsWith("Preço: "))?.Replace("Preço: ", "") ?? "";
@@ -223,16 +223,67 @@ namespace byte_hunt.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateStatus(int Id, string Responsavel, string status)
+        public async Task<IActionResult> UpdateStatus(int Id, string status)
         {
             var contribuicao = await _context.Contribuicoes.FindAsync(Id);
             if (contribuicao == null) return NotFound();
 
-            contribuicao.ResponsavelId = Responsavel;
             contribuicao.Status = status;
             contribuicao.DataReview = DateTime.Now;
-
             _context.Update(contribuicao);
+            
+            //se aprovada, adicionar o item
+            if (status == "Approved") {
+                //criar item
+                var newItem = new Item();
+                Console.WriteLine("===================================================");
+                    Console.WriteLine("|" + contribuicao.DetalhesContribuicao + "|");
+                Console.WriteLine("===================================================");
+                //adicionar ao context
+                var detalhesContribuicao = contribuicao.DetalhesContribuicao?.Split("\n");
+                Console.WriteLine("===================================================");
+                foreach (var k in detalhesContribuicao) {
+                    Console.WriteLine("|" + k + "|");
+                }
+                Console.WriteLine("===================================================");
+                var nome = detalhesContribuicao?.FirstOrDefault(p => p.StartsWith("Nome: "))?.Replace("Nome: ", "") ?? "SEM_NOME";
+                var marca = detalhesContribuicao?.FirstOrDefault(p => p.StartsWith("Marca: "))?.Replace("Marca: ", "") ?? "SEM_MARCA";
+                var preco = detalhesContribuicao?.FirstOrDefault(p => p.StartsWith("Preço: "))?.Replace("Preço: ", "") ?? "";
+                var descricao = detalhesContribuicao?.FirstOrDefault(p => p.StartsWith("Descrição: "))?.Replace("Descrição: ", "") ?? "";
+                Console.WriteLine("===================================================");
+                Console.WriteLine("Nome: |" + nome +"|");
+                Console.WriteLine("Marca: |" + marca +"|");
+                Console.WriteLine("Preco: |" + preco +"|");
+                Console.WriteLine("Descricao: |" + descricao +"|");
+                Console.WriteLine("===================================================");
+                
+                //nome
+                newItem.Nome = nome;
+                //marca
+                newItem.Marca = marca;
+                //preco
+                var strPreco = preco; 
+                newItem.Preco = decimal.Parse(strPreco);
+                //desricao
+                newItem.Descricao = descricao;
+                
+                //add a categoria "Outros" (criar se nao existir)
+                var categoriaOutros = await _context.Categorias.FirstOrDefaultAsync(c => c.Nome == "Outros");
+                if (categoriaOutros != null)
+                {
+                    newItem.CategoriaId = categoriaOutros.Id;
+                }
+                else
+                {
+                    // criar categoria "Outros" se não existir
+                    categoriaOutros = new Categoria { Nome = "Outros" };
+                    _context.Categorias.Add(categoriaOutros);
+                    await _context.SaveChangesAsync(); 
+                    newItem.CategoriaId = categoriaOutros.Id;
+                }
+                _context.Itens.Add(newItem);
+            }
+            
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));

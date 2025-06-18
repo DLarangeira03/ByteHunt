@@ -100,12 +100,14 @@
                     }
                     
                     @if (User.IsInRole("Moderator") || User.IsInRole("Administrator")) {
-                        if (contribuicao.Status == "Pending" && (User.IsInRole("Administrator") || contribuicao.ResponsavelId == userId)) {
+                        
+                        if (contribuicao.Status == "Pending" && ((User.IsInRole("Administrator") && contribuicao.ResponsavelId != null) || contribuicao.ResponsavelId == userId)) {
+                            
                             <a class="btn btn-sm btn-warning" asp-action="Edit"
                                asp-route-id="@contribuicao.Id">Editar</a>
                         }
                         
-                        if (contribuicao.ResponsavelId.IsNullOrEmpty()) {
+                        if (contribuicao.Status == "Pending" && contribuicao.ResponsavelId.IsNullOrEmpty()) {
                             <form asp-action="Claim" method="post" asp-route-id="@contribuicao.Id" asp-route-returnUrl="@Url.Action("Index")" style="display:inline;">
                                 <button type="submit" class="btn btn-sm btn-success">Assumir</button>
                             </form>
