@@ -3,15 +3,24 @@
 @{
     ViewData["Title"] = "Painel de Administração | Gerir Utilizadores";
     var allRoles = ViewBag.AllRoles as List<string> ?? new List<string>();
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+}
+@if (TempData["RoleRemovalConfirmation"] != null) {
+    var infoModel = new byte_hunt.Models.Popups.InfoPopupViewModel {
+        Titulo = "Permissão Removida",
+        Mensagem = TempData["RoleRemovalConfirmation"].ToString()
+    };
+    @Html.Partial("_InfoPopup", infoModel)
 }
 
 <h1>Gerir Permissões</h1>
 
 <table class="table table-borderless">
     <thead>
-        <th>Utilizador</th>
-        <th>Cargos</th>
-        <th class="text-end" >Gerir</th>
+    <th>Utilizador</th>
+    <th>Cargos (clique para remover)</th>
+    <th class="text-end">Adicionar Permissão</th>
     </thead>
     <tbody>
     @foreach (var user in Model) {
@@ -19,27 +28,144 @@
             <td> @user.UserName </td>
             <td>
                 @foreach (var role in user.Roles) {
-                <form method="post" asp-action="RemoveRole" style="display:inline" onsubmit="return confirm('Tem a certeza que pretende remover a role @role de @user.UserName?');">
-                    <input type="hidden" name="userId" value="@user.UserId"/>
-                    <input type="hidden" name="role" value="@role"/>
-                    <button type="submit" class="btn btn-sm btn-outline-danger">@role</button>
-                </form>
+                    <button type="button" class="btn btn-sm btn-outline-danger confirm-action-btn"
+                            data-user="@user.UserName"
+                            data-role="@role"
+                            data-userid="@user.UserId"
+                            data-question="Tem a certeza que pretende remover a permissão '@role' do utilizador '@user.UserName?'"
+                            data-action="@Url.Action("RemoveRole")"
+                            data-title="Confirmar Remoção"
+                            data-confirmtext="Remover">
+                        @role
+                    </button>
                 }
             </td>
             <td class="text-end">
-                <form asp-action="AddRole" method="post" class="d-inline-flex gap-2 align-items-center justify-content-end">
-                    <input type="hidden" name="userId" value="@user.UserId" />
-                    <select name="role" class="form-select form-select-sm w-auto" required>
+                <div class="d-inline-flex gap-2 align-items-center justify-content-end">
+                    <select class="form-select form-select-sm w-auto add-role-select" required>
                         <option value="" disabled selected>Selecione uma role</option>
-                        @foreach (var roleName in allRoles.Except(user.Roles))
-                        {
+                        @foreach (var roleName in allRoles.Except(user.Roles)) {
                             <option value="@roleName">@roleName</option>
                         }
                     </select>
-                    <button type="submit" class="btn btn-sm btn-primary">Add</button>
-                </form>
+                    <button type="button" class="btn btn-sm btn-primary confirm-add-role-btn"
+                            data-action="@Url.Action("AddRole")"
+                            data-method="post"
+                            data-title="Adicionar permissão"
+                            data-question="Tem certeza que deseja adicionar esta role ao utilizador '@user.UserName'?"
+                            data-confirmtext="Adicionar"
+                            data-userid="@user.UserId"
+                            data-username="@user.UserName">
+                        <i class="bi bi-plus-circle"></i>
+                    </button>
+                </div>
+
             </td>
         </tr>
     }
     </tbody>
 </table>
+
+@section Scripts {
+    @* modal de informacao *@
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            const modalEl = document.getElementById('infoModal');
+            if (modalEl) {
+                const modal = new bootstrap.Modal(modalEl);
+                modal.show();
+            }
+        });
+
+        @* script de confimacao *@
+        document.addEventListener('DOMContentLoaded', () => {
+            const confirmModalEl = document.getElementById('confirmModal');
+            const confirmModal = new bootstrap.Modal(confirmModalEl);
+            const form = confirmModalEl.querySelector('form');
+            const questionEl = confirmModalEl.querySelector('.modal-body p');
+            const titleEl = confirmModalEl.querySelector('.modal-title');
+            const confirmBtn = form.querySelector('button[type="submit"]');
+
+            const createHiddenInput = (name, value) => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = name;
+                input.value = value;
+                return input;
+            };
+
+            @* script de confimacao de remover role *@
+            document.querySelectorAll('.confirm-action-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const dataset = button.dataset;
+
+                    // definir conteudo
+                    titleEl.textContent = dataset.title || "Confirmar Ação";
+                    questionEl.textContent = dataset.question || "Tem certeza que deseja continuar?";
+                    confirmBtn.textContent = dataset.confirmtext || "Confirmar";
+
+                    // definir action e method
+                    form.action = dataset.action || "#";
+                    form.method = dataset.method || "post";
+
+                    // remover inputs ja existentes
+                    form.querySelectorAll('input[name]').forEach(i => i.remove());
+
+                    // adicinar inputs para as entrys do dataset
+                    for (const [key, value] of Object.entries(dataset)) {
+                        if (["title", "question", "confirmtext", "action", "method"].includes(key)) continue;
+                        form.appendChild(createHiddenInput(key, value));
+                    }
+
+                    confirmModal.show();
+                });
+            });
+
+            @* script de confimacao de adicionar role *@
+            document.querySelectorAll('.confirm-add-role-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const td = button.closest('td');
+                    const select = td.querySelector('.add-role-select');
+                    const selectedRole = select.value;
+
+                    if (!selectedRole) {
+                        alert('Selecione uma role');
+                        return;
+                    }
+
+                    const dataset = button.dataset;
+
+                    // preencher os campos do modal
+                    titleEl.textContent = dataset.title || "Confirmar Ação";
+                    questionEl.textContent = dataset.question || "Tem certeza que deseja continuar?";
+                    confirmBtn.textContent = dataset.confirmtext || "Confirmar";
+                    // definir action e method
+                    form.action = dataset.action || "#";
+                    form.method = dataset.method || "post";
+
+                    // limpar inputs antigos
+                    form.querySelectorAll('input[name]').forEach(i => i.remove());
+
+                    // adicionar os inputs necessários
+                    form.appendChild(createHiddenInput("userId", dataset.userid));
+                    form.appendChild(createHiddenInput("role", selectedRole));
+
+                    confirmModal.show();
+
+                })
+            });
+        });
+    </script>
+}
+
+@{
+    var confirmModel = new byte_hunt.Models.Popups.ConfirmPopupViewModel {
+        Titulo = "Confirmar", // altera com js
+        Pergunta = "",
+        ConfirmBtnText = "Confirmar", // altera com js
+        CancelBtnText = "Cancelar", // altera com js
+        ActionUrl = "",
+        FormMethod = "post"
+    };
+    @Html.Partial("_ConfirmPopup", confirmModel)
+}

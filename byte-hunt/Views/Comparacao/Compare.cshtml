@@ -1,0 +1,77 @@
+﻿@using byte_hunt.Models.Comparador
+@model byte_hunt.Models.Comparador.ItemComparisonViewModel
+
+@{
+    ViewData["Title"] = "Comparação";
+}
+
+<h2>Comparação</h2>
+
+<table class="table table-bordered text-center">
+    <thead>
+    <tr>
+        <th>Atributo</th>
+        @foreach (var item in Model.Items) {
+            <th>@item.Nome</th>
+        }
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var row in Model.AttrRows) {
+        <tr>
+            <td><strong>@row.Key</strong></td>
+            @for (int i = 0; i < row.Values.Count; i++) {
+                var css = row.Highlights[i] switch {
+                    HighlightType.Best => "table-success",
+                    HighlightType.Worst => "table-danger",
+                    _ => ""
+                };
+
+                string display = FormatValue(row.Key, row.Values[i]);
+                <td class="@css">@display</td>
+            }
+        </tr>
+    }
+    </tbody>
+</table>
+
+@functions {
+    string FormatValue(string key, string rawValue) {
+        // Handle Sim/Não first
+        if (rawValue.Trim().Equals("Sim", StringComparison.OrdinalIgnoreCase) ||
+            rawValue.Trim().Equals("Não", StringComparison.OrdinalIgnoreCase)) {
+            return rawValue;
+        }
+
+        // Try parse number
+        if (!decimal.TryParse(
+                rawValue.Replace(",", ".").Trim(),
+                System.Globalization.NumberStyles.Number,
+                System.Globalization.CultureInfo.InvariantCulture,
+                out var val))
+            return rawValue;
+
+        return key switch {
+            "Armazenamento" => FormatStorage(val),
+            "Memória RAM" => $"{val:0.#} GB",
+            "Autonomia da Bateria" => $"{val} mAh",
+            "Peso" => $"{val} g",
+            "Câmera" => $"{val} MP",
+            "Ecrã" or "Tamanho do Ecrã" => $"{val:0.#}\"",         
+            "Preço" => $"{val:0.00} €",                          
+            "Tempo de Resposta" => $"{val:0.#} ms",
+            "Taxa de Atualização" => $"{val:0.#} Hz",
+            "Brilho" => $"{val} nits",
+            "Contraste" => $"{val}",
+            _ => $"{val:0.#}"
+        };
+    }
+
+    string FormatStorage(decimal gb) {
+        if (gb >= 1024)
+            return $"{gb / 1024:0.#} TB";
+        if (gb < 1)
+            return $"{gb * 1024:0.#} MB";
+        return $"{gb:0.#} GB";
+    }
+}

@@ -227,6 +227,9 @@ namespace byte_hunt.Migrations
                     b.Property<DateTime>("DataContribuicao")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime?>("DataEditada")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime?>("DataReview")
                         .HasColumnType("datetime2");
 
@@ -261,6 +264,9 @@ namespace byte_hunt.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AttrsJson")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("CategoriaId")
                         .HasColumnType("int");

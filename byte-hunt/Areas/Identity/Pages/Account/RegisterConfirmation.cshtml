@@ -1,0 +1,26 @@
+﻿@page
+@model RegisterConfirmationModel
+@{
+    ViewData["Title"] = "Confirmação de Conta";
+}
+
+<h1>@ViewData["Title"]</h1>
+@{
+    if (@Model.DisplayConfirmAccountLink) {
+        <div>
+            <h4>Obrigado por te registrares em Byte Hunt!</h4>
+            <p>Te enviamos um email para poderes confirmar tua conta! Verifique sua caixa de entrada!</p>
+        </div>
+        <p>
+            Para Dev:
+            <a id="confirm-link" href="@Model.EmailConfirmationUrl">Click here to confirm your account</a>
+        </p>
+    }
+    else {
+        <div>
+            <h4>Obrigado por te registrares em Byte Hunt!</h4>
+            <p>Te enviamos um email para poderes confirmar tua conta! Verifique sua caixa de entrada!</p>
+        </div>
+    }
+}
+

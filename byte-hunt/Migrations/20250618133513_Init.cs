@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace byte_hunt.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -203,6 +203,7 @@ namespace byte_hunt.Migrations
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DataContribuicao = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DataReview = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DataEditada = table.Column<DateTime>(type: "datetime2", nullable: true),
                     UtilizadorId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ResponsavelId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
@@ -234,6 +235,7 @@ namespace byte_hunt.Migrations
                     Descricao = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Preco = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     FotoItem = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AttrsJson = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CategoriaId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
