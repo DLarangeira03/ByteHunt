@@ -9,9 +9,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
+using byte_hunt.Services;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-
 
 // metodo para definir roles
 // isso garante que as roles existam na base de dados
@@ -40,18 +41,19 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        sqlOptions => sqlOptions.EnableRetryOnFailure()
+        builder.Configuration.GetConnectionString("DefaultConnection")
+        //sqlOptions => sqlOptions.EnableRetryOnFailure()
     ));
 
-builder.Services.AddDefaultIdentity<Utilizador>(options =>
-{
+builder.Services.AddDefaultIdentity<Utilizador>(options => {
     options.SignIn.RequireConfirmedAccount = true; // email deve ser confirmado para login
-    options.Password.RequireUppercase = false;
-    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = false; 
+    options.Password.RequireNonAlphanumeric = false; 
 }).AddRoles<IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddRazorPages();
+//email
+builder.Services.AddTransient<IEmailSender, SmtpEmailSender>();
 
 var jwtKey = builder.Configuration["JwtSettings:SecretKey"];
 
@@ -114,8 +116,7 @@ builder.Services.AddSwaggerGen(c =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
-{
+if (!app.Environment.IsDevelopment()) {
     app.UseExceptionHandler("/Home/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
@@ -135,8 +136,7 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-using (var scope = app.Services.CreateScope())
-{
+using (var scope = app.Services.CreateScope()) {
     var services = scope.ServiceProvider;
     await SeedRoles(services);
 }
@@ -144,10 +144,6 @@ using (var scope = app.Services.CreateScope())
 //jwt Swagger
 app.UseSwagger();
 app.UseSwaggerUI();
-
-app.UseAuthentication();
-app.UseAuthorization();
-
 
 // run the app
 app.Run();

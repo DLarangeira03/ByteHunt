@@ -1,33 +1,33 @@
 @model byte_hunt.Models.Categoria
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Eliminar Categoria";
+    <link rel="stylesheet" href="~/css/categorias_crud.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
 }
 
-<h1>Delete</h1>
+<div class="categoria-background-image "></div>
+<div class="categoria-form-container-wide">
+    <h1 class="text-center mb-4 text-danger display-2">Eliminar Categoria</h1>
 
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>Categoria</h4>
-    <hr />
+    <p class="text-center">Tem a certeza de que pretende eliminar esta categoria?</p>
+
     <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Nome)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Nome)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Descricao)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Descricao)
-        </dd>
+        <dt class="col-sm-3">Nome</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.Nome)</dd>
+
+        <dt class="col-sm-3">Descrição</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.Descricao)</dd>
     </dl>
-    
-    <form asp-action="Delete">
+
+    <form asp-action="Delete" method="post" class="text-center mt-4">
+        @Html.AntiForgeryToken()
         <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
+        <button type="submit" class="btn btn-danger rounded-pill px-5 shadow-sm mt-3">
+            <i class="bi bi-trash me-2"></i> Eliminar
+        </button>
+        <a asp-action="Index" class="btn btn-secondary rounded-pill px-4 shadow-sm mt-3 ms-3">
+            <i class="bi bi-x-circle me-2"></i> Cancelar
+        </a>
     </form>
 </div>

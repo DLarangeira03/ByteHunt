@@ -21,7 +21,8 @@ namespace byte_hunt.Controllers
         }
 
         // GET: Itens
-        public async Task<IActionResult> Index(string searchTerm, int? categoriaId, int pageNumber = 1, int pageSize = 6)
+        public async Task<IActionResult> Index(string searchTerm, int? categoriaId, int pageNumber = 1,
+            int pageSize = 9)
         {
             var query = _context.Itens.Include(i => i.Categoria).AsQueryable();
 
@@ -88,20 +89,43 @@ namespace byte_hunt.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Nome,Marca,Descricao,Preco,CategoriaId")] Item item)
+        public async Task<IActionResult> Create([Bind("Id,Nome,Marca,Descricao,Preco,CategoriaId")] Item item,
+            IFormFile imagem)
         {
+            ModelState.Remove("imagem");
+            
             //====== DEBUG 
             foreach (var kvp in ModelState)
             {
                 Console.WriteLine($"{kvp.Key}: {string.Join(", ", kvp.Value.Errors.Select(e => e.ErrorMessage))}");
             }
             //====== DEBUG 
+
             if (ModelState.IsValid)
             {
+                if (imagem != null)
+                {
+                    var nomeImagem = await GuardarImagemAsync(imagem);
+                    if (nomeImagem != null)
+                    {
+                        item.FotoItem = nomeImagem;
+                    }
+                    else
+                    {
+                        item.FotoItem = string.Empty;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("image  null");   
+                    item.FotoItem = string.Empty;
+                }
+
                 _context.Add(item);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["CategoriaId"] = new SelectList(_context.Categorias, "Id", "Nome", item.CategoriaId);
             return View(item);
         }
@@ -119,6 +143,7 @@ namespace byte_hunt.Controllers
             {
                 return NotFound();
             }
+
             ViewData["CategoriaId"] = new SelectList(_context.Categorias, "Id", "Nome", item.CategoriaId);
             return View(item);
         }
@@ -128,19 +153,43 @@ namespace byte_hunt.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,Marca,Descricao,Preco,CategoriaId")] Item item)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,Marca,Descricao,Preco,CategoriaId")] Item item, IFormFile imagem)
         {
             if (id != item.Id)
             {
                 return NotFound();
             }
 
+            // Obtem o item original da base de dados
+            var itemExistente = await _context.Itens.AsNoTracking().FirstOrDefaultAsync(i => i.Id == id);
+            if (itemExistente == null)
+            {
+                return NotFound();
+            }
+            
+            ModelState.Remove("imagem");
+            
             if (ModelState.IsValid)
             {
                 try
                 {
+                    if (imagem != null && imagem.Length > 0)
+                    {
+                        var nomeImagem = await GuardarImagemAsync(imagem);
+                        if (nomeImagem != null)
+                        {
+                            item.FotoItem = nomeImagem;
+                        }
+                    }
+                    else
+                    {
+                        // Mantém a imagem anterior
+                        item.FotoItem = itemExistente.FotoItem;
+                    }
+
                     _context.Update(item);
                     await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -153,8 +202,8 @@ namespace byte_hunt.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
             }
+
             ViewData["CategoriaId"] = new SelectList(_context.Categorias, "Id", "Nome", item.CategoriaId);
             return View(item);
         }
@@ -196,6 +245,38 @@ namespace byte_hunt.Controllers
         private bool ItemExists(int id)
         {
             return _context.Itens.Any(e => e.Id == id);
+        }
+
+        private async Task<string> GuardarImagemAsync(IFormFile ficheiro)
+        {
+            if (ficheiro != null && ficheiro.Length > 0)
+            {
+                var extensao = Path.GetExtension(ficheiro.FileName).ToLower();
+                var permitidas = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+
+                if (!permitidas.Contains(extensao)) return null;
+
+                if (!ficheiro.ContentType.StartsWith("image/")) return null;
+
+                if (ficheiro.Length > 5 * 1024 * 1024) return null; // Limite de 5MB
+
+                var nomeUnico = Guid.NewGuid().ToString() + extensao;
+                var pastaUploads = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "itens_Imagens");
+
+                if (!Directory.Exists(pastaUploads))
+                {
+                    Directory.CreateDirectory(pastaUploads);
+                }
+
+                var caminho = Path.Combine(pastaUploads, nomeUnico);
+
+                using var stream = new FileStream(caminho, FileMode.Create);
+                await ficheiro.CopyToAsync(stream);
+
+                return nomeUnico;
+            }
+
+            return null;
         }
     }
 }

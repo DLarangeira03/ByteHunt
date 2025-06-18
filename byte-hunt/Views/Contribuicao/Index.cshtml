@@ -1,47 +1,141 @@
+@* Index.cshtml (UPDATED for string-based user IDs) *@
 @model IEnumerable<byte_hunt.Models.Contribuicao>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Contribuições";
+
+    <link rel="stylesheet" href="~/css/contribuicao_apresentacao.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    var utilizadores = ViewData["Utilizadores"] as List<SelectListItem>;
+    var utilizadorSelecionado = ViewData["UtilizadorSelecionado"]?.ToString();
+    var currentPage = (int)ViewData["CurrentPage"];
+    var totalPages = (int)ViewData["TotalPages"];
 }
 
-<h1>Index</h1>
+<div class="contribuicao-fundo"></div>
+<div class="container contribuicao-conteudo">
+    <h2 class="mb-4">Contribuições</h2>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
+    <div class="d-flex flex-column align-items-start mb-3">
+        <div class="dropdown">
+            <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownUtilizadores" data-bs-toggle="dropdown" aria-expanded="false">
+                @(utilizadorSelecionado == "0" || string.IsNullOrEmpty(utilizadorSelecionado)
+                    ? "Todos Utilizadores"
+                    : utilizadores.FirstOrDefault(u => u.Value == utilizadorSelecionado)?.Text)
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownUtilizadores">
+                @foreach (var utilizador in utilizadores)
+                {
+                    <li>
+                        <a class="dropdown-item @(utilizador.Value == utilizadorSelecionado ? "active" : "")"
+                           href="@Url.Action("Index", new { utilizadorId = utilizador.Value })">
+                            @utilizador.Text
+                        </a>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+
+    <a class="btn btn-success mb-3" asp-action="Create">+ Nova Contribuição</a>
+
+    <table class="table table-hover table-striped contribuicao-tabela">
+        <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.DetalhesContribuicao)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DataContribuicao)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Utilizador)
-            </th>
-            <th></th>
+            <th>ID</th>
+            <th>Contribuição</th>
+            <th>Estado</th>
+            <th>Data Contribuição</th>
+            <th>Responsável</th>
+            <th>Data de Revisão</th>
+            <th>Utilizador</th>
+            <th>Ações</th>
         </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.DetalhesContribuicao)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DataContribuicao)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Utilizador.Nome)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+        @foreach (var contribuicao in Model)
+        {
+            <tr>
+                <td>@contribuicao.Id</td>
+                <td>
+                    @{
+                        var detalhes = contribuicao.DetalhesContribuicao ?? "";
+                        var nome = "";
+                        var prefix = "Nome:";
+                        if (detalhes.Contains(prefix))
+                        {
+                            int start = detalhes.IndexOf(prefix) + prefix.Length;
+                            int end = detalhes.IndexOf("Marca:", start);
+                            if (end == -1) end = detalhes.Length;
+                            nome = detalhes.Substring(start, end - start).Trim();
+                        }
+                    }
+                    @nome
+                </td>
+                <td>
+                    <span class="badge @(contribuicao.Status switch {
+                                           "Approved" => "bg-success",
+                                           "Pending" => "bg-warning text-dark",
+                                           "Rejected" => "bg-danger",
+                                           _ => "bg-secondary"
+                                       })">@contribuicao.Status</span>
+                </td>
+                <td>@contribuicao.DataContribuicao.ToShortDateString()</td>
+                <td>@contribuicao.Responsavel?.Nome </td>
+                <td>@contribuicao.DataReview?.ToShortDateString()</td>
+                <td>@contribuicao.Utilizador?.Nome</td>
+                <td>
+                    <a class="btn btn-sm btn-info" asp-action="Details" asp-route-id="@contribuicao.Id">Ver</a>
+                    @if (contribuicao.Status != "Approved" && contribuicao.Status != "Rejected")
+                    {
+                        <a class="btn btn-sm btn-warning" asp-action="Edit" asp-route-id="@contribuicao.Id">Editar</a>
+                    }
+                    <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@contribuicao.Id">Remover</a>
+                    <a class="btn btn-sm btn-success" asp-action="Details" asp-route-id="@contribuicao.Id">Requisitar</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+
+    @if (totalPages > 0)
+    {
+        <nav class="mt-5">
+            <ul class="pagination justify-content-center">
+                <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                    <a class="page-link" asp-action="Index" asp-route-page="1" asp-route-utilizadorId="@utilizadorSelecionado">
+                        <i class="bi bi-chevron-double-left"></i>
+                    </a>
+                </li>
+                <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                    <a class="page-link" asp-action="Index" asp-route-page="@(currentPage - 1)" asp-route-utilizadorId="@utilizadorSelecionado">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                </li>
+                @for (int i = 1; i <= totalPages; i++)
+                {
+                    <li class="page-item @(i == currentPage ? "active" : "")">
+                        <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-utilizadorId="@utilizadorSelecionado">
+                            @i
+                        </a>
+                    </li>
+                }
+                <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                    <a class="page-link" asp-action="Index" asp-route-page="@(currentPage + 1)" asp-route-utilizadorId="@utilizadorSelecionado">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+                <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                    <a class="page-link" asp-action="Index" asp-route-page="@totalPages" asp-route-utilizadorId="@utilizadorSelecionado">
+                        <i class="bi bi-chevron-double-right"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    }
+    else
+    {
+        <div class="alert alert-info text-center my-4">Não existem contribuições para serem apresentadas.</div>
+    }
+</div>

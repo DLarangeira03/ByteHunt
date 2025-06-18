@@ -68,6 +68,7 @@ public class AdminController : Controller {
         if (user != null && await _roleManager.RoleExistsAsync(role)) {
             await _userManager.RemoveFromRoleAsync(user, role);
         }
+        TempData["RoleRemovalConfirmation"] = $"Permissão \"{role}\" removida com sucesso do utilizador \"{user.UserName}\"";
         return RedirectToAction("ManageRoles");
     }
     
