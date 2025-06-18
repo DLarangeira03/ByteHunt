@@ -23,6 +23,8 @@ public class Item
     
     public string? FotoItem {get;set;} //foto do item
     
+    public string? AttrsJson { get; set; } // JSON de atributos do item
+    
     public int CategoriaId { get; set; } //chave estrangeira
     
     [ForeignKey("CategoriaId")]
