@@ -1,19 +1,24 @@
 ﻿@page
 @model IndexModel
+@inject UserManager<Utilizador> UserManager
 @{
     ViewData["Title"] = "Seus Dados";
     ViewData["ActivePage"] = ManageNavPages.Index;
+
+    <link rel="stylesheet" href="~/css/index_manage_account.css" asp-append-version="true"/>
 }
 
-<h3>@ViewData["Title"]</h3>
-<h6>Se desejar, altere seus dados aqui:</h6>
-<partial name="_StatusMessage" for="StatusMessage" />
+
+<partial name="_StatusMessage" for="StatusMessage"/>
 <div class="row">
     <div class="col-md-6">
+        <h3>@ViewData["Title"]</h3>
+        <h6>Se desejar, altere seus dados aqui:</h6>
         <form id="profile-form" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
             <div class="form-floating mb-3">
-                <input asp-for="Username" class="form-control" placeholder="Por favor insira seu nome de utilizador." disabled />
+                <input asp-for="Username" class="form-control" placeholder="Por favor insira seu nome de utilizador."
+                       disabled/>
                 <label asp-for="Username" class="form-label"></label>
             </div>
             <div class="form-floating mb-3">
@@ -24,8 +29,40 @@
             <button id="update-profile-button" type="submit" class="w-100 btn btn-lg btn-primary">Salvar</button>
         </form>
     </div>
+    <div class="col-md-6">
+        @{
+            var user = await UserManager.GetUserAsync(User);
+            var fotoPerfil = user?.FotoPerfil;
+        }
+
+        <form method="post" enctype="multipart/form-data" asp-page-handler="UploadFotoPerfil">
+            <div class="perfil-wrapper">
+                <label for="fotoUpload" class="perfil-container">
+                    @if (!string.IsNullOrEmpty(fotoPerfil))
+                    {
+                        <img src="@fotoPerfil" class="rounded-circle perfil-foto"
+                             alt="Foto de perfil"/>
+                    }
+                    else
+                    {
+                        <i class="bi bi-person-circle text-secondary fs-1"></i>
+                    }
+
+                    <div class="overlay rounded-circle">
+                        <span class="overlay-text"><i class="bi bi-pencil-fill fs-3"></i></span>
+                    </div>
+                </label>
+
+                <input id="fotoUpload" name="FotoPerfil" type="file" accept="image/*"
+                       class="d-none" onchange="this.form.submit()"/>
+            </div>
+        </form>
+    </div>
 </div>
 
+
+
+
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+    <partial name="_ValidationScriptsPartial"/>
 }
