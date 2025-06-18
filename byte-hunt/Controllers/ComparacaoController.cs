@@ -56,7 +56,7 @@ namespace byte_hunt.Controllers {
             var model = BuildComparisonViewModel(items);
             return View("Compare", model);
         }
-
+        
         private ItemComparisonViewModel BuildComparisonViewModel(List<Item> items) {
             var attrMap = new Dictionary<string, List<string>>();
 

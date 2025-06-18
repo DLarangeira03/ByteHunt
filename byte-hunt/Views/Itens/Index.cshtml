@@ -183,6 +183,7 @@
                                 @currentPage
                             </a>
                         </li>
+                        
                         @if (currentPage != totalPages)
                         {
                             <li class="page-item active">
@@ -194,6 +195,26 @@
                                 </a>
                             </li>
                         }
+                        
+                        @if (currentPage != totalPages && currentPage != totalPages - 1)
+                        {
+                            <li class="page-item ">
+                                <a class="page-link bg-dark text-white border-dark">...</a>
+                            </li>
+                        }
+                        
+                        @if (currentPage != totalPages && currentPage != totalPages - 1)
+                        {
+                            <li class="page-item active">
+                                <a class="page-link bg-dark text-white border-dark"
+                                   asp-action="Index"
+                                   asp-route-pageNumber="@(totalPages)"
+                                   asp-route-pageSize="@pageSize">
+                                    @(totalPages)
+                                </a>
+                            </li>
+                        }
+                        
                     }
 
 

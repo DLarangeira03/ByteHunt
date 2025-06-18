@@ -3,43 +3,61 @@
 
 @{
     ViewData["Title"] = "Comparação";
+    
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="~/css/fundo_container.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 }
 
-<h2>Comparação</h2>
 
-<table class="table table-bordered text-center">
-    <thead>
-    <tr>
-        <th>Atributo</th>
-        @foreach (var item in Model.Items) {
-            <th>@item.Nome</th>
-        }
-    </tr>
-    </thead>
-    <tbody>
-    @foreach (var row in Model.AttrRows) {
+<div class="vw-fundo"></div>
+
+
+
+<div class="container vw-container">
+    <h2>Comparação</h2>
+    <table class="table table-bordered text-center">
+        <thead>
         <tr>
-            <td><strong>@row.Key</strong></td>
-            @for (int i = 0; i < row.Values.Count; i++) {
-                var css = row.Highlights[i] switch {
-                    HighlightType.Best => "table-success",
-                    HighlightType.Worst => "table-danger",
-                    _ => ""
-                };
-
-                string display = FormatValue(row.Key, row.Values[i]);
-                <td class="@css">@display</td>
+            <th>Atributo</th>
+            @foreach (var item in Model.Items)
+            {
+                <th>@item.Nome</th>
             }
         </tr>
-    }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+        @foreach (var row in Model.AttrRows)
+        {
+            <tr>
+                <td><strong>@row.Key</strong></td>
+                @for (int i = 0; i < row.Values.Count; i++)
+                {
+                    var css = row.Highlights[i] switch
+                    {
+                        HighlightType.Best => "table-success",
+                        HighlightType.Worst => "table-danger",
+                        _ => ""
+                    };
+
+                    string display = FormatValue(row.Key, row.Values[i]);
+                    <td class="@css">@display</td>
+                }
+            </tr>
+        }
+        </tbody>
+    </table>
+
+</div>
 
 @functions {
-    string FormatValue(string key, string rawValue) {
+
+    string FormatValue(string key, string rawValue)
+    {
         // Handle Sim/Não first
         if (rawValue.Trim().Equals("Sim", StringComparison.OrdinalIgnoreCase) ||
-            rawValue.Trim().Equals("Não", StringComparison.OrdinalIgnoreCase)) {
+            rawValue.Trim().Equals("Não", StringComparison.OrdinalIgnoreCase))
+        {
             return rawValue;
         }
 
@@ -51,14 +69,15 @@
                 out var val))
             return rawValue;
 
-        return key switch {
+        return key switch
+        {
             "Armazenamento" => FormatStorage(val),
             "Memória RAM" => $"{val:0.#} GB",
             "Autonomia da Bateria" => $"{val} mAh",
             "Peso" => $"{val} g",
             "Câmera" => $"{val} MP",
-            "Ecrã" or "Tamanho do Ecrã" => $"{val:0.#}\"",         
-            "Preço" => $"{val:0.00} €",                          
+            "Ecrã" or "Tamanho do Ecrã" => $"{val:0.#}\"",
+            "Preço" => $"{val:0.00} €",
             "Tempo de Resposta" => $"{val:0.#} ms",
             "Taxa de Atualização" => $"{val:0.#} Hz",
             "Brilho" => $"{val} nits",
@@ -67,11 +86,13 @@
         };
     }
 
-    string FormatStorage(decimal gb) {
+    string FormatStorage(decimal gb)
+    {
         if (gb >= 1024)
             return $"{gb / 1024:0.#} TB";
         if (gb < 1)
             return $"{gb * 1024:0.#} MB";
         return $"{gb:0.#} GB";
     }
+
 }

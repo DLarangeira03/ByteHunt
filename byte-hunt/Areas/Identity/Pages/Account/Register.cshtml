@@ -1,50 +1,57 @@
 ﻿@page
 @model RegisterModel
 @{
-    ViewData["Title"] = "Registrar";
+    ViewData["Title"] = "Registar";
+
+    <link rel="stylesheet" href="~/css/fundo_container.css" asp-append-version="true"/>
 }
 
+<div class="vw-fundo"></div>
 
-<div class="d-flex justify-content-center mt-5">
-    <div class="w-100" style="max-width: 420px;">
-        <h1>Registra-te!</h1>
-        <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
-            <h3>Crie sua nova conta agora:</h3>
-            <hr/>
-            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.UserName" class="form-control" autocomplete="username" aria-required="true"
-                       placeholder="name@example.com"/>
-                <label asp-for="Input.UserName">Nome de Utilizador:</label>
-                <span asp-validation-for="Input.UserName" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Nome" class="form-control" autocomplete="username" aria-required="true"
-                       placeholder="name@example.com"/>
-                <label asp-for="Input.Nome">Nome:</label>
-                <span asp-validation-for="Input.Nome" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true"
-                       placeholder="name@example.com"/>
-                <label asp-for="Input.Email">Email:</label>
-                <span asp-validation-for="Input.Email" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true"
-                       placeholder="password"/>
-                <label asp-for="Input.Password">Senha:</label>
-                <span asp-validation-for="Input.Password" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password"
-                       aria-required="true" placeholder="password"/>
-                <label asp-for="Input.ConfirmPassword">Confime sua senha:</label>
-                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
-            </div>
-            <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Registrar</button>
-        </form>
+<div class="container vw-container">
+    <div class="d-flex justify-content-center mt-5">
+        <div class="w-100" style="max-width: 420px;">
+            <h1>Regista-te!</h1>
+            <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                <h3>Crie a sua nova conta agora:</h3>
+                <hr/>
+                <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.UserName" class="form-control" autocomplete="username" aria-required="true"
+                           placeholder="name@example.com"/>
+                    <label asp-for="Input.UserName">Nome de Utilizador:</label>
+                    <span asp-validation-for="Input.UserName" class="text-danger"></span>
+                </div>
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.Nome" class="form-control" autocomplete="username" aria-required="true"
+                           placeholder="name@example.com"/>
+                    <label asp-for="Input.Nome">Nome:</label>
+                    <span asp-validation-for="Input.Nome" class="text-danger"></span>
+                </div>
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true"
+                           placeholder="name@example.com"/>
+                    <label asp-for="Input.Email">Email:</label>
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                </div>
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.Password" class="form-control" autocomplete="new-password"
+                           aria-required="true"
+                           placeholder="password"/>
+                    <label asp-for="Input.Password">Palavra-Passe:</label>
+                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                </div>
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password"
+                           aria-required="true" placeholder="password"/>
+                    <label asp-for="Input.ConfirmPassword">Confime a Palavra-Passe:</label>
+                    <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                </div>
+                <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Registar</button>
+            </form>
+        </div>
     </div>
+
 </div>
 
 @section Scripts {
