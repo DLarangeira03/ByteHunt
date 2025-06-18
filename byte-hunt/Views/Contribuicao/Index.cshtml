@@ -1,10 +1,12 @@
 @* Index.cshtml (UPDATED for string-based user IDs) *@
 @model IEnumerable<byte_hunt.Models.Contribuicao>
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.IdentityModel.Tokens
 
 @{
     ViewData["Title"] = "Contribuições";
 
-    <link rel="stylesheet" href="~/css/contribuicao_apresentacao.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/contribuicao_apresentacao.css" asp-append-version="true"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
     var utilizadores = ViewData["Utilizadores"] as List<SelectListItem>;
@@ -17,45 +19,49 @@
 <div class="container contribuicao-conteudo">
     <h2 class="mb-4">Contribuições</h2>
 
-    <div class="d-flex flex-column align-items-start mb-3">
-        <div class="dropdown">
-            <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownUtilizadores" data-bs-toggle="dropdown" aria-expanded="false">
-                @(utilizadorSelecionado == "0" || string.IsNullOrEmpty(utilizadorSelecionado)
-                    ? "Todos Utilizadores"
-                    : utilizadores.FirstOrDefault(u => u.Value == utilizadorSelecionado)?.Text)
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="dropdownUtilizadores">
-                @foreach (var utilizador in utilizadores)
-                {
-                    <li>
-                        <a class="dropdown-item @(utilizador.Value == utilizadorSelecionado ? "active" : "")"
-                           href="@Url.Action("Index", new { utilizadorId = utilizador.Value })">
-                            @utilizador.Text
-                        </a>
-                    </li>
-                }
-            </ul>
+    @if (User.IsInRole("Moderator") || User.IsInRole("Administrator")) {
+        <div class="d-flex flex-column align-items-start mb-3">
+            <div class="dropdown">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownUtilizadores"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                    @(utilizadorSelecionado == "0" || string.IsNullOrEmpty(utilizadorSelecionado)
+                        ? "Todos Utilizadores"
+                        : utilizadores.FirstOrDefault(u => u.Value == utilizadorSelecionado)?.Text)
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownUtilizadores">
+                    @foreach (var utilizador in utilizadores) {
+                        <li>
+                            <a class="dropdown-item @(utilizador.Value == utilizadorSelecionado ? "active" : "")"
+                               href="@Url.Action("Index", new { dropDownId = utilizador.Value })">
+                                @utilizador.Text
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>
         </div>
-    </div>
+    }
 
-    <a class="btn btn-success mb-3" asp-action="Create">+ Nova Contribuição</a>
+    <a class="btn btn-success mb-3" asp-action="Create">Contribuir <i class="bi bi-plus-lg"></i></a>
+
 
     <table class="table table-hover table-striped contribuicao-tabela">
         <thead>
         <tr>
-            <th>ID</th>
-            <th>Contribuição</th>
+            <th>Nº</th>
+            <th>Produto</th>
             <th>Estado</th>
             <th>Data Contribuição</th>
             <th>Responsável</th>
-            <th>Data de Revisão</th>
-            <th>Utilizador</th>
-            <th>Ações</th>
+            <th>Última Revisão</th>
+            @if (User.IsInRole("Moderator") || User.IsInRole("Administrator")) {
+                <th>Utilizador</th>
+            }
+            <th></th>
         </tr>
         </thead>
         <tbody>
-        @foreach (var contribuicao in Model)
-        {
+        @foreach (var contribuicao in Model) {
             <tr>
                 <td>@contribuicao.Id</td>
                 <td>
@@ -63,8 +69,7 @@
                         var detalhes = contribuicao.DetalhesContribuicao ?? "";
                         var nome = "";
                         var prefix = "Nome:";
-                        if (detalhes.Contains(prefix))
-                        {
+                        if (detalhes.Contains(prefix)) {
                             int start = detalhes.IndexOf(prefix) + prefix.Length;
                             int end = detalhes.IndexOf("Marca:", start);
                             if (end == -1) end = detalhes.Length;
@@ -84,58 +89,77 @@
                 <td>@contribuicao.DataContribuicao.ToShortDateString()</td>
                 <td>@contribuicao.Responsavel?.Nome </td>
                 <td>@contribuicao.DataReview?.ToShortDateString()</td>
-                <td>@contribuicao.Utilizador?.Nome</td>
+                @if (User.IsInRole("Moderator") || User.IsInRole("Administrator")) {
+                    <td>@contribuicao.Utilizador?.UserName</td>
+                }
                 <td>
                     <a class="btn btn-sm btn-info" asp-action="Details" asp-route-id="@contribuicao.Id">Ver</a>
-                    @if (contribuicao.Status != "Approved" && contribuicao.Status != "Rejected")
-                    {
-                        <a class="btn btn-sm btn-warning" asp-action="Edit" asp-route-id="@contribuicao.Id">Editar</a>
+                    
+                    @{
+                        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
                     }
-                    <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@contribuicao.Id">Remover</a>
-                    <a class="btn btn-sm btn-success" asp-action="Details" asp-route-id="@contribuicao.Id">Requisitar</a>
+                    
+                    @if (User.IsInRole("Moderator") || User.IsInRole("Administrator")) {
+                        if (contribuicao.Status == "Pending" && (User.IsInRole("Administrator") || contribuicao.ResponsavelId == userId)) {
+                            <a class="btn btn-sm btn-warning" asp-action="Edit"
+                               asp-route-id="@contribuicao.Id">Editar</a>
+                        }
+                        
+                        if (contribuicao.ResponsavelId.IsNullOrEmpty()) {
+                            <form asp-action="Claim" method="post" asp-route-id="@contribuicao.Id" asp-route-returnUrl="@Url.Action("Index")" style="display:inline;">
+                                <button type="submit" class="btn btn-sm btn-success">Assumir</button>
+                            </form>
+                        }
+                    }
+                    @if (User.IsInRole("Administrator")) {
+                        <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@contribuicao.Id">Remover</a>
+                    }
+
                 </td>
             </tr>
         }
         </tbody>
     </table>
 
-    @if (totalPages > 0)
-    {
+    @if (totalPages > 0) {
         <nav class="mt-5">
             <ul class="pagination justify-content-center">
                 <li class="page-item @(currentPage == 1 ? "disabled" : "")">
-                    <a class="page-link" asp-action="Index" asp-route-page="1" asp-route-utilizadorId="@utilizadorSelecionado">
+                    <a class="page-link" asp-action="Index" asp-route-page="1"
+                       asp-route-utilizadorId="@utilizadorSelecionado">
                         <i class="bi bi-chevron-double-left"></i>
                     </a>
                 </li>
                 <li class="page-item @(currentPage == 1 ? "disabled" : "")">
-                    <a class="page-link" asp-action="Index" asp-route-page="@(currentPage - 1)" asp-route-utilizadorId="@utilizadorSelecionado">
+                    <a class="page-link" asp-action="Index" asp-route-page="@(currentPage - 1)"
+                       asp-route-utilizadorId="@utilizadorSelecionado">
                         <i class="bi bi-chevron-left"></i>
                     </a>
                 </li>
-                @for (int i = 1; i <= totalPages; i++)
-                {
+                @for (int i = 1; i <= totalPages; i++) {
                     <li class="page-item @(i == currentPage ? "active" : "")">
-                        <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-utilizadorId="@utilizadorSelecionado">
+                        <a class="page-link" asp-action="Index" asp-route-page="@i"
+                           asp-route-utilizadorId="@utilizadorSelecionado">
                             @i
                         </a>
                     </li>
                 }
                 <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
-                    <a class="page-link" asp-action="Index" asp-route-page="@(currentPage + 1)" asp-route-utilizadorId="@utilizadorSelecionado">
+                    <a class="page-link" asp-action="Index" asp-route-page="@(currentPage + 1)"
+                       asp-route-utilizadorId="@utilizadorSelecionado">
                         <i class="bi bi-chevron-right"></i>
                     </a>
                 </li>
                 <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
-                    <a class="page-link" asp-action="Index" asp-route-page="@totalPages" asp-route-utilizadorId="@utilizadorSelecionado">
+                    <a class="page-link" asp-action="Index" asp-route-page="@totalPages"
+                       asp-route-utilizadorId="@utilizadorSelecionado">
                         <i class="bi bi-chevron-double-right"></i>
                     </a>
                 </li>
             </ul>
         </nav>
     }
-    else
-    {
+    else {
         <div class="alert alert-info text-center my-4">Não existem contribuições para serem apresentadas.</div>
     }
 </div>

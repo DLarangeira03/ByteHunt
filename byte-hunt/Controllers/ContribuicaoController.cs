@@ -7,29 +7,41 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using byte_hunt.Data;
 using byte_hunt.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace byte_hunt.Controllers
 {
     public class ContribuicaoController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<Utilizador> _userManager;
 
-        public ContribuicaoController(ApplicationDbContext context)
+        public ContribuicaoController(ApplicationDbContext context, UserManager<Utilizador> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Contribuicao
-        public async Task<IActionResult> Index(string? utilizadorId, int page = 1, int pageSize = 10)
-        {
+        public async Task<IActionResult> Index(string? dropDownId, int page = 1, int pageSize = 10) {
+            
             var query = _context.Contribuicoes
                 .Include(c => c.Utilizador)
                 .Include(c => c.Responsavel)
                 .AsQueryable();
 
-            if (!string.IsNullOrEmpty(utilizadorId) && utilizadorId != "0")
+            if (!string.IsNullOrEmpty(dropDownId) && dropDownId != "0")
             {
-                query = query.Where(c => c.UtilizadorId == utilizadorId);
+                query = query.Where(c => c.UtilizadorId == dropDownId);
+            }
+            
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+            var isMod = _userManager.IsInRoleAsync(user, "Moderator").Result;
+            var iaAdmin = _userManager.IsInRoleAsync(user, "Moderator").Result;
+
+            if (!isMod && !iaAdmin) {
+                query = query.Where(c => c.UtilizadorId == user.Id);
             }
 
             query = query.OrderByDescending(c => c.DataContribuicao);
@@ -49,7 +61,7 @@ namespace byte_hunt.Controllers
             utilizadores.Insert(0, new SelectListItem { Value = "0", Text = "Todos Utilizadores" });
 
             ViewData["Utilizadores"] = utilizadores;
-            ViewData["UtilizadorSelecionado"] = utilizadorId ?? "0";
+            ViewData["UtilizadorSelecionado"] = dropDownId ?? "0";
             ViewData["CurrentPage"] = page;
             ViewData["TotalPages"] = totalPages;
 
@@ -71,6 +83,24 @@ namespace byte_hunt.Controllers
             ViewBag.Utilizadores = new SelectList(_context.Users, "Id", "Nome");
             return View(contribuicao);
         }
+        
+        //atribuicao de responsavel
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Claim(int id, string? returnUrl = null)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var contrib = await _context.Contribuicoes.FindAsync(id);
+            if (contrib == null) return NotFound();
+
+            contrib.ResponsavelId = user.Id;
+            await _context.SaveChangesAsync();
+
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                return LocalRedirect(returnUrl);
+
+            return RedirectToAction("Index"); 
+        }
 
         // GET: Contribuicao/Create
         public IActionResult Create()
@@ -89,7 +119,7 @@ namespace byte_hunt.Controllers
             var marca = form["Marca"];
             var preco = form["Preco"];
             var descricao = form["Descricao"];
-            var utilizadorId = form["UtilizadorId"];
+            var utilizadorId = _userManager.GetUserId(User);
 
             string detalhes = $"Nome: {nome}\nMarca: {marca}\nPreço: {preco}\nDescrição: {descricao}";
 
@@ -113,6 +143,7 @@ namespace byte_hunt.Controllers
         }
 
         // GET: Contribuicao/Edit/5
+        [Authorize(Roles = "Administrator,Moderator")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
