@@ -33,12 +33,15 @@ public class AdminController : Controller {
         var users = _userManager.Users.ToList();
         var model = new List<UserRolesViewModel>();
 
+        // ordem de demonstracao 
+        var predefinedOrder = new List<string> {  "User", "Moderator", "Administrator" };
+        
         foreach (var user in users) {
             var roles = await _userManager.GetRolesAsync(user);
             model.Add(new UserRolesViewModel {
                 UserId = user.Id,
                 UserName = user.UserName,
-                Roles = roles.ToList()
+                Roles = roles.OrderBy(r => predefinedOrder.IndexOf(r)).ToList()
             });
         }
         //mandar todas as roles para a dropdown

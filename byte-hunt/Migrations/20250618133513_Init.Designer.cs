@@ -12,8 +12,8 @@ using byte_hunt.Data;
 namespace byte_hunt.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250528155729_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250618133513_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -267,6 +267,9 @@ namespace byte_hunt.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AttrsJson")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("CategoriaId")
                         .HasColumnType("int");

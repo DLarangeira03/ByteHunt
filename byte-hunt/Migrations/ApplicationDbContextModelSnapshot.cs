@@ -265,6 +265,9 @@ namespace byte_hunt.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("AttrsJson")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("CategoriaId")
                         .HasColumnType("int");
 
