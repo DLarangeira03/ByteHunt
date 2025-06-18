@@ -174,6 +174,38 @@ namespace byte_hunt.Areas.Identity.Pages.Account.Manage
 
             return RedirectToPage();
         }
+        
+        public async Task<IActionResult> OnPostRemoverFotoPerfilAsync()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return NotFound();
+
+            var caminhoImagem = user.FotoPerfil;
+            
+            Console.WriteLine(caminhoImagem + "CAMINHO DA IMAGEM!!!!");
+            
+            if (!string.IsNullOrEmpty(caminhoImagem))
+            {
+                try
+                {
+                    var caminhoFisico = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", caminhoImagem.TrimStart('/').Replace("/", Path.DirectorySeparatorChar.ToString()));
+                    if (System.IO.File.Exists(caminhoFisico))
+                    {
+                        System.IO.File.Delete(caminhoFisico);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Erro ao apagar imagem antiga: {ex.Message}");
+                }
+
+                // Limpar o caminho da imagem do user
+                user.FotoPerfil = string.Empty;
+                await _userManager.UpdateAsync(user);
+            }
+
+            return RedirectToPage();
+        }
 
 
         private async Task<string> GuardarImagemAsync(IFormFile ficheiro)
