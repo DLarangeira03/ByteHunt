@@ -81,13 +81,15 @@
                         @if (!string.IsNullOrEmpty(item.FotoItem))
                         {
                             <img src="~/itens_Imagens/@item.FotoItem" class="card-img-top" alt="@item.Nome"
-                                 style="height: 200px; width: 100%; object-fit: contain;"/>
+                                 style="height: 200px; width: 100%; object-fit: contain; border: 1px solid #333; border-radius: 5px;"
+                                 onerror="this.onerror=null; this.src='/images/no_image.jpg';"
+                                 />
                         }
                         else
                         {
-                            <img src="~/images/background_byte_hunt.svg "
+                            <img src="~/images/no_image.jpg"
                                  alt="Imagem do item"
-                                 class="img-fluid rounded" style="max-height: 200px;"/>
+                                 class="img-fluid rounded" style="height: 200px; width: 100%; object-fit: contain; border: 1px solid #333; border-radius: 5px;"/>
                         }
 
                         <div class="card-body d-flex flex-row justify-content-between">
