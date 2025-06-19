@@ -53,6 +53,7 @@ namespace byte_hunt.Controllers
             
             // Prepara os dados para a view
             ViewData["CurrentPage"] = page;
+            ViewData["PageSize"] = pageSize;
             ViewData["TotalPages"] = (int)Math.Ceiling((double)totalItems / pageSize);
             ViewData["SearchString"] = searchString;
             

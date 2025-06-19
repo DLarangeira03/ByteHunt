@@ -6,11 +6,11 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" href="~/css/itens_style.css" asp-append-version="true"/>
 
-    int currentPage = (int)ViewData["CurrentPage"];
-    int pageSize = (int)ViewData["PageSize"];
-    int totalPages = (int)ViewData["TotalPages"];
+    var currentPage = (int)ViewData["CurrentPage"];
+    var pageSize = (int)ViewData["PageSize"];
+    var totalPages = (int)ViewData["TotalPages"];
 
-    string SearchTerm = ViewData["SearchTerm"] as string ;
+    var SearchTerm = ViewData["SearchTerm"] as string ;
 
     int categoriaSelecionada = 0;
     var categorias = (SelectList)ViewData["Categorias"];
