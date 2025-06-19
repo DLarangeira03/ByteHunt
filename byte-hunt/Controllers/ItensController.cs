@@ -9,6 +9,7 @@ using byte_hunt.Data;
 using byte_hunt.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.Text.Json;
+using System.Globalization;
 
 namespace byte_hunt.Controllers {
     public class ItensController : Controller {
@@ -80,7 +81,7 @@ namespace byte_hunt.Controllers {
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Nome,Marca,Descricao,Preco,CategoriaId,AttrsJson")] Item item,
+        public async Task<IActionResult> Create([Bind("Id,Nome,Marca,Descricao,CategoriaId,AttrsJson")] Item item,
             IFormFile imagem) {
             ModelState.Remove("imagem");
 
@@ -96,6 +97,17 @@ namespace byte_hunt.Controllers {
             catch (JsonException)
             {
                 ModelState.AddModelError("AttrsJson", "O conteúdo não é um JSON válido.");
+            }
+            
+            ModelState.Remove("Preco");
+            var precoStr = Request.Form["Preco"];
+            if (decimal.TryParse(precoStr, NumberStyles.Any, CultureInfo.CurrentCulture, out var precoParsed))
+            {
+                item.Preco = precoParsed;
+            }
+            else
+            {
+                ModelState.AddModelError("Preco", "Preço inválido.");
             }
             
             if (ModelState.IsValid) {
@@ -143,7 +155,7 @@ namespace byte_hunt.Controllers {
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id,
-            [Bind("Id,Nome,Marca,Descricao,Preco,CategoriaId,AttrsJson")] Item item, IFormFile imagem) {
+            [Bind("Id,Nome,Marca,Descricao,CategoriaId,AttrsJson")] Item item, IFormFile imagem) {
             if (id != item.Id) {
                 return NotFound();
             }
@@ -168,6 +180,17 @@ namespace byte_hunt.Controllers {
             catch (JsonException)
             {
                 ModelState.AddModelError("AttrsJson", "O conteúdo não é um JSON válido.");
+            }
+            
+            ModelState.Remove("Preco");
+            var precoStr = Request.Form["Preco"];
+            if (decimal.TryParse(precoStr, NumberStyles.Any, CultureInfo.CurrentCulture, out var precoParsed))
+            {
+                item.Preco = precoParsed;
+            }
+            else
+            {
+                ModelState.AddModelError("Preco", "Preço inválido.");
             }
             
             if (ModelState.IsValid) {

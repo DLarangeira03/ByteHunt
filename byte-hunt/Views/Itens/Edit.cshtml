@@ -36,7 +36,9 @@
 
             <div class="mb-3">
                 <label asp-for="Preco" class="form-label"></label>
-                <input asp-for="Preco" class="form-control rounded-pill shadow-sm" />
+                <input type="text" name="Preco"
+                       value="@(Model?.Preco.HasValue == true ? Model.Preco.Value.ToString("0.00", System.Globalization.CultureInfo.CurrentCulture) : "")"
+                       class="form-control rounded-pill shadow-sm" />
                 <span asp-validation-for="Preco" class="text-danger"></span>
             </div>
 

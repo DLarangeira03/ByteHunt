@@ -9,41 +9,49 @@
 @if (!Model.Any()) {
     <p>Você ainda não realizou nenhuma comparação.</p>
 } else {
-    <form asp-action="DeletarHistoricoAll" method="post" class="mb-3">
-        @Html.AntiForgeryToken()
-        <button type="submit" class="btn btn-danger">Apagar Todo o Histórico</button>
-    </form>
+    <div class="d-flex justify-content-end mb-3">
+        <form asp-action="DeletarHistoricoAll" method="post">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-danger">Apagar Todo o Histórico</button>
+        </form>
+    </div>
 
-    <table class="table table-bordered">
-        <thead>
+    <table class="table table-bordered table-striped align-middle shadow-sm rounded">
+        <thead class="table-light">
         <tr>
-            <th>Data</th>
-            <th>Itens</th>
-            <th>Ações</th>
+            <th style="width: 20%;">Data</th>
+            <th style="width: 50%;">Itens Comparados</th>
         </tr>
         </thead>
         <tbody>
-        @foreach (var comp in Model) {
-            <tr>
-                <td>@comp.Data.ToString("dd/MM/yyyy HH:mm")</td>
-                <td>
-                    @foreach (var item in comp.Itens) {
-                        <span class="badge bg-primary">@item.Nome</span>
+        @foreach (var comp in Model)
+        {
+            <tr style="height: 2.5rem;">
+                <td class="text-start ps-3" style="vertical-align: middle;">
+                    @comp.Data.ToString("dd/MM/yyyy HH:mm")
+                </td>
+                <td class="text-start ps-3" style="vertical-align: middle;">
+                    @foreach (var item in comp.Itens)
+                    {
+                        <span class="badge bg-primary me-1">@item.Nome</span>
                     }
                 </td>
-                <td class="d-flex gap-2">
-                    <form asp-action="RunCompare" method="post">
-                        @foreach (var item in comp.Itens) {
-                            <input type="hidden" name="itemNames" value="@item.Nome" />
-                        }
-                        <button type="submit" class="btn btn-sm btn-outline-success">Comparar Novamente</button>
-                    </form>
+                <td class="text-start ps-3" style="vertical-align: middle;">
+                    <div class="d-flex gap-2 flex-wrap">
+                        <form asp-action="RunCompare" method="post">
+                            @foreach (var item in comp.Itens)
+                            {
+                                <input type="hidden" name="itemNames" value="@item.Nome" />
+                            }
+                            <button type="submit" class="btn btn-sm btn-outline-success">Comparar Novamente</button>
+                        </form>
 
-                    <form asp-action="DeletarHistorico" method="post">
-                        @Html.AntiForgeryToken()
-                        <input type="hidden" name="id" value="@comp.Id" />
-                        <button type="submit" class="btn btn-sm btn-outline-danger">Apagar</button>
-                    </form>
+                        <form asp-action="DeletarHistorico" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@comp.Id" />
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Apagar</button>
+                        </form>
+                    </div>
                 </td>
             </tr>
         }

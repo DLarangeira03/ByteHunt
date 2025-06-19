@@ -1,4 +1,7 @@
-﻿@model byte_hunt.Models.Comparador.ItemCompareSelectViewModel
+﻿@using Microsoft.AspNetCore.Identity
+@model byte_hunt.Models.Comparador.ItemCompareSelectViewModel
+@inject SignInManager<Utilizador> SignInManager
+@inject UserManager<Utilizador> UserManager
 
 @{
     ViewData["Title"] = "Comparar Items";
@@ -15,7 +18,7 @@
     <link rel="stylesheet" href="~/css/compareSelect.css" asp-append-version="true"/>
 }
 
-<h2>Selecione os itens para comparar:</h2>
+<h2 style="margin-bottom: 2rem">Selecione os itens para comparar:</h2>
 
 <form asp-action="RunCompare" method="post">
     <div class="d-flex justify-content-center mb-3 flex-wrap gap-2" id="input-container">
@@ -33,9 +36,26 @@
     </div>
 
     <div class="text-center">
-        <button id="submit-btn" type="submit" class="btn btn-primary" disabled>Comparar</button>
+        <button id="submit-btn" type="submit" class="btn btn-primary px-3 py-2" disabled>Comparar <i class="bi bi-arrow-right"></i></button>
+
     </div>
 </form>
+
+@if (SignInManager.IsSignedIn(User)) {
+    <div class="alert alert-info d-flex align-items-center gap-2 mt-3" role="alert">
+        <i class="bi bi-info-circle-fill"></i>
+        As comparações realizadas serão guardadas no seu histórico. 
+        <a asp-action="HistoricoComparacao" class="ms-1">Ver histórico</a>.
+    </div>
+}
+else {
+    <div class="alert alert-info d-flex align-items-center gap-2 mt-3" role="alert">
+        <i class="bi bi-info-circle-fill"></i>
+        Que tal guardar suas comparações em um histórico?
+        <a asp-area="Identity" asp-page="/Account/Login" class="ms-1">Inicie sessão</a> para guardar e consultar suas comparações.
+    </div>
+}
+
 
 @section Scripts {
     <script>

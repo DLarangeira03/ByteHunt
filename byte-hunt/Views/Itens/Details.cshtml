@@ -55,13 +55,17 @@
             var attrs = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(Model.AttrsJson);
             if (attrs != null && attrs.Count > 0)
             {
-                <table class="table table-bordered mt-3">
+                <table class="table table-striped table-bordered align-middle shadow-sm rounded">
                     <tbody>
                     @foreach (var attr in attrs.OrderBy(a => a.Key))
                     {
-                        <tr>
-                            <td>@attr.Key</td>
-                            <td>@attr.Value</td>
+                        <tr style="height: 3rem;">
+                            <th class="bg-light text-start ps-3" style="width: 30%; font-size: 1.15rem; font-weight: 700; vertical-align: middle;">
+                                @attr.Key
+                            </th>
+                            <td class="text-start ps-3" style="font-size: 1.1rem; vertical-align: middle;">
+                                @FormatValue(attr.Key, attr.Value)
+                            </td>
                         </tr>
                     }
                     </tbody>
@@ -74,3 +78,45 @@
         }
     </div>
 </div>
+
+@functions {
+    string FormatValue(string key, string rawValue) {
+        // Handle Sim/Não first
+        if (rawValue.Trim().Equals("Sim", StringComparison.OrdinalIgnoreCase) ||
+            rawValue.Trim().Equals("Não", StringComparison.OrdinalIgnoreCase)) {
+            return rawValue;
+        }
+
+        // Try parse number
+        if (!decimal.TryParse(
+                rawValue.Replace(",", ".").Trim(),
+                System.Globalization.NumberStyles.Number,
+                System.Globalization.CultureInfo.InvariantCulture,
+                out var val))
+            return rawValue;
+
+        return key switch {
+            "Armazenamento" => FormatStorage(val),
+            "Memória RAM" => $"{val:0.#} GB",
+            "Autonomia da Bateria" => $"{val} mAh",
+            "Peso" => $"{val} g",
+            "Câmera" => $"{val} MP",
+            "Ecrã" or "Tamanho do Ecrã" => $"{val:0.#}\"",
+            "Preço" => $"{val:0.00} €",
+            "Tempo de Resposta" => $"{val:0.#} ms",
+            "Taxa de Atualização" => $"{val:0.#} Hz",
+            "Brilho" => $"{val} nits",
+            "Contraste" => $"{val}",
+            "Bluetooth" => $"v{val:0.#}",
+            _ => $"{val:0.#}"
+        };
+    }
+
+    string FormatStorage(decimal gb) {
+        if (gb >= 1024)
+            return $"{gb / 1024:0.#} TB";
+        if (gb < 1)
+            return $"{gb * 1024:0.#} MB";
+        return $"{gb:0.#} GB";
+    }
+}

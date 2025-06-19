@@ -3,37 +3,76 @@
 
 @{
     ViewData["Title"] = "Comparação";
+    <link rel="stylesheet" href="~/css/compare.css" asp-append-version="true"/>
 }
 
 <h2>Comparação</h2>
 
-<table class="table table-bordered text-center">
-    <thead>
-    <tr>
-        <th>Atributo</th>
-        @foreach (var item in Model.Items) {
-            <th>@item.Nome</th>
-        }
-    </tr>
-    </thead>
-    <tbody>
-    @foreach (var row in Model.AttrRows) {
-        <tr>
-            <td><strong>@row.Key</strong></td>
-            @for (int i = 0; i < row.Values.Count; i++) {
-                var css = row.Highlights[i] switch {
-                    HighlightType.Best => "table-success",
-                    HighlightType.Worst => "table-danger",
-                    _ => ""
-                };
-
-                string display = FormatValue(row.Key, row.Values[i]);
-                <td class="@css">@display</td>
+<div class="table-responsive">
+    <table class="table table-bordered align-middle shadow-sm text-center" style="border-collapse: separate; border-spacing: 0 0.75rem;">
+        <tbody>
+        <!-- Foto -->
+        <tr class="info-row" style="height: 150px;">
+            <td class="text-start ps-3 fw-semibold"></td>
+            @foreach (var item in Model.Items)
+            {
+                <td>
+                    <img src="~/images/@(string.IsNullOrEmpty(item.FotoItem) ? "background_byte_hunt.svg" : item.FotoItem)"
+                         alt="Foto de @item.Nome"
+                         style="height: 130px; width: 100%; object-fit: contain;" />
+                </td>
             }
         </tr>
-    }
-    </tbody>
-</table>
+
+        <!-- Nome -->
+        <tr class="info-row">
+            <td class="text-start ps-3 fw-semibold"></td>
+            @foreach (var item in Model.Items)
+            {
+                <td class="fw-bold fs-4">@item.Nome</td>
+            }
+        </tr>
+
+        <!-- Marca -->
+        <tr class="info-row">
+            <td class="text-start ps-3 fw-semibold"></td>
+            @foreach (var item in Model.Items)
+            {
+                <td class="fw-normal fs-5">@item.Marca</td>
+            }
+        </tr>
+
+        <!-- Spacer -->
+        <tr class="info-row">
+            <td colspan="@(Model.Items.Count + 1)" style="height: 1rem;"></td>
+        </tr>
+
+            <!-- Atributos -->
+            @foreach (var row in Model.AttrRows)
+            {
+                <tr style="height: 3.5rem;">
+                    <th class="bg-light text-start ps-3" style="font-size: 1.05rem; font-weight: 600;">
+                        @row.Key
+                    </th>
+                    @for (int i = 0; i < row.Values.Count; i++)
+                    {
+                        var css = row.Highlights[i] switch
+                        {
+                            HighlightType.Best => "table-success",
+                            HighlightType.Worst => "table-danger",
+                            _ => ""
+                        };
+
+                        string display = FormatValue(row.Key, row.Values[i]);
+                        <td class="@css text-start ps-3" style="font-size: 1rem;">
+                            @display
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
 
 @functions {
     string FormatValue(string key, string rawValue) {
@@ -63,6 +102,7 @@
             "Taxa de Atualização" => $"{val:0.#} Hz",
             "Brilho" => $"{val} nits",
             "Contraste" => $"{val}",
+            "Bluetooth" => $"v{val:0.#}",
             _ => $"{val:0.#}"
         };
     }
