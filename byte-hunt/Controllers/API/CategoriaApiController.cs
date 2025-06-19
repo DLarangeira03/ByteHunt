@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using byte_hunt.Data;
 using byte_hunt.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 
 namespace byte_hunt.Controllers.API
@@ -51,7 +52,7 @@ namespace byte_hunt.Controllers.API
         /// </summary>
         /// <returns>Lista de Categorias</returns>
         [HttpGet]
-        [Authorize]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<IEnumerable<Categoria>>> GetCategorias()
         {
             // Retorna todas as categorias com todas as informações para utilizadores autenticados
@@ -66,7 +67,7 @@ namespace byte_hunt.Controllers.API
         /// <param name="id">ID da categoria</param>
         /// <returns>Categoria</returns>
         [HttpGet("{id}")]
-        [Authorize]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<Categoria>> GetCategoria(int id)
         {
             // Procura a categoria pelo ID fornecido
@@ -92,7 +93,7 @@ namespace byte_hunt.Controllers.API
         /// <param name="categoria">Categoria com as novas informações</param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        [Authorize(Roles = "Administrator,Moderator")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator,Moderator")]
         public async Task<IActionResult> PutCategoria(int id, Categoria categoria)
         {
             // Verifica se o ID fornecido corresponde ao ID da categoria
@@ -139,7 +140,7 @@ namespace byte_hunt.Controllers.API
         /// <param name="categoria">Categoria a ser criada</param>
         /// <returns>Nova Categoria</returns>
         [HttpPost]
-        [Authorize(Roles = "Administrator,Moderator")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator,Moderator")]
         public async Task<ActionResult<Categoria>> PostCategoria(Categoria categoria)
         {
             // Adiciona a nova categoria ao contexto
@@ -159,7 +160,7 @@ namespace byte_hunt.Controllers.API
         /// <param name="id">ID da categoria a ser eliminada</param>
         /// <returns></returns>
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator")]
         public async Task<IActionResult> DeleteCategoria(int id)
         {
             // Procura a categoria pelo ID fornecido

@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using byte_hunt.Data;
 using byte_hunt.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 
 namespace byte_hunt.Controllers.API
@@ -29,25 +31,23 @@ namespace byte_hunt.Controllers.API
         /// </summary>
         /// <returns>Lista de comparações</returns>
         [HttpGet]
-        [Authorize]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<IEnumerable<Comparacao>>> GetComparacoes()
         {
             // Obtém o nome do utilizador autenticado e verifica se é Admin ou Mod
-            var userName = User.Identity.Name;
-            // Verifica se o utilizador é Admin ou Mod
-            var isAdmin = User.IsInRole("Administrator");
-            var isMod = User.IsInRole("Moderator");
+            var userIdAtualApi = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var rolesAtualApi = User.FindAll(ClaimTypes.Role).Select(r => r.Value).ToList();
             
             // Cria uma consulta para obter as comparações
             var query = _context.Comparacoes
                 .Include(c => c.Utilizador)
                 .AsQueryable();
             
-            // Se não for Admin ou Mod, filtra as comparações pelo nome do utilizador
-            if (!isAdmin && !isMod)
+            // Verifica se o utilizador é Admin ou Mod
+            if (rolesAtualApi.Count == 1 && rolesAtualApi.Contains("User"))
             {
-                // Filtra as comparações para incluir apenas aquelas feitas pelo utilizador autenticado
-                query = query.Where(c => c.Utilizador.Nome == userName);
+                //  Filtra só as contribuições do utilizador atual
+                query = query.Where(c => c.Utilizador.Id == userIdAtualApi);
             }
             
             // Executa a consulta e obtém a lista de comparações
@@ -78,11 +78,12 @@ namespace byte_hunt.Controllers.API
         /// <param name="id">ID da comparação a obter</param>
         /// <returns>Comparação</returns>
         [HttpGet("{id}")]
-        [Authorize]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<Comparacao>> GetComparacao(int id)
         {
-            // Obtém o nome do utilizador autenticado
-            var userName = User.Identity.Name;
+            // Obtém o nome do utilizador autenticado 
+            var userIdAtualApi = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var rolesAtualApi = User.FindAll(ClaimTypes.Role).Select(r => r.Value).ToList();
             
             // Busca a comparação pelo ID e inclui o utilizador associado
             var comparacao = await _context.Comparacoes.Include(c => c.Utilizador)
@@ -93,16 +94,12 @@ namespace byte_hunt.Controllers.API
                 return NotFound();
             
             // Verifica se o utilizador é Admin ou Mod
-            var isAdmin = User.IsInRole("Administrator");
-            var isMod = User.IsInRole("Moderator");
-            
-            //verifica se é um user normal autenticado
-            if (!isAdmin && !isMod)
+            if (rolesAtualApi.Count == 1 && rolesAtualApi.Contains("User"))
             {
-                //verifica se a comparacao pertence ao utilizador que fez request 
-                if (comparacao.Utilizador.Nome != userName)
+                // Se for um utilizador normal, verifica se a contribuição é do utilizador autenticado
+                if (comparacao.Utilizador.Id != userIdAtualApi)
                     // Se não for do utilizador autenticado, nega acesso
-                    return Forbid();  
+                    return Forbid(); 
             }
             
             // Mapeia as comparações para a nova estrutura de dados de Comparacao
@@ -130,7 +127,7 @@ namespace byte_hunt.Controllers.API
         /// <param name="comparacao">Dados da comparação a atualizar</param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        [Authorize(Roles = "Administrator,Moderator")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator,Moderator")]
         public async Task<IActionResult> PutComparacao(int id, Comparacao comparacao)
         {
             // Verifica se o ID da comparação corresponde ao ID do parâmetro
@@ -176,7 +173,7 @@ namespace byte_hunt.Controllers.API
         /// <param name="comparacao">Dados da comparação a criar</param>
         /// <returns>Nova comparação</returns>
         [HttpPost]
-        [Authorize(Roles = "Administrator,Moderator")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator,Moderator")]
         public async Task<ActionResult<Comparacao>> PostComparacao(Comparacao comparacao)
         {
             // Adiciona a comparação ao contexto
@@ -208,7 +205,7 @@ namespace byte_hunt.Controllers.API
         /// <param name="id"> ID da comparação a eliminar</param>
         /// <returns></returns>
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator")]
         public async Task<IActionResult> DeleteComparacao(int id)
         {
             // Procura a comparação pelo ID

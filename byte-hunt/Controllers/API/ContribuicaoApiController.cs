@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using byte_hunt.Data;
 using byte_hunt.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 
 namespace byte_hunt.Controllers.API
@@ -29,23 +31,22 @@ namespace byte_hunt.Controllers.API
         /// </summary>
         /// <returns>Contribuições</returns>
         [HttpGet]
-        [Authorize]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<IEnumerable<Contribuicao>>> GetContribuicoes()
         {
             // Obtém o nome do utilizador autenticado e verifica se é Admin ou Mod
-            var userName = User.Identity.Name; 
-            var isAdmin = User.IsInRole("Administrator");
-            var isMod = User.IsInRole("Moderator");
+            var userIdAtualApi = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var rolesAtualApi = User.FindAll(ClaimTypes.Role).Select(r => r.Value).ToList();
             
             // Cria a query para obter as contribuições, incluindo os utilizadores e responsáveis
             var query = _context.Contribuicoes.Include(c => c.Utilizador)
                 .Include(c => c.Responsavel).AsQueryable();
             
             // Verifica se o utilizador é Admin ou Mod
-            if (!isAdmin && !isMod)
+            if (rolesAtualApi.Count == 1 && rolesAtualApi.Contains("User"))
             {
-                // Se não for admin ou mod, filtra só as contribuições do utilizador atual
-                query = query.Where(c => c.Utilizador.Nome == userName);
+                //  Filtra só as contribuições do utilizador atual
+                query = query.Where(c => c.Utilizador.Id == userIdAtualApi);
             }
             
             // Converte a query para uma lista de contribuições
@@ -59,16 +60,29 @@ namespace byte_hunt.Controllers.API
                 DetalhesContribuicao = c.DetalhesContribuicao,
                 DataContribuicao = c.DataContribuicao,
                 DataReviewDto = c.DataReview,
-                Utilizador = new UtilizadorDtoContribuicao
-                {
-                    Id = c.Utilizador.Id,
-                    Nome = c.Utilizador != null ? c.Utilizador.Nome : "Sem utilizador"
-                },
-                Responsavel = new UtilizadorDtoContribuicao
-                {
-                    Id = c.Responsavel.Id,
-                    Nome = c.Responsavel != null ? c.Responsavel.Nome : "Sem responsável"
-                }
+                Utilizador = c.Utilizador != null
+                    ? new UtilizadorDtoContribuicao
+                    {
+                        Id = c.Utilizador.Id,
+                        Nome = c.Utilizador.Nome
+                    }
+                    : new UtilizadorDtoContribuicao
+                    {
+                        Id = "0", 
+                        Nome = "Sem utilizador"
+                    },
+
+                Responsavel = c.Responsavel != null
+                    ? new UtilizadorDtoContribuicao
+                    {
+                        Id = c.Responsavel.Id,
+                        Nome = c.Responsavel.Nome
+                    }
+                    : new UtilizadorDtoContribuicao
+                    {
+                        Id = "0", 
+                        Nome = "Sem responsável"
+                    }
             }).ToList();
             
             // Retorna a lista de contribuições 
@@ -83,11 +97,12 @@ namespace byte_hunt.Controllers.API
         /// <param name="id">ID da contribuição</param>
         /// <returns>Contribuição</returns>
         [HttpGet("{id}")]
-        [Authorize]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<Contribuicao>> GetContribuicao(int id)
         {
-            // Obtém o nome do utilizador autenticado
-            var userName = User.Identity.Name;
+            // Obtém o nome do utilizador autenticado 
+            var userIdAtualApi = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var rolesAtualApi = User.FindAll(ClaimTypes.Role).Select(r => r.Value).ToList();
             
             // Busca a contribuição pelo ID, incluindo os utilizadores e responsáveis
             var contribuicao = await _context.Contribuicoes.Include(c => c.Utilizador).Include(c => c.Responsavel)
@@ -98,18 +113,14 @@ namespace byte_hunt.Controllers.API
                 // Se não encontrar a contribuição, retorna NotFound
                 return NotFound();
             
-            // Verifica a Role do utilizador autenticado
-            var isAdmin = User.IsInRole("Administrator");
-            var isMod = User.IsInRole("Moderator");
-            
-            //verifica se é um user normal autenticado
-            if (!isAdmin && !isMod)
+            // Verifica se o utilizador é Admin ou Mod
+            if (rolesAtualApi.Count == 1 && rolesAtualApi.Contains("User"))
             {
-                //verifica se a comparacao pertence ao utilizador que fez request 
-                if (contribuicao.Utilizador.Nome != userName)
-                    return Forbid();  // Se não for do utilizador autenticado, nega acesso
+                // Se for um utilizador normal, verifica se a contribuição é do utilizador autenticado
+                if (contribuicao.Utilizador.Id != userIdAtualApi)
+                    // Se não for do utilizador autenticado, nega acesso
+                    return Forbid(); 
             }
-            
             // Mapeia a contribuição para a nova estrutura ContribuiçãoDto
             var contribuicoesDto = new ContribuicaoDto
             {
@@ -118,16 +129,29 @@ namespace byte_hunt.Controllers.API
                 DetalhesContribuicao = contribuicao.DetalhesContribuicao,
                 DataContribuicao = contribuicao.DataContribuicao,
                 DataReviewDto = contribuicao.DataReview,
-                Utilizador = new UtilizadorDtoContribuicao
-                {
-                    Id = contribuicao.Utilizador.Id,
-                    Nome = contribuicao.Utilizador != null ? contribuicao.Utilizador.Nome : "Sem utilizador"
-                },
-                Responsavel = new UtilizadorDtoContribuicao
-                {
-                    Id = contribuicao.Responsavel.Id,
-                    Nome = contribuicao.Responsavel != null ? contribuicao.Responsavel.Nome : "Sem responsável"
-                }
+                Utilizador = contribuicao.Utilizador != null
+                    ? new UtilizadorDtoContribuicao
+                    {
+                        Id = contribuicao.Utilizador.Id,
+                        Nome = contribuicao.Utilizador.Nome
+                    }
+                    : new UtilizadorDtoContribuicao
+                    {
+                        Id = "0", 
+                        Nome = "Sem utilizador"
+                    },
+
+                Responsavel = contribuicao.Responsavel != null
+                    ? new UtilizadorDtoContribuicao
+                    {
+                        Id = contribuicao.Responsavel.Id,
+                        Nome = contribuicao.Responsavel.Nome
+                    }
+                    : new UtilizadorDtoContribuicao
+                    {
+                        Id = "0", 
+                        Nome = "Sem responsável"
+                    }
             };
             
             // Retorna a contribuição mapeada
@@ -142,7 +166,7 @@ namespace byte_hunt.Controllers.API
         /// <param name="contribuicao">Contribuição a ser atualizada</param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        [Authorize(Roles = "Administrator,Moderator")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator,Moderator")]
         public async Task<IActionResult> PutContribuicao(int id, Contribuicao contribuicao)
         {
             // Verifica se o ID da contribuição fornecido corresponde ao ID do objeto contribuicao
@@ -188,7 +212,7 @@ namespace byte_hunt.Controllers.API
         /// <param name="contribuicao">Contribuição a ser criada</param>
         /// <returns>Nova contribuição</returns>
         [HttpPost]
-        [Authorize(Roles = "Administrator,Moderator")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator,Moderator")]
         public async Task<ActionResult<Contribuicao>> PostContribuicao(Contribuicao contribuicao)
         {
             // Adiciona a nova contribuição ao contexto
@@ -204,16 +228,29 @@ namespace byte_hunt.Controllers.API
                 DetalhesContribuicao = contribuicao.DetalhesContribuicao,
                 DataContribuicao = contribuicao.DataContribuicao,
                 DataReviewDto = contribuicao.DataReview,
-                Utilizador = new UtilizadorDtoContribuicao
-                {
-                    Id = contribuicao.Utilizador.Id,
-                    Nome = contribuicao.Utilizador != null ? contribuicao.Utilizador.Nome : "Sem utilizador"
-                },
-                Responsavel = new UtilizadorDtoContribuicao
-                {
-                    Id = contribuicao.Responsavel.Id,
-                    Nome = contribuicao.Responsavel != null ? contribuicao.Responsavel.Nome : "Sem responsável"
-                }
+                Utilizador = contribuicao.Utilizador != null
+                    ? new UtilizadorDtoContribuicao
+                    {
+                        Id = contribuicao.Utilizador.Id,
+                        Nome = contribuicao.Utilizador.Nome
+                    }
+                    : new UtilizadorDtoContribuicao
+                    {
+                        Id = "0", 
+                        Nome = "Sem utilizador"
+                    },
+
+                Responsavel = contribuicao.Responsavel != null
+                    ? new UtilizadorDtoContribuicao
+                    {
+                        Id = contribuicao.Responsavel.Id,
+                        Nome = contribuicao.Responsavel.Nome
+                    }
+                    : new UtilizadorDtoContribuicao
+                    {
+                        Id = "0", 
+                        Nome = "Sem responsável"
+                    }
             };
             
             // Retorna a nova contribuição criada 
@@ -227,7 +264,7 @@ namespace byte_hunt.Controllers.API
         /// <param name="id">ID da contribuição a ser eliminada</param>
         /// <returns></returns>
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator")]
         public async Task<IActionResult> DeleteContribuicao(int id)
         {
             // Busca a contribuição pelo ID

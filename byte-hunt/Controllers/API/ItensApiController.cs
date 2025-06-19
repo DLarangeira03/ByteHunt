@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using byte_hunt.Data;
 using byte_hunt.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 
 namespace byte_hunt.Controllers.API
@@ -53,7 +54,7 @@ namespace byte_hunt.Controllers.API
         /// </summary>
         /// <returns>Lista de Itens</returns>
         [HttpGet]
-        [Authorize]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<IEnumerable<Item>>> GetItens()
         {
             //Retorna uma lista com todos os itens e todas as suas informações
@@ -68,7 +69,7 @@ namespace byte_hunt.Controllers.API
         /// <param id">ID do item a obter</param>
         /// <returns>Item</returns>
         [HttpGet("{id}")]
-        [Authorize]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<Item>> GetItem(int id)
         {
             //Identifica o item pretendido por ID
@@ -93,7 +94,7 @@ namespace byte_hunt.Controllers.API
         /// <param name="id">ID do item a editar</param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        [Authorize(Roles = "Administrator,Moderator")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator,Moderator")]
         public async Task<IActionResult> PutItem(int id, Item item)
         {
             //Verfica se o ID do produto que pretende editar é igual ao que o utilizador pretende editar 
@@ -139,7 +140,7 @@ namespace byte_hunt.Controllers.API
         /// <param name="item">Item a criar</param>
         /// <returns>Novo Item</returns>
         [HttpPost]
-        [Authorize(Roles = "Administrator,Moderator")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator,Moderator")]
         public async Task<ActionResult<Item>> PostItem(Item item)
         {
             //Adiciona o novo item ao contexto da base de dados
@@ -159,7 +160,7 @@ namespace byte_hunt.Controllers.API
         /// <param name="id">ID do item a eliminar</param>
         /// <returns></returns>
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator")]
         public async Task<IActionResult> DeleteItem(int id)
         {
             //Procura o item na base de dados pelo ID

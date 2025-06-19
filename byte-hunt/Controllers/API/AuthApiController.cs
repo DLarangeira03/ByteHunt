@@ -31,6 +31,7 @@ public class AuthController : ControllerBase
     {
         //procura o utilizador pelo email
         var user = await _userManager.FindByEmailAsync(dto.Email);
+        
         //verifica se o utilizador existe e se a password está correta
         if (user != null && await _userManager.CheckPasswordAsync(user, dto.Password))
         {
