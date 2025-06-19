@@ -20,12 +20,21 @@ namespace byte_hunt.Controllers {
         }
 
         // GET: Itens
+        /// <summary>
+        /// Lista todos os itens, com suporte a pesquisa por nome, marca ou categoria e paginação.
+        /// </summary>
+        /// <param name="searchTerm">Termo de pesquisa para filtrar os itens.</param>
+        /// <param name="categoriaId">ID da categoria para filtrar os itens.</param>
+        /// <param name="pageNumber">Número da página atual.</param>
+        /// <param name="pageSize">Quantidade de itens por página.</param>
+        /// <returns>View com a lista de itens filtrados e paginados.</returns>
         public async Task<IActionResult> Index(string searchTerm, int? categoriaId, int pageNumber = 1,
             int pageSize = 9) {
             var query = _context.Itens.Include(i => i.Categoria).AsQueryable();
 
             if (!string.IsNullOrEmpty(searchTerm)) {
                 searchTerm = searchTerm.ToLower();
+                // Filtra os itens com base na string de pesquisa
                 query = query.Where(i =>
                     i.Nome.ToLower().Contains(searchTerm) ||
                     i.Marca.ToLower().Contains(searchTerm) ||
@@ -35,22 +44,27 @@ namespace byte_hunt.Controllers {
             if (categoriaId.HasValue && categoriaId.Value > 0) {
                 query = query.Where(i => i.CategoriaId == categoriaId.Value);
             }
-
+            
+            // Conta o total de itens que correspondem aos critérios de pesquisa
             int totalItems = await query.CountAsync();
-
+            
+            // Pagina os resultados com base no número da página e no tamanho da página
             var itens = await query
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
-
+            
+            // Configura os dados de paginação na ViewData
             ViewData["CurrentPage"] = pageNumber;
             ViewData["PageSize"] = pageSize;
-            ViewData["TotalItems"] = totalItems;
-
-            ViewData["SearchTerm"] = searchTerm ?? "";
+            ViewData["TotalPages"] = (int)Math.Ceiling((double)totalItems / pageSize);
+            
+            // Configura os dados de pesquisa na ViewData
+            ViewData["SearchTerm"] = searchTerm ;
             ViewData["CategoriaId"] = categoriaId ?? 0;
             ViewData["Categorias"] = new SelectList(await _context.Categorias.ToListAsync(), "Id", "Nome");
-
+            
+            // Retorna a View com a lista de itens filtrados e paginados
             return View(itens);
         }
 
@@ -59,26 +73,34 @@ namespace byte_hunt.Controllers {
             if (id == null) {
                 return NotFound();
             }
-
+            
+            // Procurar o item pelo ID, incluindo a categoria associada
             var item = await _context.Itens
                 .Include(i => i.Categoria)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (item == null) {
                 return NotFound();
             }
-
+            
+            // Retorna a View com os detalhes do item
             return View(item);
         }
 
         // GET: Itens/Create
         public IActionResult Create() {
             ViewData["CategoriaId"] = new SelectList(_context.Categorias, "Id", "Nome");
+            
+            // Retorna a View para criação de um novo item
             return View();
         }
 
         // POST: Itens/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        /// <summary>
+        /// Cria um novo item com os dados fornecidos.
+        /// </summary>
+        /// <param name="item">Objeto Item com os dados do novo item.</param>
+        /// <param name="imagem">Arquivo de imagem do item.</param>
+        /// <returns>Redireciona para a lista de itens se bem-sucedido, senão retorna a view de criação.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Nome,Marca,Descricao,CategoriaId,AttrsJson")] Item item,
@@ -124,13 +146,18 @@ namespace byte_hunt.Controllers {
                     Console.WriteLine("image  null");
                     item.FotoItem = string.Empty;
                 }
-
+                
+                // Adiciona o novo item ao contexto e salva as alterações
                 _context.Add(item);
+                // Salva as alterações no contexto
                 await _context.SaveChangesAsync();
+                // Redireciona para a ação Index após a criação bem-sucedida
                 return RedirectToAction(nameof(Index));
             }
-
+            
+            // Se o ModelState não for válido, preenche o ViewData com a lista de categorias para o dropdown
             ViewData["CategoriaId"] = new SelectList(_context.Categorias, "Id", "Nome", item.CategoriaId);
+            // Retorna a View de criação com o item atual
             return View(item);
         }
 
@@ -139,19 +166,28 @@ namespace byte_hunt.Controllers {
             if (id == null) {
                 return NotFound();
             }
-
+            
+            // Procura o item pelo ID
             var item = await _context.Itens.FindAsync(id);
             if (item == null) {
                 return NotFound();
             }
-
+            
+            // Preenche o ViewData com a lista de categorias para o dropdown
             ViewData["CategoriaId"] = new SelectList(_context.Categorias, "Id", "Nome", item.CategoriaId);
+            
+            // Retorna a View de edição com o item encontrado
             return View(item);
         }
 
         // POST: Itens/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        /// <summary>
+        ///  Edita um item existente com os dados fornecidos.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="item"></param>
+        /// <param name="imagem"></param>
+        /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id,
@@ -159,7 +195,7 @@ namespace byte_hunt.Controllers {
             if (id != item.Id) {
                 return NotFound();
             }
-
+            
             // Obtem o item original da base de dados
             var itemExistente = await _context.Itens.AsNoTracking().FirstOrDefaultAsync(i => i.Id == id);
             if (itemExistente == null) {
@@ -205,9 +241,12 @@ namespace byte_hunt.Controllers {
                         // Mantém a imagem anterior
                         item.FotoItem = itemExistente.FotoItem;
                     }
-
+                    
+                    // Atualiza o item no contexto
                     _context.Update(item);
+                    // Salva as alterações no contexto
                     await _context.SaveChangesAsync();
+                    // Redireciona para a ação Index após a edição bem-sucedida
                     return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException) {
@@ -219,8 +258,10 @@ namespace byte_hunt.Controllers {
                     }
                 }
             }
-
+            
+            // Se o ModelState não for válido, preenche o ViewData com a lista de categorias para o dropdown
             ViewData["CategoriaId"] = new SelectList(_context.Categorias, "Id", "Nome", item.CategoriaId);
+            // Retorna a View de edição com o item atualizado
             return View(item);
         }
 
@@ -229,7 +270,8 @@ namespace byte_hunt.Controllers {
             if (id == null) {
                 return NotFound();
             }
-
+            
+            // Procura o item pelo ID, incluindo a categoria associada
             var item = await _context.Itens
                 .Include(i => i.Categoria)
                 .FirstOrDefaultAsync(m => m.Id == id);

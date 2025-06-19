@@ -7,12 +7,11 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" href="~/css/itens_style.css" asp-append-version="true"/>
 
-    int currentPage = ViewData["CurrentPage"] != null ? (int)ViewData["CurrentPage"] : 1;
-    int pageSize = ViewData["PageSize"] != null ? (int)ViewData["PageSize"] : 9;
-    int totalItems = ViewData["TotalItems"] != null ? (int)ViewData["TotalItems"] : 0;
-    int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+    var currentPage = (int)ViewData["CurrentPage"];
+    var pageSize = (int)ViewData["PageSize"];
+    var totalPages = (int)ViewData["TotalPages"];
 
-    string currentSearch = ViewData["SearchTerm"] as string ?? "";
+    var SearchTerm = ViewData["SearchTerm"] as string ;
 
     int categoriaSelecionada = 0;
     var categorias = (SelectList)ViewData["Categorias"];
@@ -30,8 +29,8 @@
             <div class="d-flex justify-content-between align-items-start mb-4" style="gap: 1rem;">
                 <form class="d-flex align-items-center" method="get" asp-action="Index" style="flex-shrink: 0;">
                     <input class="form-control rounded-pill shadow-sm"
-                           type="search" name="searchTerm" placeholder="Pesquisar por nome, marca ou categoria..."
-                           value="@currentSearch" aria-label="Search" style="width: 500px;"/>
+                           type="search" name="SearchTerm" placeholder="Pesquisar por nome, marca ou categoria..."
+                           value="@SearchTerm" aria-label="Search" style="width: 500px;"/>
                     <input type="hidden" name="categoriaId" value="@categoriaSelecionada"/>
                     <button class="btn btn-dark ms-2 rounded-pill px-4 shadow-sm" type="submit"
                             style="white-space: nowrap;">
@@ -50,7 +49,7 @@
                             style="min-width: 180px;">
                             <li>
                                 <a class="dropdown-item @(categoriaSelecionada == 0 ? "active" : "")"
-                                   href="@Url.Action("Index", new { searchTerm = currentSearch, categoriaId = 0 })">
+                                   href="@Url.Action("Index", new { searchTerm = @SearchTerm, categoriaId = 0 })">
                                     Todas Categorias
                                 </a>
                             </li>
@@ -58,7 +57,7 @@
                                 var catId = int.Parse(categoria.Value);
                                 <li>
                                     <a class="dropdown-item @(catId == categoriaSelecionada ? "active" : "")"
-                                       href="@Url.Action("Index", new { searchTerm = currentSearch, categoriaId = catId })">
+                                       href="@Url.Action("Index", new { searchTerm = @SearchTerm, categoriaId = catId })">
                                         @categoria.Text
                                     </a>
                                 </li>
@@ -82,13 +81,16 @@
                     <div class="card h-100 shadow-sm">
                         @if (!string.IsNullOrEmpty(item.FotoItem)) {
                             <img src="~/itens_Imagens/@item.FotoItem" class="card-img-top" alt="@item.Nome"
-                                 style="height: 200px; width: 100%; object-fit: contain;"/>
+                                 style="height: 200px; width: 100%; object-fit: contain; border: 1px solid #333; border-radius: 5px;"
+                                 onerror="this.onerror=null; this.src='/images/no_image.jpg';"
+                            />
                         }
-                        else {
-                            <img src="~/images/background_byte_hunt.svg "
+                        else
+                        {
+                            <img src="~/images/no_image.jpg"
                                  alt="Imagem do item"
-                                 class="img-fluid rounded" style="max-height: 200px;"/>
-                        }
+                                 class="img-fluid rounded" style="height: 200px; width: 100%; object-fit: contain; border: 1px solid #333; border-radius: 5px;"/>
+                                                }
 
                         <div class="card-body d-flex flex-row justify-content-between">
                             <div>
@@ -134,13 +136,20 @@
                     @if (currentPage != 1) {
                         <li class="page-item @(currentPage == 1 ? "disabled" : "")">
                             <a class="page-link bg-dark text-white border-dark" asp-action="Index"
-                               asp-route-pageNumber="1" asp-route-pageSize="@pageSize" aria-label="Previous">
+                               asp-route-pageNumber="1" 
+                               asp-route-pageSize="@pageSize" 
+                               asp-route-searchTerm="@SearchTerm"
+                               asp-route-categoriaId="@categoriaSelecionada"
+                               aria-label="Previous">
                                 <span aria-hidden="true"><i class="bi bi-chevron-double-left"></i></span>
                             </a>
                         </li>
                         <li class="page-item @(currentPage == 1 ? "disabled" : "")">
                             <a class="page-link bg-dark text-white border-dark" asp-action="Index"
-                               asp-route-pageNumber="@(currentPage - 1)" asp-route-pageSize="@pageSize"
+                               asp-route-pageNumber="@(currentPage - 1)" 
+                               asp-route-pageSize="@pageSize"
+                               asp-route-searchTerm="@SearchTerm"
+                               asp-route-categoriaId="@categoriaSelecionada"
                                aria-label="Previous">
                                 <span aria-hidden="true"><i class="bi bi-chevron-left"></i></span>
                             </a>
@@ -153,7 +162,9 @@
                                 <a class="page-link @(i == currentPage ? "bg-black text-white border-dark" : "bg-dark text-white border-dark")"
                                    asp-action="Index"
                                    asp-route-pageNumber="@i"
-                                   asp-route-pageSize="@pageSize">
+                                   asp-route-pageSize="@pageSize"
+                                   asp-route-searchTerm="@SearchTerm"
+                                   asp-route-categoriaId="@categoriaSelecionada">
                                     @i
                                 </a>
                             </li>
@@ -165,7 +176,9 @@
                                 <a class="page-link bg-dark text-white border-dark"
                                    asp-action="Index"
                                    asp-route-pageNumber="@(currentPage - 1)"
-                                   asp-route-pageSize="@pageSize">
+                                   asp-route-pageSize="@pageSize"
+                                   asp-route-searchTerm="@SearchTerm"
+                                   asp-route-categoriaId="@categoriaSelecionada">
                                     @(currentPage - 1)
                                 </a>
                             </li>
@@ -175,34 +188,66 @@
                             <a class="page-link bg-black text-white border-dark"
                                asp-action="Index"
                                asp-route-pageNumber="@currentPage"
-                               asp-route-pageSize="@pageSize">
+                               asp-route-pageSize="@pageSize"
+                               asp-route-searchTerm="@SearchTerm"
+                               asp-route-categoriaId="@categoriaSelecionada">
                                 @currentPage
                             </a>
                         </li>
-                        @if (currentPage != totalPages) {
+                        
+                        @if (currentPage != totalPages)
+                        {
                             <li class="page-item active">
                                 <a class="page-link bg-dark text-white border-dark"
                                    asp-action="Index"
                                    asp-route-pageNumber="@(currentPage + 1)"
-                                   asp-route-pageSize="@pageSize">
+                                   asp-route-pageSize="@pageSize"
+                                   asp-route-searchTerm="@SearchTerm"
+                                   asp-route-categoriaId="@categoriaSelecionada">
                                     @(currentPage + 1)
                                 </a>
                             </li>
                         }
+                        
+                        @if (currentPage != totalPages && currentPage != totalPages - 1)
+                        {
+                            <li class="page-item ">
+                                <a class="page-link bg-dark text-white border-dark">...</a>
+                            </li>
+                            <li class="page-item active">
+                                <a class="page-link bg-dark text-white border-dark"
+                                   asp-action="Index"
+                                   asp-route-pageNumber="@(totalPages)"
+                                   asp-route-pageSize="@pageSize"
+                                   asp-route-searchTerm="@SearchTerm"
+                                   asp-route-categoriaId="@categoriaSelecionada">
+                                    @(totalPages)
+                                </a>
+                            </li>
+                        }
+                        
                     }
 
 
-                    @if (currentPage != totalPages) {
+                    @if (currentPage != totalPages)
+                    {
                         <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
                             <a class="page-link bg-dark text-white border-dark" asp-action="Index"
-                               asp-route-pageNumber="@(currentPage + 1)" asp-route-pageSize="@pageSize"
+                               asp-route-pageNumber="@(currentPage + 1)" 
+                               asp-route-pageSize="@pageSize"
+                               asp-route-searchTerm="@SearchTerm"
+                               asp-route-categoriaId="@categoriaSelecionada"
                                aria-label="Next">
                                 <span aria-hidden="true"><i class="bi bi-chevron-right"></i></span>
                             </a>
                         </li>
                         <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
                             <a class="page-link bg-dark text-white border-dark" asp-action="Index"
-                               asp-route-pageNumber="@totalPages" asp-route-pageSize="@pageSize" aria-label="Previous">
+                               asp-route-pageNumber="@totalPages" 
+                               asp-route-pageSize="@pageSize" 
+                               asp-route-searchTerm="@SearchTerm"
+                               asp-route-categoriaId="@categoriaSelecionada"
+                               aria-label="Previous">
                                 <span aria-hidden="true"><i class="bi bi-chevron-double-right"></i></span>
                             </a>
                         </li>
@@ -210,7 +255,8 @@
                 </ul>
             </nav>
         }
-        else {
+        else
+        {
             <div class="alert alert-info text-center my-4" role="alert" style="font-size: 1.2rem;">Não existem itens
                 para serem apresentados.
             </div>

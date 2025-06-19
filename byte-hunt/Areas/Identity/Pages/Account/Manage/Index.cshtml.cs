@@ -38,7 +38,8 @@ namespace byte_hunt.Areas.Identity.Pages.Account.Manage
         /// </summary>
         [TempData]
         public string StatusMessage { get; set; }
-
+        
+        
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
@@ -59,7 +60,11 @@ namespace byte_hunt.Areas.Identity.Pages.Account.Manage
             [Phone]
             [Display(Name = "Nº Telemóvel")]
             public string PhoneNumber { get; set; }
+            
+            public string? FotoPerfilNova { get; set; }
         }
+        
+       
 
         private async Task LoadAsync(Utilizador user)
         {
@@ -70,8 +75,10 @@ namespace byte_hunt.Areas.Identity.Pages.Account.Manage
 
             Input = new InputModel
             {
-                PhoneNumber = phoneNumber
+                PhoneNumber = phoneNumber ,
+                FotoPerfilNova = null
             };
+            
         }
 
         public async Task<IActionResult> OnGetAsync()
@@ -114,6 +121,121 @@ namespace byte_hunt.Areas.Identity.Pages.Account.Manage
             await _signInManager.RefreshSignInAsync(user);
             StatusMessage = "Seus dados foram atualizados com sucesso!";
             return RedirectToPage();
+        }
+        
+        [BindProperty]
+        public IFormFile FotoPerfil { get; set; }
+
+        public async Task<IActionResult> OnPostUploadFotoPerfilAsync()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return NotFound();
+
+            if (FotoPerfil != null)
+            {
+                var caminhoAntigo = user.FotoPerfil;
+
+                var nomeImagem = await GuardarImagemAsync(FotoPerfil);
+                if (nomeImagem != null)
+                {
+                    user.FotoPerfil = "/fotosPerfil/" + nomeImagem;
+
+                    // Apagar imagem antiga (se existir)
+                    if (!string.IsNullOrEmpty(caminhoAntigo))
+                    {
+                        try
+                        {
+                            var caminhoFisico = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", caminhoAntigo.TrimStart('/').Replace("/", Path.DirectorySeparatorChar.ToString()));
+                            if (System.IO.File.Exists(caminhoFisico))
+                            {
+                                System.IO.File.Delete(caminhoFisico);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            // Loga exceção se quiseres, mas não impede o upload
+                            Console.WriteLine($"Erro ao apagar imagem antiga: {ex.Message}");
+                        }
+                    }
+                }
+                else
+                {
+                    user.FotoPerfil = string.Empty;
+                }
+
+                await _userManager.UpdateAsync(user);
+            }
+            else
+            {
+                Console.WriteLine("Imagem nula");
+                user.FotoPerfil = string.Empty;
+                await _userManager.UpdateAsync(user);
+            }
+
+            return RedirectToPage();
+        }
+        
+        public async Task<IActionResult> OnPostRemoverFotoPerfilAsync()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return NotFound();
+
+            var caminhoImagem = user.FotoPerfil;
+            
+            Console.WriteLine(caminhoImagem + "CAMINHO DA IMAGEM!!!!");
+            
+            if (!string.IsNullOrEmpty(caminhoImagem))
+            {
+                try
+                {
+                    var caminhoFisico = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", caminhoImagem.TrimStart('/').Replace("/", Path.DirectorySeparatorChar.ToString()));
+                    if (System.IO.File.Exists(caminhoFisico))
+                    {
+                        System.IO.File.Delete(caminhoFisico);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Erro ao apagar imagem antiga: {ex.Message}");
+                }
+
+                // Limpar o caminho da imagem do user
+                user.FotoPerfil = string.Empty;
+                await _userManager.UpdateAsync(user);
+            }
+
+            return RedirectToPage();
+        }
+
+
+        private async Task<string> GuardarImagemAsync(IFormFile ficheiro)
+        {
+            if (ficheiro != null && ficheiro.Length > 0)
+            {
+                var extensao = Path.GetExtension(ficheiro.FileName).ToLower();
+                var permitidas = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+
+                if (!permitidas.Contains(extensao)) return null;
+                if (!ficheiro.ContentType.StartsWith("image/")) return null;
+                if (ficheiro.Length > 5 * 1024 * 1024) return null; // 5MB
+
+                var nomeUnico = Guid.NewGuid().ToString() + extensao;
+                var pastaUploads = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "fotosPerfil");
+
+                if (!Directory.Exists(pastaUploads))
+                {
+                    Directory.CreateDirectory(pastaUploads);
+                }
+
+                var caminho = Path.Combine(pastaUploads, nomeUnico);
+
+                using var stream = new FileStream(caminho, FileMode.Create);
+                await ficheiro.CopyToAsync(stream);
+
+                return nomeUnico;
+            }
+
+            return null;
         }
     }
 }

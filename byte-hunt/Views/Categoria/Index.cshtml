@@ -8,6 +8,7 @@
 
 
     var currentPage = (int)ViewData["CurrentPage"];
+    var pageSize = (int)ViewData["PageSize"];
     var totalPages = (int)ViewData["TotalPages"];
     var searchString = ViewData["SearchString"] as string;
 }
@@ -64,14 +65,19 @@
             }
             </tbody>
         </table>
-        
-        @if (totalPages > 1)
+
+        @if (totalPages > 0)
         {
-            <nav aria-label="Page navigation" class="mt-4">
-                <ul class="pagination justify-content-center">
+        <nav aria-label="Page navigation" class="mt-4">
+            <ul class="pagination justify-content-center">
+                @if (currentPage != 1)
+                {
                     <li class="page-item @(currentPage == 1 ? "disabled" : "")">
                         <a class="page-link bg-dark text-white border-dark" asp-action="Index"
-                           asp-route-page="1" asp-route-pageSize="10" aria-label="Previous">
+                           asp-route-page="1"
+                           asp-route-pageSize="@pageSize"
+                           asp-route-searchString="@searchString"
+                           aria-label="Previous">
                             <span aria-hidden="true"><i class="bi bi-chevron-double-left"></i></span>
                         </a>
                     </li>
@@ -79,79 +85,106 @@
                         <a class="page-link bg-dark text-white border-dark"
                            asp-action="Index"
                            asp-route-page="@(currentPage - 1)"
+                           asp-route-pageSize="@pageSize"
                            asp-route-searchString="@searchString"
                            aria-label="Previous">
                             <span aria-hidden="true"><i class="bi bi-chevron-left"></i></span>
                         </a>
                     </li>
+                }
+                
 
-                    @if (totalPages < 10)
-                    {
-                        @for (int i = 1; i <= totalPages; i++)
-                        {
-                            <li class="page-item @(i == currentPage ? "active" : "")">
-                                <a class="page-link @(i == currentPage ? "bg-black text-white border-dark" : "bg-dark text-white border-dark")"
-                                   asp-action="Index"
-                                   asp-route-page="@i"
-                                   asp-route-searchString="@searchString">
-                                    @i
-                                </a>
-                            </li>
-                        }
-                    }
-                    else
-                    {
-                        @if (currentPage != 1)
-                        {
-                            <li class="page-item active">
-                                <a class="page-link bg-dark text-white border-dark"
-                                   asp-action="Index"
-                                   asp-route-page="@(currentPage - 1)"
-                                   asp-route-pageSize="10">
-                                    @(currentPage - 1)
-                                </a>
-                            </li>
-                        }
 
-                        <li class="page-item active">
-                            <a class="page-link bg-black text-white border-dark"
+                @if (totalPages < 5)
+                {
+                    @for (int i = 1; i <= totalPages; i++)
+                    {
+                        <li class="page-item @(i == currentPage ? "active" : "")">
+                            <a class="page-link @(i == currentPage ? "bg-black text-white border-dark" : "bg-dark text-white border-dark")"
                                asp-action="Index"
-                               asp-route-page="@currentPage"
-                               asp-route-pageSize="10">
-                                @currentPage
+                               asp-route-page="@i"
+                               asp-route-pageSize="@pageSize"
+                               asp-route-searchString="@searchString">
+                                @i
                             </a>
                         </li>
-                        <li class="page-item active">...</li>
-                        @if (currentPage != totalPages)
-                        {
-                            <li class="page-item active">
-                                <a class="page-link bg-dark text-white border-dark"
-                                   asp-action="Index"
-                                   asp-route-page="@(currentPage + 1)"
-                                   asp-route-pageSize="10">
-                                    @(currentPage + 1)
-                                </a>
-                            </li>
-                        }
                     }
-                    
-                    <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
-                        <a class="page-link bg-dark text-white border-dark"
+                }
+                else
+                {
+                    @if (currentPage != 1)
+                    {
+                        <li class="page-item active">
+                            <a class="page-link bg-dark text-white border-dark"
+                               asp-action="Index"
+                               asp-route-page="@(currentPage - 1)"
+                               asp-route-pageSize="@pageSize"
+                               asp-route-searchString="@searchString">
+                                @(currentPage - 1)
+                            </a>
+                        </li>
+                    }
+
+                    <li class="page-item active">
+                        <a class="page-link bg-black text-white border-dark"
                            asp-action="Index"
-                           asp-route-page="@(currentPage + 1)"
-                           asp-route-searchString="@searchString"
-                           aria-label="Next">
-                            <span aria-hidden="true"><i class="bi bi-chevron-right"></i></span>
+                           asp-route-page="@currentPage"
+                           asp-route-pageSize="@pageSize"
+                           asp-route-searchString="@searchString">
+                            @currentPage
                         </a>
                     </li>
-                    <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
-                        <a class="page-link bg-dark text-white border-dark" asp-action="Index"
-                           asp-route-page="@totalPages" asp-route-pageSize="10" aria-label="Previous">
-                            <span aria-hidden="true"><i class="bi bi-chevron-double-right"></i></span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
+
+                    @if (currentPage != totalPages)
+                    {
+                        <li class="page-item active">
+                            <a class="page-link bg-dark text-white border-dark"
+                               asp-action="Index"
+                               asp-route-page="@(currentPage + 1)"
+                               asp-route-pageSize="@pageSize"
+                               asp-route-searchString="@searchString">
+                                @(currentPage + 1)
+                            </a>
+                        </li>
+                    }
+
+                    @if (currentPage != totalPages && currentPage != totalPages - 1)
+                    {
+                        <li class="page-item ">
+                            <a class="page-link bg-dark text-white border-dark">...</a>
+                        </li>
+                        <li class="page-item active">
+                            <a class="page-link bg-dark text-white border-dark"
+                               asp-action="Index"
+                               asp-route-page="@(totalPages)"
+                               asp-route-pageSize="@pageSize"
+                               asp-route-searchString="@searchString">
+                                @(totalPages)
+                            </a>
+                        </li>
+                    }
+                }
+
+                <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                    <a class="page-link bg-dark text-white border-dark"
+                       asp-action="Index"
+                       asp-route-page="@(currentPage + 1)"
+                       asp-route-searchString="@searchString"
+                       aria-label="Next">
+                        <span aria-hidden="true"><i class="bi bi-chevron-right"></i></span>
+                    </a>
+                </li>
+                <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                    <a class="page-link bg-dark text-white border-dark" asp-action="Index"
+                       asp-route-page="@totalPages"
+                       asp-route-pageSize="@pageSize"
+                       asp-route-searchString="@searchString"
+                       aria-label="Previous">
+                        <span aria-hidden="true"><i class="bi bi-chevron-double-right"></i></span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
         }
     }
 </div>
