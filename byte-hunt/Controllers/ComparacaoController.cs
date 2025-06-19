@@ -141,13 +141,15 @@ namespace byte_hunt.Controllers
                 List<HighlightType> highlights;
 
                 highlights = new List<HighlightType>(new HighlightType[values.Count]);
-
+                
+                // Filtra os índices dos valores válidos (diferentes de "---")
                 var validIndices = values
                     .Select((v, idx) => (v, idx))
                     .Where(t => t.v != "---")
                     .Select(t => t.idx)
                     .ToList();
-
+                
+                // Se houver valores válidos, compara-os com a regra
                 if (validIndices.Count > 0) {
                     var validValues = validIndices.Select(idx => values[idx]).ToList();
                     var partialHighlights = AttributeComparer.Compare(validValues, rule);
