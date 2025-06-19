@@ -13,7 +13,7 @@
 
 
 
-<div class="container py-5">
+<div class="container py-4">
     <div class="produto-card row g-0">
         <div class="col-md-6">
             @if (!string.IsNullOrEmpty(Model.FotoItem))
@@ -48,8 +48,29 @@
             </div>
         </div>
     </div>
-    <div class="produto-card row g-0 mt-5">
-        <h1 class=" w-100 mb-4">Especificações</h1>
-        <h2>ola estou no h2 - Andre Json</h2>
+    <div class="produto-card row g-0 mt-5" style="padding: 1rem; padding-bottom: 4rem">
+        <h2 class=" w-100 mb-4">Especificações</h2>
+        @if (!string.IsNullOrWhiteSpace(Model.AttrsJson))
+        {
+            var attrs = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(Model.AttrsJson);
+            if (attrs != null && attrs.Count > 0)
+            {
+                <table class="table table-bordered mt-3">
+                    <tbody>
+                    @foreach (var attr in attrs.OrderBy(a => a.Key))
+                    {
+                        <tr>
+                            <td>@attr.Key</td>
+                            <td>@attr.Value</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            }
+        }
+        else
+        {
+            <h5 class="text-muted">Por enquanto não temos mais informações sobre este produto...</h5>
+        }
     </div>
 </div>

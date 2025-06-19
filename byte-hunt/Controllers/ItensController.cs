@@ -84,12 +84,13 @@ namespace byte_hunt.Controllers {
             IFormFile imagem) {
             ModelState.Remove("imagem");
 
-            //validacao json
+            // validacao json
             try
             {
                 if (!string.IsNullOrWhiteSpace(item.AttrsJson))
                 {
-                    JsonDocument.Parse(item.AttrsJson);
+                    using var doc = JsonDocument.Parse(item.AttrsJson); // excecao se invalido
+                    item.AttrsJson = JsonSerializer.Serialize(doc.RootElement); // minifica
                 }
             }
             catch (JsonException)
@@ -154,17 +155,21 @@ namespace byte_hunt.Controllers {
             }
 
             ModelState.Remove("imagem");
-
+            
             // validacao json
-            try {
-                if (!string.IsNullOrWhiteSpace(item.AttrsJson)) {
-                    JsonDocument.Parse(item.AttrsJson); // excecao se invalido
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(item.AttrsJson))
+                {
+                    using var doc = JsonDocument.Parse(item.AttrsJson); // excecao se invalido
+                    item.AttrsJson = JsonSerializer.Serialize(doc.RootElement); // minifica
                 }
             }
-            catch (JsonException) {
+            catch (JsonException)
+            {
                 ModelState.AddModelError("AttrsJson", "O conteúdo não é um JSON válido.");
             }
-
+            
             if (ModelState.IsValid) {
                 try {
                     if (imagem != null && imagem.Length > 0) {

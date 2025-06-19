@@ -58,7 +58,7 @@
                 </small>
                 <textarea asp-for="AttrsJson" class="form-control" rows="6"></textarea>
                 <span asp-validation-for="AttrsJson" class="text-danger"></span>
-                
+                <button type="button" class="btn btn-secondary mt-2" onclick="formatJson()">Formatar JSON</button>
             </div>
 
             <button type="submit" class="btn btn-dark rounded-pill px-5 shadow-sm mt-3">
@@ -71,3 +71,19 @@
         </form>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        function formatJson() {
+            const jsonField = document.querySelector('[name="AttrsJson"]');
+            try {
+                const parsed = JSON.parse(jsonField.value);
+                jsonField.value = JSON.stringify(parsed, null, 4); //4 espacos para ident
+            } catch {
+                alert("JSON inválido — não foi possível formatar.");
+            }
+        }
+    </script>
+
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}
