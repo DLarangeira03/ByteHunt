@@ -13,21 +13,21 @@
 
 <div class="container pp-container">
     <div class="container my-5">
-        <h1 class="text-center mb-5">Desenvolvedores</h1>
+        <h1 class="text-center mb-5">Desenvolvedores:</h1>
 
         <div class="row text-center mb-5">
             <div class="col-md-6 mb-4">
-                <img src="~/devFotos/andre.jpg" alt="Foto Dev 1" class="rounded-circle dev-foto" />
+                <img src="~/devFotos/andre.jpg" alt="Foto Dev 1" class="rounded-circle dev-foto"/>
                 <h5 class="mt-3">André Benquerer</h5>
                 <p>Aluno Nº: 24633</p>
-                <p>Email: aluno24633@ipt.pt</p>
+                <p>Email: dev.benquerer@gmail.com</p>
                 <div>
                     <a href="https://github.com/Benquerer" target="_blank" class="text-dark me-2">
-                        <i class="bi bi-github fs-4"></i>
+                        <i class="bi bi-github fs-2" style="color: #6e5494;"></i>
                     </a>
                 </div>
             </div>
-            
+
             <div class="col-md-6 mb-4">
                 <img src="~/devFotos/diogo.jpg" alt="Foto Dev 2" class="rounded-circle dev-foto"/>
                 <h5 class="mt-3">Diogo Larangeira</h5>
@@ -35,76 +35,130 @@
                 <p>Email: aluno24993@ipt.pt</p>
                 <div>
                     <a href="https://github.com/DLarangeira03" target="_blank" class="text-dark me-2">
-                        <i class="bi bi-github fs-4"></i>
+                        <i class="bi bi-github fs-2" style="color: #6e5494;"></i>
                     </a>
                 </div>
             </div>
         </div>
         
-        
-        <hr class="my-5 border-dark">
-        
-        <div class="text-center">
-            <h2 class="mb-3">Projeto</h2>
-            <p>Este projeto foi desenvolvido no âmbito da Unidade Curricular de Desenvolvimento Web, do curso de Engenharia Informática no Instituto Politécnico de Tomar, durante o ano letivo 2024/2025.</p>
-            <p>O objetivo deste projeto é aprofundar o conhecimento em programação web do lado do servidor, utilizando as tecnologias apresentadas na secção seguinte.</p>
 
-            
+        <hr class="my-5 border-dark">
+
+        <div class="text-center">
+            <div class="mt-5 text-start">
+                <h3 class="mb-3">Sobre o Projeto:</h3>
+                <p><strong>ByteHunt</strong> é uma aplicação web desenvolvida no âmbito da unidade curricular de <strong>Desenvolvimento Web</strong>,
+                    no ano letivo de <strong>2024/2025</strong>, no curso de Engenharia Informática do <a href="https://portal2.ipt.pt/pt/cursos/licenciaturas/l_-_ei/" target="_blank" class="text-decoration-none fw-semibold">Instituto Politécnico de Tomar</a>.</p>
+
+
+                <p>O principal objetivo da aplicação é oferecer uma <strong>plataforma intuitiva e dinâmica para
+                        comparação de produtos tecnológicos</strong>. Através de uma galeria visual e organizada, os
+                    utilizadores podem explorar diferentes itens e realizar comparações lado a lado, com <strong>destaque
+                    automático dos melhores e piores atributos</strong> com base em critérios definidos.</p>
+
+                <p>A estrutura da aplicação permite ainda a <strong>colaboração da comunidade</strong>, permitindo que
+                    utilizadores registados possam <strong>submeter sugestões de novos produtos</strong>, através de um
+                    sistema de contribuições. Estas sugestões são revistas por <strong>moderadores</strong>, que podem
+                    aprovar ou rejeitar conteúdos. Os <strong>administradores</strong> têm acesso total ao sistema,
+                    podendo gerir utilizadores, categorias, contribuições e permissões.</p>
+
+                <h4 class="mt-4">Características principais</h4>
+                <ul>
+                    <li>Comparação inteligente de atributos com base em valores quantitativos e qualitativos;</li>
+                    <li>Armazenamento dinâmico de atributos em formato JSON, facilitando a flexibilidade de dados;</li>
+                    <li>Interface moderna e responsiva com suporte para pesquisa e filtros por categoria;</li>
+                    <li>Sistema de autenticação e autorização com gestão de papéis (Utilizador, Moderador,
+                        Administrador);
+                    </li>
+                    <li>Upload de imagens e submissão de descrições para novos itens;</li>
+                    <li>Painel de administração para gestão de conteúdos e aprovações;</li>
+                    <li><strong>API REST pública e protegida</strong> com suporte a autenticação JWT e documentação via
+                        <strong>Swagger</strong>:
+                        <ul>
+                            <li>Endpoints abertos a todos os utilizadores;</li>
+                            <li>Endpoints reservados para utilizadores autenticados;</li>
+                            <li>Endpoints exclusivos para moderadores e administradores.</li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <h4 class="mt-4">Objetivos académicos</h4>
+                <ul>
+                    <li>Programação com ASP.NET Core MVC;</li>
+                    <li>Utilização de Entity Framework Core para persistência de dados;</li>
+                    <li>Implementação de autenticação com Identity e JWT;</li>
+                    <li>Criação e consumo de APIs RESTful com Swagger;</li>
+                    <li>Manipulação de dados dinâmicos via JSON;</li>
+                    <li>Separação clara entre lógica de negócio, dados e apresentação (MVC);</li>
+                    <li>Desenvolvimento de interfaces web responsivas com HTML, CSS e Bootstrap;</li>
+                    <li>Tratamento de emails com MailKit.</li>
+                </ul>
+            </div>
+
             <div>
+                <h5 class="mt-4">Repositório do Projeto:</h5>
                 <a href="https://github.com/Benquerer/byte-hunt" target="_blank" class="text-dark me-2">
-                    <i class="bi bi-github fs-4"></i>
+                    <i class="bi bi-github fs-1" style="color: #6e5494;"></i>
                 </a>
             </div>
-            
+
             <hr class="my-5 border-dark">
-            
+
             <h3 class="mt-4">Tecnologias Utilizadas</h3>
             <ul class="list-inline">
                 <li class="list-inline-item m-1">
-                    <a href="https://learn.microsoft.com/aspnet/core" target="_blank" class="badge bg-dark px-3 py-2 fs-6 text-decoration-none">
+                    <a href="https://learn.microsoft.com/aspnet/core" target="_blank"
+                       class="badge bg-dark px-3 py-2 fs-6 text-decoration-none">
                         ASP.NET Core
                     </a>
                 </li>
                 <li class="list-inline-item m-1">
-                    <a href="https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity?view=aspnetcore-9.0&tabs=visual-studio" target="_blank" class="badge bg-dark px-3 py-2 fs-6 text-decoration-none">
+                    <a href="https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity?view=aspnetcore-9.0&tabs=visual-studio"
+                       target="_blank" class="badge bg-dark px-3 py-2 fs-6 text-decoration-none">
                         ASP.NET Core Identity
                     </a>
                 </li>
                 <li class="list-inline-item m-1">
-                    <a href="https://learn.microsoft.com/ef/" target="_blank" class="badge bg-dark px-3 py-2 fs-6 text-decoration-none">
+                    <a href="https://learn.microsoft.com/ef/" target="_blank"
+                       class="badge bg-dark px-3 py-2 fs-6 text-decoration-none">
                         Entity Framework
                     </a>
                 </li>
                 <li class="list-inline-item m-1">
-                    <a href="https://getbootstrap.com/" target="_blank" class="badge bg-dark px-3 py-2 fs-6 text-decoration-none">
+                    <a href="https://getbootstrap.com/" target="_blank"
+                       class="badge bg-dark px-3 py-2 fs-6 text-decoration-none">
                         Bootstrap
                     </a>
                 </li>
                 <li class="list-inline-item m-1">
-                    <a href="https://learn.microsoft.com/sql/sql-server/" target="_blank" class="badge bg-dark px-3 py-2 fs-6 text-decoration-none">
+                    <a href="https://learn.microsoft.com/sql/sql-server/" target="_blank"
+                       class="badge bg-dark px-3 py-2 fs-6 text-decoration-none">
                         SQL Server
                     </a>
                 </li>
                 <li class="list-inline-item m-1">
-                    <a href="https://swagger.io/tools/swagger-ui/" target="_blank" class="badge bg-dark px-3 py-2 fs-6 text-decoration-none">
+                    <a href="https://swagger.io/tools/swagger-ui/" target="_blank"
+                       class="badge bg-dark px-3 py-2 fs-6 text-decoration-none">
                         Swagger
                     </a>
                 </li>
                 <li class="list-inline-item m-1">
-                    <a href="https://jwt.io/introduction" target="_blank" class="badge bg-dark px-3 py-2 fs-6 text-decoration-none">
+                    <a href="https://jwt.io/introduction" target="_blank"
+                       class="badge bg-dark px-3 py-2 fs-6 text-decoration-none">
                         JWT
                     </a>
                 </li>
                 <li class="list-inline-item m-1">
-                    <a href="https://azure.microsoft.com/" target="_blank" class="badge bg-dark px-3 py-2 fs-6 text-decoration-none">
+                    <a href="https://azure.microsoft.com/" target="_blank"
+                       class="badge bg-dark px-3 py-2 fs-6 text-decoration-none">
                         Microsoft Azure
                     </a>
                 </li>
             </ul>
         </div>
-        
+
         <hr class="my-5 border-dark">
-        
+
         <h3 class="mt-5 mb-3 text-center">Credenciais de Acesso</h3>
 
         <div class="table-responsive">
@@ -135,20 +189,22 @@
                 </tbody>
             </table>
         </div>
-        
+
         <hr class="my-5 border-dark">
-        
+
         <section class="codigo-reutilizado my-5">
             <div class="container">
                 <h2 class="text-center mb-4">Código Reutilizado / de Terceiros</h2>
                 <p class="text-center mb-5">
-                    Nesta secção listamos os componentes de terceiros que foram integrados no projeto para facilitar o desenvolvimento.
+                    Nesta secção listamos os componentes de terceiros que foram integrados no projeto para facilitar o
+                    desenvolvimento.
                 </p>
                 <div class="row justify-content-center">
                     <div class="col-md-8">
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item">
-                                <strong>Colocação de Imagem na Aplicação</strong> – Código disponibilizado pelos docentes.
+                                <strong>Colocação de Imagem na Aplicação</strong> – Código disponibilizado pelos
+                                docentes.
                             </li>
                             <li class="list-group-item">
                                 <strong>Integração da API</strong> – Código disponibilizado pelos docentes.
@@ -158,6 +214,6 @@
                 </div>
             </div>
         </section>
-        
+
     </div>
 </div>
