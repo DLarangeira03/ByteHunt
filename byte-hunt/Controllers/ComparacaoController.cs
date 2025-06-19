@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using byte_hunt.Data;
 using byte_hunt.Models;
 using byte_hunt.Models.Comparador;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 
 namespace byte_hunt.Controllers
@@ -180,6 +181,7 @@ namespace byte_hunt.Controllers
         /// Mostra o histórico de comparações do utilizador autenticado.
         /// </summary>
         /// <returns>View com a lista de comparações realizadas pelo utilizador.</returns>
+        [Authorize]
         public async Task<IActionResult> HistoricoComparacao()
         {
             // Verifica se o utilizador está autenticado
@@ -206,6 +208,7 @@ namespace byte_hunt.Controllers
         /// <returns>Redireciona para o histórico de comparações.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> EliminarHistorico(int id)
         {
             // Procura as informações do utilizador autenticado
@@ -234,6 +237,7 @@ namespace byte_hunt.Controllers
         /// <returns>Redireciona para o histórico de comparações.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> EliminarHistoricoAll()
         {
             // Procura as informações do utilizador autenticado

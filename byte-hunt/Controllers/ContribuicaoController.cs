@@ -31,6 +31,7 @@ namespace byte_hunt.Controllers
         /// <param name="page">Número da página atual.</param>
         /// <param name="pageSize">Número de itens por página.</param>
         /// <returns>View com a lista de contribuições filtrada e paginada.</returns>
+        [Authorize]
         public async Task<IActionResult> Index(string? dropDownId, int page = 1, int pageSize = 10) {
             
             // Query para obter as contribuições, incluindo utilizador e responsável
@@ -96,6 +97,7 @@ namespace byte_hunt.Controllers
         /// </summary>
         /// <param name="id">ID da contribuição.</param>
         /// <returns>View com os detalhes da contribuição.</returns>
+        [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
             // Verifica se o ID é nulo
@@ -125,6 +127,7 @@ namespace byte_hunt.Controllers
         /// <returns>Redireciona para a página anterior ou para o índice.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrator,Moderator")]
         public async Task<IActionResult> Claim(int id, string? returnUrl = null)
         {
             // Carrega o utilizador atual
@@ -156,6 +159,7 @@ namespace byte_hunt.Controllers
         /// Exibe o formulário para criar uma nova contribuição.
         /// </summary>
         /// <returns>View para criar uma contribuição.</returns>
+        [Authorize]
         public IActionResult Create()
         {
            // Retorna a View para criar uma nova contribuição
@@ -170,6 +174,7 @@ namespace byte_hunt.Controllers
         /// <returns>Redireciona para o índice ou retorna a view em caso de erro.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Create(IFormCollection form)
         {
             // Retira os dados do formulário
@@ -249,6 +254,7 @@ namespace byte_hunt.Controllers
         /// <returns>Redireciona para o índice ou retorna a view em caso de erro.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrator,Moderator")]
         public async Task<IActionResult> Edit(int id, IFormCollection form)
         {
             // Procurar a contribuição pelo ID
@@ -290,6 +296,7 @@ namespace byte_hunt.Controllers
         /// </summary>
         /// <param name="id">ID da contribuição.</param>
         /// <returns>View de confirmação de eliminação.</returns>
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Delete(int? id)
         {
             // Verifica se o ID é nulo
@@ -320,6 +327,7 @@ namespace byte_hunt.Controllers
         /// <returns>Redireciona para o índice.</returns>
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             // Procurar a contribuição pelo ID
@@ -355,6 +363,7 @@ namespace byte_hunt.Controllers
         /// <returns>Redireciona para o índice.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrator,Moderator")]
         public async Task<IActionResult> UpdateStatus(int Id, string status)
         {
             // Procura a contribuição pelo ID
@@ -423,13 +432,3 @@ namespace byte_hunt.Controllers
         }
     }
 }
-
-
-// if (User.IsInRole("admin"))
-// {
-//     
-// }
-// else
-// {
-//     query = query.Where(c => c.UtilizadorId == utilizadorId.Value);    
-// }

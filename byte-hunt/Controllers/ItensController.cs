@@ -28,8 +28,7 @@ namespace byte_hunt.Controllers {
         /// <param name="pageNumber">Número da página atual.</param>
         /// <param name="pageSize">Quantidade de itens por página.</param>
         /// <returns>View com a lista de itens filtrados e paginados.</returns>
-        public async Task<IActionResult> Index(string searchTerm, int? categoriaId, int pageNumber = 1,
-            int pageSize = 9) {
+        public async Task<IActionResult> Index(string searchTerm, int? categoriaId, int pageNumber = 1, int pageSize = 9) {
             
             // Query para obter todos os itens, incluindo a categoria associada
             var query = _context.Itens.Include(i => i.Categoria).AsQueryable();
@@ -105,6 +104,7 @@ namespace byte_hunt.Controllers {
         /// Exibe o formulário para criar um novo item.
         /// </summary>
         /// <returns>View para criar um item.</returns>
+        [Authorize(Roles = "Administrator,Moderator")]
         public IActionResult Create() {
             // Preenche o ViewData com a lista de categorias para o dropdown
             ViewData["CategoriaId"] = new SelectList(_context.Categorias, "Id", "Nome");
@@ -122,8 +122,8 @@ namespace byte_hunt.Controllers {
         /// <returns>Redireciona para a lista de itens se bem-sucedido, senão retorna a view de criação.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Nome,Marca,Descricao,CategoriaId,AttrsJson")] Item item,
-            IFormFile imagem) {
+        [Authorize(Roles = "Administrator,Moderator")]
+        public async Task<IActionResult> Create([Bind("Id,Nome,Marca,Descricao,CategoriaId,AttrsJson")] Item item, IFormFile imagem) {
             
             // Retira a validação do campo imagem do ModelState
             ModelState.Remove("imagem");
@@ -203,6 +203,7 @@ namespace byte_hunt.Controllers {
         /// </summary>
         /// <param name="id">ID do item.</param>
         /// <returns>View para editar o item.</returns>
+        [Authorize(Roles = "Administrator,Moderator")]
         public async Task<IActionResult> Edit(int? id) {
             // Verifica se o ID é nulo
             if (id == null) {
@@ -235,8 +236,8 @@ namespace byte_hunt.Controllers {
         /// <returns>Redireciona para a lista de itens se bem-sucedido, senão retorna a view de edição.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id,
-            [Bind("Id,Nome,Marca,Descricao,CategoriaId,AttrsJson")] Item item, IFormFile imagem) {
+        [Authorize(Roles = "Administrator,Moderator")]
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,Marca,Descricao,CategoriaId,AttrsJson")] Item item, IFormFile imagem) {
             
             // Verifica se o ID do item no formulário corresponde ao ID passado por parâmetro
             if (id != item.Id) {
@@ -340,6 +341,7 @@ namespace byte_hunt.Controllers {
         /// </summary>
         /// <param name="id">ID do item.</param>
         /// <returns>View de confirmação de eliminação.</returns>
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Delete(int? id) {
             // Verifica se o ID é nulo
             if (id == null) {
@@ -369,6 +371,7 @@ namespace byte_hunt.Controllers {
         /// <returns>Redireciona para a lista de itens.</returns>
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> DeleteConfirmed(int id) {
             // Procura o item pelo ID
             var item = await _context.Itens.FindAsync(id);

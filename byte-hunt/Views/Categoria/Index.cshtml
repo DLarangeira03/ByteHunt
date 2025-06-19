@@ -1,3 +1,5 @@
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<byte_hunt.Models.Utilizador> SignInManager
 @model IEnumerable<byte_hunt.Models.Categoria>
 
 @{
@@ -59,7 +61,9 @@
                     <td class="categoria-botoes">
                         <a class="btn btn-sm btn-info" asp-action="Details" asp-route-id="@categoria.Id">Ver</a>
                         <a class="btn btn-sm btn-warning" asp-action="Edit" asp-route-id="@categoria.Id">Editar</a>
-                        <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@categoria.Id">Remover</a>
+                        @if (SignInManager.IsSignedIn(User) && User.IsInRole("Administrator")) {
+                            <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@categoria.Id">Remover</a>
+                        }
                     </td>
                 </tr>
             }

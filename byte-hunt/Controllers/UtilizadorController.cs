@@ -66,6 +66,7 @@ namespace byte_hunt.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns> Detalhes de um utilizador por ID</returns>
+        [Authorize(Roles = "Administrator,Moderator")]
         public async Task<IActionResult> Details(string id)
         {
             // Verifica se o ID é nulo ou vazio

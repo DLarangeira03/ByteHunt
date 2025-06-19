@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using byte_hunt.Data;
 using byte_hunt.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace byte_hunt.Controllers
 {
@@ -27,6 +28,7 @@ namespace byte_hunt.Controllers
         /// <param name="page">Número da página atual.</param>
         /// <param name="pageSize">Quantidade de categorias por página.</param>
         /// <returns>View com a lista de categorias filtradas e paginadas.</returns>
+        [Authorize(Roles = "Administrator,Moderator")]
         public async Task<IActionResult> Index(string searchString, int page = 1, int pageSize = 10)
         {
             // Query para obter categorias 
@@ -67,6 +69,7 @@ namespace byte_hunt.Controllers
         /// </summary>
         /// <param name="id">ID da categoria a visualizar.</param>
         /// <returns>View com os detalhes da categoria ou NotFound se não existir.</returns>
+        [Authorize(Roles = "Administrator,Moderator")]
         public async Task<IActionResult> Details(int? id)
         {
             // Verifica se o ID é nulo
@@ -95,6 +98,7 @@ namespace byte_hunt.Controllers
         /// Exibe o formulário para criar uma nova categoria.
         /// </summary>
         /// <returns>View para criação de uma nova categoria.</returns>
+        [Authorize(Roles = "Administrator,Moderator")]
         public IActionResult Create()
         {
             // Retorna a view para criar uma nova categoria 
@@ -109,6 +113,7 @@ namespace byte_hunt.Controllers
         /// <returns>Redireciona para a lista de categorias se bem-sucedido, senão retorna a view de criação.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrator,Moderator")]
         public async Task<IActionResult> Create([Bind("Id,Nome,Descricao")] Categoria categoria)
         {
             // Verifica se o modelo é válido
@@ -131,6 +136,7 @@ namespace byte_hunt.Controllers
         /// </summary>
         /// <param name="id">ID da categoria a editar.</param>
         /// <returns>View para edição da categoria ou NotFound se não existir.</returns>
+        [Authorize(Roles = "Administrator,Moderator")]
         public async Task<IActionResult> Edit(int? id)
         {
             // Verifica se o ID é nulo
@@ -161,6 +167,7 @@ namespace byte_hunt.Controllers
         /// <returns>Redireciona para a lista de categorias se bem-sucedido, senão retorna a view de edição.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrator,Moderator")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,Descricao")] Categoria categoria)
         {
             // Verifica se o ID da categoria corresponde ao ID fornecido
@@ -207,6 +214,7 @@ namespace byte_hunt.Controllers
         /// </summary>
         /// <param name="id">ID da categoria a excluir.</param>
         /// <returns>View de confirmação de exclusão ou NotFound se não existir.</returns>
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Delete(int? id)
         {
             // Verifica se o ID é nulo
@@ -237,6 +245,7 @@ namespace byte_hunt.Controllers
         /// <returns>Redireciona para a lista de categorias após a exclusão.</returns>
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             // Busca a categoria pelo ID
