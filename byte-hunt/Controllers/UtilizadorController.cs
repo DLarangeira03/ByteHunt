@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using byte_hunt.Data;
 using byte_hunt.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 
 namespace byte_hunt.Controllers
@@ -21,9 +22,28 @@ namespace byte_hunt.Controllers
         }
 
         // GET: Utilizador
-        public async Task<IActionResult> Index()
+        [Authorize(Roles = "Administrator,Moderator")]
+        public async Task<IActionResult> Index(string searchString, int page = 1, int pageSize = 10)
         {
-            return View(await _userManager.Users.ToListAsync());
+            var query = _userManager.Users.AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchString))
+                query = query.Where(u => u.Nome.Contains(searchString) 
+                                         || u.UserName.Contains(searchString)
+                                         || u.Email.Contains(searchString));
+
+            var totalCount = await query.CountAsync();
+            var utilizadoresFinal = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            ViewData["CurrentPage"] = page;
+            ViewData["PageSize"] = pageSize;
+            ViewData["TotalPages"] = (int)Math.Ceiling((double)totalCount / pageSize);
+            ViewData["SearchString"] = searchString;
+
+            return View(utilizadoresFinal);
         }
 
         // GET: Utilizador/Details/5
@@ -39,6 +59,11 @@ namespace byte_hunt.Controllers
             {
                 return NotFound();
             }
+            
+            var roles = await _userManager.GetRolesAsync(utilizador);
+
+            // Passar as roles para a ViewData (ou podes criar ViewModel)
+            ViewData["UserRoles"] = roles;
 
             return View(utilizador);
         }

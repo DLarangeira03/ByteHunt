@@ -49,9 +49,9 @@ namespace byte_hunt.Controllers
 
             ViewData["CurrentPage"] = pageNumber;
             ViewData["PageSize"] = pageSize;
-            ViewData["TotalItems"] = totalItems;
+            ViewData["TotalPages"] = (int)Math.Ceiling((double)totalItems / pageSize);
 
-            ViewData["SearchTerm"] = searchTerm ?? "";
+            ViewData["SearchTerm"] = searchTerm ;
             ViewData["CategoriaId"] = categoriaId ?? 0;
             ViewData["Categorias"] = new SelectList(await _context.Categorias.ToListAsync(), "Id", "Nome");
 
