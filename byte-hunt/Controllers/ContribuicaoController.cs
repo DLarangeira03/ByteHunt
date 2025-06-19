@@ -193,7 +193,7 @@ namespace byte_hunt.Controllers
             {
                 DetalhesContribuicao = detalhes,
                 DataContribuicao = DateTime.Now,
-                Status = "Pending",
+                Status = "Pendente",
                 UtilizadorId = utilizadorId
             };
             
@@ -379,8 +379,8 @@ namespace byte_hunt.Controllers
             // Atribui o ID do utilizador atual como responsável
             _context.Update(contribuicao);
             
-            // Verifica se o estado é "Approved"
-            if (status == "Approved") {
+            // Verifica se o estado é "Aprovado"
+            if (status == "Aprovado") {
                 // Cria um novo item a partir da contribuição aprovada
                 var newItem = new Item();
                 // Divide os detalhes da contribuição em partes

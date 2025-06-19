@@ -60,7 +60,7 @@
             var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
         }
 
-        @if (Model.Status == "Pending") {
+        @if (Model.Status == "Pendente") {
             <div class="row text-center fw-bold mb-2">
                 <div class="col-sm-4">Estado Atual</div>
                 <div class="col-sm-4">Responsável</div>
@@ -79,8 +79,8 @@
                         @Html.AntiForgeryToken()
                         <input type="hidden" name="Id" value="@Model.Id"/>
                         <div class="form-group text-center d-flex justify-content-center gap-3">
-                            <button name="status" value="Approved" class="btn btn-success px-4">Aprovar</button>
-                            <button name="status" value="Rejected" class="btn btn-danger px-4">Rejeitar</button>
+                            <button name="status" value="Aprovado" class="btn btn-success px-4">Aprovar</button>
+                            <button name="status" value="Rejeitado" class="btn btn-danger px-4">Rejeitar</button>
                         </div>
                     </form>
                 }

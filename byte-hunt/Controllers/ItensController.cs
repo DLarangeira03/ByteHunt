@@ -145,19 +145,16 @@ namespace byte_hunt.Controllers {
                 ModelState.AddModelError("AttrsJson", "O conteúdo não é um JSON válido.");
             }
             
-            // Remove a validação do campo Preco do ModelState
-            ModelState.Remove("Preco");
             // Tenta obter o valor do campo Preco do formulário
             var precoStr = Request.Form["Preco"];
             // Tenta converter o valor do campo Preco para decimal
-            if (decimal.TryParse(precoStr, NumberStyles.Any, CultureInfo.CurrentCulture, out var precoParsed))
-            {
-                // Se a conversão for bem-sucedida, atribui o valor ao item
-                item.Preco = precoParsed;
-            }
-            else
-            {
-                // Se a conversão falhar, adiciona um erro ao ModelState
+            if (decimal.TryParse(precoStr, NumberStyles.Any, CultureInfo.CurrentCulture, out var precoParsed)) {
+                if (precoParsed < 0) {
+                    ModelState.AddModelError("Preco", "O preço deve ser positivo.");
+                } else {
+                    item.Preco = precoParsed;
+                }
+            } else {
                 ModelState.AddModelError("Preco", "Preço inválido.");
             }
             

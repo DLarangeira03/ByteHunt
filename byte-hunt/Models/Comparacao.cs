@@ -11,9 +11,11 @@ public class Comparacao
     public int Id { get; set; } //identificador
     
     [Required]
+    [Display(Name = "Data da Comparação")]
     public DateTime Data { get; set; } //Data da comparação
     
     [Required]
+    [Display(Name = "Utilizador")]
     public string UtilizadorId { get; set; } = string.Empty; //chave estrangeira
     
     [ForeignKey("UtilizadorId")]
