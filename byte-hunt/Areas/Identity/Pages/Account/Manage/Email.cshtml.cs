@@ -128,8 +128,8 @@ namespace byte_hunt.Areas.Identity.Pages.Account.Manage
                 var subject = "Confirmação de Conta - ByteHunt";
                 var body = $@"<div style='font-family:Arial; font-size:14px;'>
                                       <p>Olá <strong>{user.UserName}</strong>,</p>
-                                      <p>Obrigado por se registrar no ByteHunt!</p>
-                                      <p>Por favor confirme seu email clicando no botão abaixo:</p>
+                                      <p>Obrigado por se registar na ByteHunt!</p>
+                                      <p>Por favor confirma o email clicando no botão abaixo:</p>
                                       <p style='margin-top:20px;'>
                                           <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'
                                              style='display:inline-block;padding:10px 20px;background-color:#007bff;color:#fff;
@@ -137,9 +137,9 @@ namespace byte_hunt.Areas.Identity.Pages.Account.Manage
                                               Confirmar Conta
                                           </a>
                                       </p>
-                                      <p>Se você não solicitou isso, ignore este email.</p>
+                                      <p>Se não solicitou a confirmação, ignore este email.</p>
                                       <br/>
-                                      <p>— Equipe ByteHunt</p>
+                                      <p>— a ByteHunt</p>
                                   </div>";
                 
                 await _emailSender.SendEmailAsync(
@@ -147,7 +147,7 @@ namespace byte_hunt.Areas.Identity.Pages.Account.Manage
                     subject,
                     body);
 
-                StatusMessage = "Enviamos para seu email a verificação de conta. Verifique sua caixa de entrada por favor";
+                StatusMessage = "Enviámos para o seu email a verificação de conta. Verifique a sua caixa de entrada por favor";
                 return RedirectToPage();
             }
 
@@ -182,8 +182,8 @@ namespace byte_hunt.Areas.Identity.Pages.Account.Manage
             var subject = "Confirmação de Conta - ByteHunt";
             var body = $@"<div style='font-family:Arial; font-size:14px;'>
                                       <p>Olá <strong>{user.UserName}</strong>,</p>
-                                      <p>Obrigado por se registrar no ByteHunt!</p>
-                                      <p>Por favor confirme seu email clicando no botão abaixo:</p>
+                                      <p>Obrigado por se registar na ByteHunt!</p>
+                                      <p>Por favor confirma o email clicando no botão abaixo:</p>
                                       <p style='margin-top:20px;'>
                                           <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'
                                              style='display:inline-block;padding:10px 20px;background-color:#007bff;color:#fff;
@@ -191,9 +191,9 @@ namespace byte_hunt.Areas.Identity.Pages.Account.Manage
                                               Confirmar Conta
                                           </a>
                                       </p>
-                                      <p>Se você não solicitou isso, ignore este email.</p>
+                                      <p>Se não solicitou a confirmação, ignore este email.</p>
                                       <br/>
-                                      <p>— Equipe ByteHunt</p>
+                                      <p>— Equipa ByteHunt</p>
                                   </div>";
             
             await _emailSender.SendEmailAsync(
@@ -201,7 +201,7 @@ namespace byte_hunt.Areas.Identity.Pages.Account.Manage
                 subject,
                 body);
 
-            StatusMessage = "Enviamos para seu email a verificação de conta. Verifique sua caixa de entrada por favor";
+            StatusMessage = "Enviámos para o seu email a verificação de conta. Verifique a sua caixa de entrada por favor";
             return RedirectToPage();
         }
     }

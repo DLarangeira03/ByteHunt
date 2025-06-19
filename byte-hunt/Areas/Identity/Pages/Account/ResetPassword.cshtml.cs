@@ -50,7 +50,7 @@ namespace byte_hunt.Areas.Identity.Pages.Account
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [Required]
-            [Display(Name = "Nova senha:")]
+            [Display(Name = "Nova Palavra-Passe:")]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
             [DataType(DataType.Password)]
             public string Password { get; set; }
@@ -60,8 +60,8 @@ namespace byte_hunt.Areas.Identity.Pages.Account
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [DataType(DataType.Password)]
-            [Display(Name = "Confirme a senha:")]
-            [Compare("Password", ErrorMessage = "As senhas devem ser iguais!")]
+            [Display(Name = "Confirme a Palavra-Passe:")]
+            [Compare("Password", ErrorMessage = "As Palavras-Passe devem ser iguais!")]
             public string ConfirmPassword { get; set; }
 
             /// <summary>

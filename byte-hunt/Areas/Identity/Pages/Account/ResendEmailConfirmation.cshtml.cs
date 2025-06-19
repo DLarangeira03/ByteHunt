@@ -81,8 +81,8 @@ namespace byte_hunt.Areas.Identity.Pages.Account
             var subject = "Confirmação de Conta - ByteHunt";
             var body = $@"<div style='font-family:Arial; font-size:14px;'>
                                       <p>Olá <strong>{user.UserName}</strong>,</p>
-                                      <p>Obrigado por se registrar no ByteHunt!</p>
-                                      <p>Por favor confirme seu email clicando no botão abaixo:</p>
+                                      <p>Obrigado por se registar na ByteHunt!</p>
+                                      <p>Por favor confirma o email clicando no botão abaixo:</p>
                                       <p style='margin-top:20px;'>
                                           <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'
                                              style='display:inline-block;padding:10px 20px;background-color:#007bff;color:#fff;
@@ -90,9 +90,9 @@ namespace byte_hunt.Areas.Identity.Pages.Account
                                               Confirmar Conta
                                           </a>
                                       </p>
-                                      <p>Se você não solicitou isso, ignore este email.</p>
+                                      <p>Se não solicitou a confirmação, ignore este email.</p>
                                       <br/>
-                                      <p>— Equipe ByteHunt</p>
+                                      <p>— Equipa ByteHunt</p>
                                   </div>";
             
             await _emailSender.SendEmailAsync(
@@ -100,7 +100,7 @@ namespace byte_hunt.Areas.Identity.Pages.Account
                 subject,
                 body);
 
-            ModelState.AddModelError(string.Empty, "Confirmação de contra reenviada, verifique seu email!");
+            ModelState.AddModelError(string.Empty, "Confirmação de conta reenviada, verifique seu email!");
             return Page();
         }
     }

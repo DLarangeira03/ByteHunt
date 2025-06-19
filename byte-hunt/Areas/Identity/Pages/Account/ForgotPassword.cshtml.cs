@@ -72,22 +72,22 @@ namespace byte_hunt.Areas.Identity.Pages.Account
                     protocol: Request.Scheme);
 
                 
-                var subject = "Redefinição de Senha - ByteHunt";
+                var subject = "Alteração de Palavra-Passe - ByteHunt";
                 
                 var body = $@"<div style='font-family:Arial; font-size:14px;'>
                 <p>Olá <strong>{user.UserName}</strong>,</p>
-                <p>Recebemos um pedido para redefinir sua senha no ByteHunt.</p>
+                <p>Recebemos um pedido para alterar a sua Palavra-Passe na ByteHunt.</p>
                 <p>Clique no botão abaixo para continuar:</p>
                 <p style='margin-top:20px;'>
                     <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'
                        style='display:inline-block;padding:10px 20px;background-color:#dc3545;color:#fff;
                               text-decoration:none;border-radius:4px;'>
-                        Redefinir Senha
+                        Alterar Palavra-Passe
                     </a>
                 </p>
-                <p>Se você não solicitou essa ação, ignore este email. Sua senha permanecerá segura.</p>
+                <p>Se  não solicitou esta ação, ignore este email. Sua Palavra-Passe permanecerá segura.</p>
                 <br/>
-                <p>— Equipe ByteHunt</p>
+                <p>— Equipa ByteHunt</p>
               </div>";
 
                 await _emailSender.SendEmailAsync(Input.Email, subject, body);

@@ -55,7 +55,7 @@ namespace byte_hunt.Areas.Identity.Pages.Account.Manage
             /// </summary>
             [Required]
             [DataType(DataType.Password)]
-            [Display(Name = "Senha atual")]
+            [Display(Name = "Palavra-Passe atual")]
             public string OldPassword { get; set; }
 
             /// <summary>
@@ -65,7 +65,7 @@ namespace byte_hunt.Areas.Identity.Pages.Account.Manage
             [Required]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
             [DataType(DataType.Password)]
-            [Display(Name = "Nova senha")]
+            [Display(Name = "Nova Palavra-Passe")]
             public string NewPassword { get; set; }
 
             /// <summary>
@@ -73,8 +73,8 @@ namespace byte_hunt.Areas.Identity.Pages.Account.Manage
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [DataType(DataType.Password)]
-            [Display(Name = "Confirmar nova senha")]
-            [Compare("NewPassword", ErrorMessage = "A nova senha e sua confimação devem ser iguais")]
+            [Display(Name = "Confirmar nova Palavra-Passe")]
+            [Compare("NewPassword", ErrorMessage = "A nova Palavra-Passe e sua confirmação devem ser iguais")]
             public string ConfirmPassword { get; set; }
         }
 
@@ -116,7 +116,7 @@ namespace byte_hunt.Areas.Identity.Pages.Account.Manage
                     if (error.Code == "PasswordMismatch")
                     {
                         // Custom translated error
-                        ModelState.AddModelError(string.Empty, "A senha atual está incorreta.");
+                        ModelState.AddModelError(string.Empty, "A Palavra-Passe atual está incorreta.");
                     }
                     else
                     {
@@ -129,7 +129,7 @@ namespace byte_hunt.Areas.Identity.Pages.Account.Manage
 
             await _signInManager.RefreshSignInAsync(user);
             _logger.LogInformation("User changed their password successfully.");
-            StatusMessage = "Sua senha foi alterada com sucesso.";
+            StatusMessage = "Palavra-Passe foi alterada com sucesso.";
 
             return RedirectToPage();
         }

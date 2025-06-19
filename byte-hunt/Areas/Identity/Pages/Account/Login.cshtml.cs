@@ -89,7 +89,7 @@ namespace byte_hunt.Areas.Identity.Pages.Account {
                         return RedirectToPage("./Lockout");
                     }
                     else {
-                        ModelState.AddModelError(string.Empty, "Erro ao acessar. Verifique seus dados.");
+                        ModelState.AddModelError(string.Empty, "Erro ao entrar. Verifique seus dados.");
                         return Page();
                     }
                 }

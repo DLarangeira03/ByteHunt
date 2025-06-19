@@ -65,12 +65,12 @@ namespace byte_hunt.Areas.Identity.Pages.Account {
             [Required]
             [StringLength(100, ErrorMessage = "A {0} deve ter entre {2} e {1} caracteres.", MinimumLength = 6)]
             [DataType(DataType.Password)]
-            [Display(Name = "Senha")]
+            [Display(Name = "Palavra-Passe")]
             public string Password { get; set; }
 
             [DataType(DataType.Password)]
-            [Display(Name = "Confirme sua Senha")]
-            [Compare("Password", ErrorMessage = "A senha e a confirmação devem ser iguais!")]
+            [Display(Name = "Confirme a Palavra-Passe")]
+            [Compare("Password", ErrorMessage = "A Palavra-Passe e a confirmação devem ser iguais!")]
             public string ConfirmPassword { get; set; }
         }
 
@@ -114,8 +114,8 @@ namespace byte_hunt.Areas.Identity.Pages.Account {
 
                     var body = $@"<div style='font-family:Arial; font-size:14px;'>
                                       <p>Olá <strong>{user.UserName}</strong>,</p>
-                                      <p>Obrigado por se registrar no ByteHunt!</p>
-                                      <p>Por favor confirme seu email clicando no botão abaixo:</p>
+                                      <p>Obrigado por se registar na ByteHunt!</p>
+                                      <p>Por favor confirme o email clicando no botão abaixo:</p>
                                       <p style='margin-top:20px;'>
                                           <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'
                                              style='display:inline-block;padding:10px 20px;background-color:#007bff;color:#fff;
@@ -123,9 +123,9 @@ namespace byte_hunt.Areas.Identity.Pages.Account {
                                               Confirmar Conta
                                           </a>
                                       </p>
-                                      <p>Se você não solicitou isso, ignore este email.</p>
+                                      <p>Se não solicitou a confirmação, ignore este email.</p>
                                       <br/>
-                                      <p>— Equipe ByteHunt</p>
+                                      <p>— Equipa ByteHunt</p>
                                   </div>";
 
                     await _emailSender.SendEmailAsync(Input.Email, subject, body);

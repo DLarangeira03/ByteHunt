@@ -21,9 +21,9 @@
                 var user = await UserManager.GetUserAsync(User);
                 var nomeUser = user?.Nome;
                 <br/>
-                <p class="fs-5">Bom te ver de volta, @nomeUser!</p>
+                <p class="fs-5">Bem-vindo de volta, @nomeUser!</p>
             }
-            <p class="lead mb-0">Explore a vasta galeria de produtos, compare-os, encontre o ideal para ti e submeta tua
+            <p class="lead mb-0">Explora a vasta galeria de produtos, compare-os, encontra o ideal para ti e submete a tua
                 contribuição!</p>
         </div>
     </div>
@@ -47,7 +47,7 @@
                  style="min-width: 300px; max-width: 350px; background: #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.1);">
                 <i class="bi bi-box-seam display-3 text-primary"></i>
                 <h3 class="mt-4 fw-bold" style="font-size: 1.8rem;">Galeria de Itens</h3>
-                <p style="font-size: 1.1rem; color: #555;">Encontre diversos itens em nossa galeria de produtos, que não
+                <p style="font-size: 1.1rem; color: #555;">Encontra diversos itens na nossa galeria de produtos, que não
                     para de crescer!</p>
                 <a class="btn btn-outline-primary btn-lg px-5" asp-controller="Itens" asp-action="Index"
                    style="transition: background-color 0.3s, color 0.3s;">
@@ -58,8 +58,8 @@
                  style="min-width: 300px; max-width: 350px; background: #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.1);">
                 <i class="bi bi-diagram-3-fill display-3 text-success"></i>
                 <h3 class="mt-4 fw-bold" style="font-size: 1.8rem;">Comparações</h3>
-                <p style="font-size: 1.1rem; color: #555;">Compare os detalhes de até 4 produtos facilmente lado a lado,
-                    e descubra o ideal para ti!</p>
+                <p style="font-size: 1.1rem; color: #555;">Compara os detalhes de até 4 produtos facilmente, lado a lado,
+                    e descobre o ideal para ti!</p>
                 <a class="btn btn-outline-success btn-lg px-5" asp-controller="Comparacao" asp-action="Index"
                    style="transition: background-color 0.3s, color 0.3s;">
                     Comparar
@@ -69,8 +69,8 @@
                  style="min-width: 300px; max-width: 350px; background: #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.1);">
                 <i class="bi bi-patch-plus display-3" style="color: #6f42c1;"></i>
                 <h3 class="mt-4 fw-bold" style="font-size: 1.8rem;">Contribuições</h3>
-                <p style="font-size: 1.1rem; color: #555;">Contribua com itens que gostaria de ver na nossa galeria e
-                    nos ajude a expandir!</p>
+                <p style="font-size: 1.1rem; color: #555;">Contribui com itens que gostarias de ver na nossa galeria e
+                    ajuda-nos a crescer!</p>
                 @if (SignInManager.IsSignedIn(User)) {
                     <a class="btn btn-purple-outline btn-lg px-5" asp-controller="Contribuicao" asp-action="Index">
                         Contribuir!
@@ -87,7 +87,7 @@
                  style="min-width: 300px; max-width: 350px; background: #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.1);">
                 <i class="bi bi-clock-history display-3" style="color: #ec9252;"></i>
                 <h3 class="mt-4 fw-bold" style="font-size: 1.8rem;">Histórico</h3>
-                <p style="font-size: 1.1rem; color: #555;">Utilize seu histórico para acessar rápidamente comparações de interesse!</p>
+                <p style="font-size: 1.1rem; color: #555;">Utiliza o teu histórico para acederes rápidamente a comparações antigas!</p>
                 @if (SignInManager.IsSignedIn(User)) {
                     <a class="btn btn-light-orange-outline btn-lg px-5" asp-area="" asp-controller="Comparacao" asp-action="HistoricoComparacao">
                         Ver Histórico
