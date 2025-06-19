@@ -89,7 +89,7 @@
                 <h3 class="mt-4 fw-bold" style="font-size: 1.8rem;">Histórico</h3>
                 <p style="font-size: 1.1rem; color: #555;">Utilize seu histórico para acessar rápidamente comparações de interesse!</p>
                 @if (SignInManager.IsSignedIn(User)) {
-                    <a class="btn btn-light-orange-outline btn-lg px-5" asp-controller="Comparacao" asp-action="Index">
+                    <a class="btn btn-light-orange-outline btn-lg px-5" asp-area="" asp-controller="Comparacao" asp-action="HistoricoComparacao">
                         Ver Histórico
                     </a>
                 }

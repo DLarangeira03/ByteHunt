@@ -4,7 +4,7 @@
     ViewData["Title"] = "Painel de Administração | Gerir Utilizadores";
     var allRoles = ViewBag.AllRoles as List<string> ?? new List<string>();
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="~/css/painel_administracaox.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="~/css/fundo_container.css" asp-append-version="true"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 }
 @if (TempData["RoleRemovalConfirmation"] != null)
@@ -17,9 +17,9 @@
     @Html.Partial("_InfoPopup", infoModel)
 }
 
-<div class="painel-fundo"></div>
+<div class="vw-fundo"></div>
 
-<div class="container painel-container">
+<div class="container vw-container">
     <h1>Gerir Permissões</h1>
 
     <table class="table table-borderless">
