@@ -63,6 +63,7 @@ namespace byte_hunt.Controllers
             ViewData["Utilizadores"] = utilizadores;
             ViewData["UtilizadorSelecionado"] = dropDownId ?? "0";
             ViewData["CurrentPage"] = page;
+            ViewData["PageSize"] = pageSize;
             ViewData["TotalPages"] = totalPages;
 
             return View(contribuicoes);
