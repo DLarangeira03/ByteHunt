@@ -18,11 +18,11 @@
         <div class="col-md-6">
             @if (!string.IsNullOrEmpty(Model.FotoItem))
             {
-                <img src="~/itens_Imagens/@Model.FotoItem" alt="@Model.Nome" class="produto-img" style=" width: 100%; object-fit: contain;" />
+                <img src="~/itens_Imagens/@Model.FotoItem" alt="@Model.Nome" class="produto-img" style=" width: 100%; object-fit: contain;" onerror="this.onerror=null; this.src='/images/no_image.jpg';"/>
             }
             else
             {
-                <img src="~/images/logo_byte_hunt.svg" alt="Produto" class="produto-img">
+                <img src="~/images/no_image.jpg" alt="Produto" class="produto-img">
             }
         </div>
 
