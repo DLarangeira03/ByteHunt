@@ -32,23 +32,31 @@ namespace byte_hunt.Controllers.API
         [Authorize]
         public async Task<ActionResult<IEnumerable<Comparacao>>> GetComparacoes()
         {
+            // Obtém o nome do utilizador autenticado e verifica se é Admin ou Mod
             var userName = User.Identity.Name;
+            // Verifica se o utilizador é Admin ou Mod
             var isAdmin = User.IsInRole("Administrator");
             var isMod = User.IsInRole("Moderator");
-
+            
+            // Cria uma consulta para obter as comparações
             var query = _context.Comparacoes
                 .Include(c => c.Utilizador)
                 .AsQueryable();
-
+            
+            // Se não for Admin ou Mod, filtra as comparações pelo nome do utilizador
             if (!isAdmin && !isMod)
             {
+                // Filtra as comparações para incluir apenas aquelas feitas pelo utilizador autenticado
                 query = query.Where(c => c.Utilizador.Nome == userName);
             }
-
+            
+            // Executa a consulta e obtém a lista de comparações
             var comparacoes = await query.ToListAsync();
-
+            
+            // Mapeia as comparações para a nova estrutura de dados de Comparacao
             var comparacoesDto = comparacoes.Select(c => new ComparacaoDto
             {
+                // Mapeia os campos necessários para a nova comparação 
                 Id = c.Id,
                 data = c.Data,
                 Utilizador = new UtilizadorDtoComparacao
@@ -57,7 +65,8 @@ namespace byte_hunt.Controllers.API
                     Nome = c.Utilizador.Nome
                 }
             }).ToList();
-
+            
+            // Retorna a lista de comparações nova
             return Ok(comparacoesDto);
         }
 
@@ -66,20 +75,24 @@ namespace byte_hunt.Controllers.API
         /// Obtém a comparação por id caso tenha sido o utilizador que a realizou se for um utiliazdor autenticado.
         /// Obtém a comparação por id caso seja um Admin ou um Mod.
         /// </summary>
+        /// <param name="id">ID da comparação a obter</param>
         /// <returns>Comparação</returns>
         [HttpGet("{id}")]
         [Authorize]
         public async Task<ActionResult<Comparacao>> GetComparacao(int id)
         {
-            
+            // Obtém o nome do utilizador autenticado
             var userName = User.Identity.Name;
-
+            
+            // Busca a comparação pelo ID e inclui o utilizador associado
             var comparacao = await _context.Comparacoes.Include(c => c.Utilizador)
                 .FirstOrDefaultAsync(c => c.Id == id);
-
+            
+            // Verifica se a comparação existe
             if (comparacao == null)
                 return NotFound();
             
+            // Verifica se o utilizador é Admin ou Mod
             var isAdmin = User.IsInRole("Administrator");
             var isMod = User.IsInRole("Moderator");
             
@@ -88,11 +101,14 @@ namespace byte_hunt.Controllers.API
             {
                 //verifica se a comparacao pertence ao utilizador que fez request 
                 if (comparacao.Utilizador.Nome != userName)
-                    return Forbid();  // Se não for do utilizador autenticado, nega acesso
+                    // Se não for do utilizador autenticado, nega acesso
+                    return Forbid();  
             }
             
+            // Mapeia as comparações para a nova estrutura de dados de Comparacao
             var comparacaoDto = new ComparacaoDto
             {
+                // Mapeia os campos necessários para a nova comparação
                 Id = comparacao.Id,
                 data = comparacao.Data,
                 Utilizador = new UtilizadorDtoComparacao
@@ -101,7 +117,8 @@ namespace byte_hunt.Controllers.API
                     Nome = comparacao.Utilizador.Nome
                 }
             };
-
+            
+            // Retorna a nova comparação 
             return Ok(comparacaoDto);
         }
 
@@ -109,34 +126,46 @@ namespace byte_hunt.Controllers.API
         /// <summary>
         /// Atualiza a comparação com base no ID.
         /// </summary>
+        /// <param name="id">ID da comparação a atualizar</param>
+        /// <param name="comparacao">Dados da comparação a atualizar</param>
         /// <returns></returns>
         [HttpPut("{id}")]
         [Authorize(Roles = "Administrator,Moderator")]
         public async Task<IActionResult> PutComparacao(int id, Comparacao comparacao)
         {
+            // Verifica se o ID da comparação corresponde ao ID do parâmetro
             if (id != comparacao.Id)
             {
-                return BadRequest();
+                // Se não corresponder, retorna BadRequest
+                return BadRequest("ID da comparação não corresponde ao ID da comparação que quer editar.");
             }
-
-            _context.Entry(comparacao).State = EntityState.Modified;
-
+            
+            // Diz ao Entity Framework que o estado da entidade foi modificado
+            _context.Entry(comparacao).State = EntityState.Modified;    
+            
+            // Tenta salvar as alterações no contexto
             try
             {
+                // Salva as alterações no contexto
                 await _context.SaveChangesAsync();
             }
+            // Captura a exceção de concorrência se ocorrer
             catch (DbUpdateConcurrencyException)
             {
+                // Verifica se a comparação ainda existe
                 if (!ComparacaoExists(id))
                 {
+                    // Se não existir, retorna NotFound
                     return NotFound();
                 }
                 else
                 {
+                    // Se existir, lança uma exceção 
                     throw;
                 }
             }
-
+            
+            // Se tudo correr bem, retorna NoContent
             return NoContent();
         }
 
@@ -144,16 +173,21 @@ namespace byte_hunt.Controllers.API
         /// <summary>
         /// Cria uma nova comparação.
         /// </summary>
+        /// <param name="comparacao">Dados da comparação a criar</param>
         /// <returns>Nova comparação</returns>
         [HttpPost]
         [Authorize(Roles = "Administrator,Moderator")]
         public async Task<ActionResult<Comparacao>> PostComparacao(Comparacao comparacao)
         {
+            // Adiciona a comparação ao contexto
             _context.Comparacoes.Add(comparacao);
+            // Salva as alterações no contexto
             await _context.SaveChangesAsync();
             
+            // Mapeia a comparação para a nova estrutura de dados de nova comparação
             var comparacaoDto = new ComparacaoDto
             {
+                // Mapeia os campos necessários para a nova comparação
                 Id = comparacao.Id,
                 data = comparacao.Data,
                 Utilizador = new UtilizadorDtoComparacao
@@ -162,7 +196,8 @@ namespace byte_hunt.Controllers.API
                     Nome = comparacao.Utilizador.Nome
                 }
             };
-
+            
+            // Retorna a nova comparação
             return CreatedAtAction("GetComparacao", new { id = comparacao.Id }, comparacaoDto);
         }
 
@@ -170,36 +205,56 @@ namespace byte_hunt.Controllers.API
         /// <summary>
         /// Elimina uma comparação.
         /// </summary>
+        /// <param name="id"> ID da comparação a eliminar</param>
         /// <returns></returns>
         [HttpDelete("{id}")]
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> DeleteComparacao(int id)
         {
+            // Procura a comparação pelo ID
             var comparacao = await _context.Comparacoes.FindAsync(id);
+            // Verifica se a comparação existe
             if (comparacao == null)
             {
+                // Se não existir, retorna NotFound
                 return NotFound();
             }
-
+            
+            // Remove a comparação do contexto
             _context.Comparacoes.Remove(comparacao);
+            // Salva as alterações no contexto
             await _context.SaveChangesAsync();
-
+            
+            // Se tudo correr bem, retorna NoContent
             return NoContent();
         }
-
+        
+        /// <summary>
+        /// Verifica se uma comparação existe com base no ID fornecido.
+        /// </summary>
+        /// returns>True se existir, caso contrário, false.</returns>
         private bool ComparacaoExists(int id)
         {
+            // Verifica se existe uma comparação com o ID fornecido
             return _context.Comparacoes.Any(e => e.Id == id);
         }
     }
 }
 
+/// <summary>
+/// Classe que permite transformar os dados de uma comparação noutro formato para mostrar
+/// Classe que representa a comparação com os dados necessários para mostrar
+/// </summary>
 public class ComparacaoDto
 {
     public int Id { get; set; }
     public DateTime data { get; set; }  
     public UtilizadorDtoComparacao Utilizador { get; set; }
 }
+
+/// <summary>
+/// Classe que representa o utilizador com os dados necessários para poder associar à comparação sem que existem ciclos infinitos
+/// </summary>
 public class UtilizadorDtoComparacao
 {
     public String Id { get; set; }
