@@ -1,4 +1,7 @@
-﻿@model byte_hunt.Models.Comparador.ItemCompareSelectViewModel
+﻿@using Microsoft.AspNetCore.Identity
+@model byte_hunt.Models.Comparador.ItemCompareSelectViewModel
+@inject SignInManager<Utilizador> SignInManager
+@inject UserManager<Utilizador> UserManager
 
 @{
     ViewData["Title"] = "Comparar Items";
@@ -13,141 +16,181 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="~/css/fundo_container.css" asp-append-version="true"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="~/css/compareSelect.css" asp-append-version="true"/>
     
 }
 
 <div class="vw-fundo"></div>
-
 <div class="container vw-container">
-    
-    <h2>Selecione os itens para comparar:</h2>
+<h2 style="margin-bottom: 2rem">Selecione os itens para comparar:</h2>
 
-    <form id="compare-form" method="post" action="/Comparacao/RunCompare">
-        <div id="input-container">
-            <div class="input-group mb-2">
-                <input class="form-control item-input" name="itemNames" placeholder="Procurar item..."
-                       list="item-suggestions" autocomplete="off"/>
-            </div>
-            <div class="input-group mb-2">
-                <input class="form-control item-input" name="itemNames" placeholder="Procurar item..."
-                       list="item-suggestions" autocomplete="off"/>
-            </div>
+<form asp-action="RunCompare" method="post">
+    <div class="d-flex justify-content-center mb-3 flex-wrap gap-2" id="input-container">
+        <div class="input-wrapper position-relative">
+            <input class="form-control item-input" name="itemNames" placeholder="Procurar item..." autocomplete="off" />
+            <div class="suggestion-box position-absolute bg-white border rounded shadow-sm mt-1 w-100"></div>
         </div>
-        <button type="button" id="add-input" class="btn btn-secondary mb-2"><i class="bi bi-plus-circle"></i></button>
-        <button type="submit" class="btn btn-primary" id="submit-btn" disabled>Comparar</button>
+        <div class="input-wrapper position-relative">
+            <input class="form-control item-input" name="itemNames" placeholder="Procurar item..." autocomplete="off" />
+            <div class="suggestion-box position-absolute bg-white border rounded shadow-sm mt-1 w-100"></div>
+        </div>
+        <button id="add-input" type="button" class="btn btn-secondary align-self-stretch">
+            <i class="bi bi-plus-circle"></i>
+        </button>
+    </div>
 
-        <datalist id="item-suggestions"></datalist>
-    </form>
+    <div class="text-center">
+        <button id="submit-btn" type="submit" class="btn btn-primary px-3 py-2" disabled>Comparar <i class="bi bi-arrow-right"></i></button>
 
+    </div>
+</form>
+@if (SignInManager.IsSignedIn(User)) {
+    <div class="alert alert-info d-flex align-items-center gap-2 mt-3" role="alert">
+        <i class="bi bi-info-circle-fill"></i>
+        As comparações realizadas serão guardadas no seu histórico.
+        <a asp-action="HistoricoComparacao" class="ms-1">Ver histórico</a>.
+    </div>
+    }
+    else {
+    <div class="alert alert-info d-flex align-items-center gap-2 mt-3" role="alert">
+        <i class="bi bi-info-circle-fill"></i>
+        Que tal guardar suas comparações em um histórico?
+        <a asp-area="Identity" asp-page="/Account/Login" class="ms-1">Inicie sessão</a> para guardar e consultar suas comparações.
+    </div>
+    }
 </div>
 
 
 
 @section Scripts {
     <script>
+        // variaveis principais
         const allItems = @Html.Raw(itemsJson);
         const container = document.getElementById('input-container');
         const addInputBtn = document.getElementById('add-input');
-        const suggestions = document.getElementById('item-suggestions');
         const submitBtn = document.getElementById('submit-btn');
-
-        // maximo de itens
         const maxInputs = 4;
-        let referenceCategoryId = null;
 
-        // definir sugestoes de input
-        function updateSuggestions(currentInput = "") {
-            const usedNames = Array.from(document.querySelectorAll('.item-input')).map(i => i.value.toLowerCase());
-            suggestions.innerHTML = '';
+        //handle de mudancas no input
+        function onInputChange(e) {
+            const inputs = Array.from(document.querySelectorAll('.item-input'));
+            const values = inputs.map(inp => inp.value.trim().toLowerCase());
+            
+            const validItems = values
+                .map(val => allItems.find(i => i.name.toLowerCase() === val))
+                .filter(Boolean);
+
+            const invalidOrPartial = values.filter(v =>
+                v.length > 0 && !allItems.some(i => i.name.toLowerCase() === v)
+            );
+            
+            //check de categoria
+            const referenceCategoryId = validItems[0]?.categoryId || null;
+            const allSameCategory = validItems.every(i => i.categoryId === referenceCategoryId);
+
+            submitBtn.disabled = !(
+                validItems.length >= 2 &&
+                validItems.length <= 4 &&
+                invalidOrPartial.length === 0 &&
+                allSameCategory
+            );
+        }
+
+        // calcular e mostrar sugestoes nas selects
+        function renderSuggestions(inputElem, currentValue = "") {
+            const inputValue = currentValue.trim().toLowerCase();
+            const allInputs = Array.from(document.querySelectorAll('.item-input'));
+            const usedNames = allInputs.map(i => i.value.trim().toLowerCase());
+
+            const validItem = allInputs
+                .map(i => allItems.find(item => item.name.toLowerCase() === i.value.trim().toLowerCase()))
+                .find(Boolean);
+
+            //utilizar categoria se exisir em alguma select
+            const referenceCategoryId = validItem?.categoryId || null;
 
             let filtered;
-
-            // ja foi colocado pelo menos um char
-            // mostrar apenas itens da mesma categoria, que possuem o char do input
-            if (currentInput.length > 0) {
-                filtered = allItems.filter(item => {
-                    const notUsed = !usedNames.includes(item.name.toLowerCase()); // ainda n foi usado
-                    const sameCategory = !referenceCategoryId || item.categoryId === referenceCategoryId; // mesma categoria
-                    const matchesInput = item.name.toLowerCase().includes(currentInput.toLowerCase()); // corresponde ao input
-                    return notUsed && sameCategory && matchesInput;
-                });
-            } else if (referenceCategoryId) {
-                // nao tem input, mas ja se sabe a categoria baseada nas outras inputs
+            if (inputValue.length > 0) {
+                //se existe algo digitado, filtra por nome
                 filtered = allItems.filter(item => {
                     const notUsed = !usedNames.includes(item.name.toLowerCase());
-                    const sameCategory = item.categoryId === referenceCategoryId;
-                    return notUsed && sameCategory;
+                    const sameCategory = !referenceCategoryId || item.categoryId === referenceCategoryId;
+                    const matches = item.name.toLowerCase().includes(inputValue);
+                    return notUsed && sameCategory && matches;
                 });
             } else {
-                // nenhuma categoria definida, e input limpo
+                //senao aleatorio
+                filtered = allItems.filter(item => {
+                    const notUsed = !usedNames.includes(item.name.toLowerCase());
+                    const sameCategory = !referenceCategoryId || item.categoryId === referenceCategoryId;
+                    return notUsed && sameCategory;
+                });
+
+                //aleatoriedade de sugestao
+                for (let i = filtered.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [filtered[i], filtered[j]] = [filtered[j], filtered[i]];
+                }
+            }
+
+            filtered = filtered.slice(0, 10);
+
+            const box = inputElem.nextElementSibling;
+            box.innerHTML = '';
+            if (filtered.length === 0) {
+                box.style.display = 'none';
                 return;
             }
 
-            // limitar a X sugestoes
-            filtered.slice(0, 5).forEach(item => {
-                const opt = document.createElement('option');
-                opt.value = item.name;
-                suggestions.appendChild(opt);
+            filtered.forEach(item => {
+                const div = document.createElement('div');
+                div.textContent = item.name;
+                div.addEventListener('mousedown', () => {
+                    inputElem.value = item.name;
+                    box.style.display = 'none';
+                    onInputChange({target: inputElem});
+                });
+                box.appendChild(div);
             });
+
+            box.style.display = 'block';
         }
-        
-        // evento para lidar com a mudanca de input
-        function onInputChange(e) {
-            const name = e.target.value.toLowerCase();
-            const match = allItems.find(i => i.name.toLowerCase() === name);
-
-            if (match) {
-                const inputs = Array.from(document.querySelectorAll('.item-input'));
-                const matches = inputs.filter(inp =>
-                    allItems.some(i => i.name.toLowerCase() === inp.value.toLowerCase())
-                );
-
-                referenceCategoryId = match.categoryId; // definir categoria com base no item identificado
-                updateSuggestions(e.target.value);
-                submitBtn.disabled = matches.length < 2;
-            } else {
-                // verificar se ainda tem algum input valido
-                const inputs = Array.from(document.querySelectorAll('.item-input'));
-                const remainingValid = inputs
-                    .map(inp => allItems.find(i => i.name.toLowerCase() === inp.value.toLowerCase()))
-                    .filter(Boolean); // filtrar apenas os validos
-
-                if (remainingValid.length > 0) {
-                    referenceCategoryId = remainingValid[0].categoryId; // manter categoria do primeiro valido
-                } else {
-                    referenceCategoryId = null; // limpar categoria se nenhum valido
-                }
-
-                updateSuggestions(e.target.value);
-                submitBtn.disabled = true;
-            }
-        }
-
-        // adicionar mais inputs a comparacao
+    
+        //adicionar novos campos the input
         function addInputField() {
             const count = container.querySelectorAll('.item-input').length;
             if (count >= maxInputs) return;
 
-            const div = document.createElement('div');
-            div.className = "input-group mb-2";
-            div.innerHTML = `
-            <input class="form-control item-input" name="itemNames" placeholder="Procurar item..." list="item-suggestions" autocomplete="off" />
-        `;
-            container.appendChild(div);
-
-            updateSuggestions(""); // atualizar sugestoes com base na categoria, se houver
+            const wrapper = document.createElement('div');
+            wrapper.className = "input-wrapper position-relative";
+            wrapper.innerHTML = `
+                <input class="form-control item-input" name="itemNames" placeholder="Procurar item..." autocomplete="off" />
+                <div class="suggestion-box position-absolute bg-white border rounded shadow-sm mt-1 w-100"></div>
+            `;
+            container.insertBefore(wrapper, addInputBtn);
         }
 
-        // escutar eventos de input nas caixas de texto
+        // eventos de input e foco em select
         container.addEventListener('input', e => {
-            if (e.target.matches('.item-input')) onInputChange(e);
+            if (e.target.matches('.item-input')) {
+                onInputChange(e);
+                renderSuggestions(e.target, e.target.value);
+            }
+        });
+        container.addEventListener('focusin', e => {
+            if (e.target.matches('.item-input')) {
+                renderSuggestions(e.target, e.target.value);
+            }
+        });
+        container.addEventListener('focusout', e => {
+            if (e.target.matches('.item-input')) {
+                setTimeout(() => {
+                    const box = e.target.nextElementSibling;
+                    if (box) box.style.display = 'none';
+                }, 100);
+            }
         });
 
-        // adicionar novo campo ao clicar no botao
         addInputBtn.addEventListener('click', addInputField);
-
-        // chamada inicial para preparar as sugestoes (vazio, mas pode ja definir por categoria)
-        updateSuggestions("");
     </script>
-
 }

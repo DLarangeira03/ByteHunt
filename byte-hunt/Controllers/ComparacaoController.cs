@@ -140,14 +140,21 @@ namespace byte_hunt.Controllers
                 // Compara os valores dos atributos usando as regras definidas
                 List<HighlightType> highlights;
 
-                // Se algum valor for "---", define os destaques como None
-                if (values.Any(v => v == "---"))
-                {
-                    highlights = values.Select(_ => HighlightType.None).ToList();
-                }
-                else
-                {
-                    highlights = AttributeComparer.Compare(values, rule);
+                highlights = new List<HighlightType>(new HighlightType[values.Count]);
+
+                var validIndices = values
+                    .Select((v, idx) => (v, idx))
+                    .Where(t => t.v != "---")
+                    .Select(t => t.idx)
+                    .ToList();
+
+                if (validIndices.Count > 0) {
+                    var validValues = validIndices.Select(idx => values[idx]).ToList();
+                    var partialHighlights = AttributeComparer.Compare(validValues, rule);
+
+                    for (int i = 0; i < validIndices.Count; i++) {
+                        highlights[validIndices[i]] = partialHighlights[i];
+                    }
                 }
 
                 // Adiciona uma nova linha de comparação com a chave, valores e destaques

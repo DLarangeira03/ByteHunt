@@ -1,4 +1,5 @@
 @model IEnumerable<byte_hunt.Models.Item>
+@using Microsoft.AspNetCore.Identity
 
 @{
     ViewData["Title"] = "Produtos";
@@ -15,8 +16,7 @@
     int categoriaSelecionada = 0;
     var categorias = (SelectList)ViewData["Categorias"];
 
-    if (!int.TryParse(ViewData["CategoriaId"]?.ToString(), out categoriaSelecionada))
-    {
+    if (!int.TryParse(ViewData["CategoriaId"]?.ToString(), out categoriaSelecionada)) {
         categoriaSelecionada = 0;
     }
 }
@@ -53,8 +53,7 @@
                                     Todas Categorias
                                 </a>
                             </li>
-                            @foreach (var categoria in categorias)
-                            {
+                            @foreach (var categoria in categorias) {
                                 var catId = int.Parse(categoria.Value);
                                 <li>
                                     <a class="dropdown-item @(catId == categoriaSelecionada ? "active" : "")"
@@ -66,31 +65,32 @@
                         </ul>
                     </div>
 
-                    <a asp-action="Create" class="btn btn-success w-100">
-                        <i class="bi bi-plus-lg"></i> Adicionar Novo Produto
-                    </a>
+                    @if (User.IsInRole("Moderator") || User.IsInRole("Administrator")) {
+                        <a asp-action="Create" class="btn btn-success w-100">
+                            <i class="bi bi-plus-lg"></i> Adicionar Novo Produto
+                        </a>
+                    }
+
                 </div>
             </div>
         </div>
 
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-            @foreach (var item in Model)
-            {
+            @foreach (var item in Model) {
                 <div class="col">
                     <div class="card h-100 shadow-sm">
-                        @if (!string.IsNullOrEmpty(item.FotoItem))
-                        {
+                        @if (!string.IsNullOrEmpty(item.FotoItem)) {
                             <img src="~/itens_Imagens/@item.FotoItem" class="card-img-top" alt="@item.Nome"
                                  style="height: 200px; width: 100%; object-fit: contain; border: 1px solid #333; border-radius: 5px;"
                                  onerror="this.onerror=null; this.src='/images/no_image.jpg';"
-                                 />
+                            />
                         }
                         else
                         {
                             <img src="~/images/no_image.jpg"
                                  alt="Imagem do item"
                                  class="img-fluid rounded" style="height: 200px; width: 100%; object-fit: contain; border: 1px solid #333; border-radius: 5px;"/>
-                        }
+                                                }
 
                         <div class="card-body d-flex flex-row justify-content-between">
                             <div>
@@ -109,30 +109,31 @@
                                 </a>
                             </div>
                         </div>
+                        @if (User.IsInRole("Moderator")) {
+                            <div class="card-footer d-flex justify-content-between">
+                                <div class="d-inline-flex gap-1"></div>
 
-                        <div class="card-footer d-flex justify-content-between">
-                            <div class="d-inline-flex gap-1"></div>
-                            <!-- -->
-                            <div class="d-inline-flex gap-2">
-                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary btn-md">
-                                    <i class="bi bi-pencil-fill"></i>
-                                </a>
-                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-md">
-                                    <i class="bi bi-trash-fill"></i>
-                                </a>
+                                <div class="d-inline-flex gap-2">
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary btn-md">
+                                        <i class="bi bi-pencil-fill"></i>
+                                    </a>
+                                    @if (User.IsInRole("Administrator")) {
+                                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-md">
+                                            <i class="bi bi-trash-fill"></i>
+                                        </a>
+                                    }
+                                </div>
                             </div>
-                        </div>
+                        }
                     </div>
                 </div>
             }
         </div>
 
-        @if (totalPages > 0)
-        {
+        @if (totalPages > 0) {
             <nav class="mt-5" aria-label="Page navigation">
                 <ul class="pagination justify-content-center">
-                    @if (currentPage != 1)
-                    {
+                    @if (currentPage != 1) {
                         <li class="page-item @(currentPage == 1 ? "disabled" : "")">
                             <a class="page-link bg-dark text-white border-dark" asp-action="Index"
                                asp-route-pageNumber="1" 
@@ -155,10 +156,8 @@
                         </li>
                     }
 
-                    @if (totalPages < 5)
-                    {
-                        @for (int i = 1; i <= totalPages; i++)
-                        {
+                    @if (totalPages < 5) {
+                        @for (int i = 1; i <= totalPages; i++) {
                             <li class="page-item @(i == currentPage ? "active" : "")">
                                 <a class="page-link @(i == currentPage ? "bg-black text-white border-dark" : "bg-dark text-white border-dark")"
                                    asp-action="Index"
@@ -171,10 +170,8 @@
                             </li>
                         }
                     }
-                    else
-                    {
-                        @if (currentPage != 1)
-                        {
+                    else {
+                        @if (currentPage != 1) {
                             <li class="page-item active">
                                 <a class="page-link bg-dark text-white border-dark"
                                    asp-action="Index"

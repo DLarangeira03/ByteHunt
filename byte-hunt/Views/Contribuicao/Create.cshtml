@@ -20,12 +20,12 @@
 
         <div class="mb-3">
             <label class="form-label">Nome:*</label>
-            <input type="text" name="Nome" class="form-control rounded-pill shadow-sm" />
+            <input type="text" name="Nome" class="form-control rounded-pill shadow-sm" required/>
         </div>
 
         <div class="mb-3">
             <label class="form-label">Marca:*</label>
-            <input type="text" name="Marca" class="form-control rounded-pill shadow-sm" />
+            <input type="text" name="Marca" class="form-control rounded-pill shadow-sm" required/>
         </div>
 
         <div class="mb-3">
@@ -36,12 +36,6 @@
         <div class="mb-3">
             <label class="form-label">Descrição:</label>
             <textarea name="Descricao" class="form-control rounded shadow-sm" rows="3"></textarea>
-        </div>
-
-        <div class="mb-3">
-            <label asp-for="UtilizadorId" class="form-label"></label>
-            <select asp-for="UtilizadorId" class="form-select rounded-pill shadow-sm" asp-items="ViewBag.UtilizadorId"></select>
-            <span asp-validation-for="UtilizadorId" class="text-danger"></span>
         </div>
 
         <div class="mb-3 text-muted">
