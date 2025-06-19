@@ -30,8 +30,11 @@ namespace byte_hunt.Controllers {
         /// <returns>View com a lista de itens filtrados e paginados.</returns>
         public async Task<IActionResult> Index(string searchTerm, int? categoriaId, int pageNumber = 1,
             int pageSize = 9) {
+            
+            // Query para obter todos os itens, incluindo a categoria associada
             var query = _context.Itens.Include(i => i.Categoria).AsQueryable();
-
+            
+            // Verifica se há uma string de pesquisa e filtra os itens
             if (!string.IsNullOrEmpty(searchTerm)) {
                 searchTerm = searchTerm.ToLower();
                 // Filtra os itens com base na string de pesquisa
@@ -40,7 +43,8 @@ namespace byte_hunt.Controllers {
                     i.Marca.ToLower().Contains(searchTerm) ||
                     i.Categoria.Nome.ToLower().Contains(searchTerm));
             }
-
+            
+            // Verifica se há um ID de categoria e filtra os itens por categoria
             if (categoriaId.HasValue && categoriaId.Value > 0) {
                 query = query.Where(i => i.CategoriaId == categoriaId.Value);
             }
@@ -69,8 +73,15 @@ namespace byte_hunt.Controllers {
         }
 
         // GET: Itens/Details/5
+        /// <summary>
+        /// Mostra os detalhes de um item.
+        /// </summary>
+        /// <param name="id">ID do item.</param>
+        /// <returns>View com os detalhes do item.</returns>
         public async Task<IActionResult> Details(int? id) {
+            // Verifica se o ID é nulo
             if (id == null) {
+                // Se o ID for nulo, retorna NotFound
                 return NotFound();
             }
             
@@ -78,7 +89,10 @@ namespace byte_hunt.Controllers {
             var item = await _context.Itens
                 .Include(i => i.Categoria)
                 .FirstOrDefaultAsync(m => m.Id == id);
+            
+            // Verifica se o item foi encontrado
             if (item == null) {
+                // Se o item não existir, retorna NotFound
                 return NotFound();
             }
             
@@ -87,7 +101,12 @@ namespace byte_hunt.Controllers {
         }
 
         // GET: Itens/Create
+        /// <summary>
+        /// Exibe o formulário para criar um novo item.
+        /// </summary>
+        /// <returns>View para criar um item.</returns>
         public IActionResult Create() {
+            // Preenche o ViewData com a lista de categorias para o dropdown
             ViewData["CategoriaId"] = new SelectList(_context.Categorias, "Id", "Nome");
             
             // Retorna a View para criação de um novo item
@@ -105,44 +124,61 @@ namespace byte_hunt.Controllers {
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Nome,Marca,Descricao,CategoriaId,AttrsJson")] Item item,
             IFormFile imagem) {
+            
+            // Retira a validação do campo imagem do ModelState
             ModelState.Remove("imagem");
 
-            // validacao json
+            // Validação fo JSON
             try
             {
+                // Verifica se o JSON de atributos não está vazio 
                 if (!string.IsNullOrWhiteSpace(item.AttrsJson))
                 {
-                    using var doc = JsonDocument.Parse(item.AttrsJson); // excecao se invalido
-                    item.AttrsJson = JsonSerializer.Serialize(doc.RootElement); // minifica
+                    using var doc = JsonDocument.Parse(item.AttrsJson); // Exceção se inválido
+                    // Serializa o JSON para garantir que não está minifica ("espandido") ou formatado de forma inadequada
+                    item.AttrsJson = JsonSerializer.Serialize(doc.RootElement); 
                 }
             }
             catch (JsonException)
             {
+                // Adiciona um erro ao ModelState se o JSON não for válido
                 ModelState.AddModelError("AttrsJson", "O conteúdo não é um JSON válido.");
             }
             
+            // Remove a validação do campo Preco do ModelState
             ModelState.Remove("Preco");
+            // Tenta obter o valor do campo Preco do formulário
             var precoStr = Request.Form["Preco"];
+            // Tenta converter o valor do campo Preco para decimal
             if (decimal.TryParse(precoStr, NumberStyles.Any, CultureInfo.CurrentCulture, out var precoParsed))
             {
+                // Se a conversão for bem-sucedida, atribui o valor ao item
                 item.Preco = precoParsed;
             }
             else
             {
+                // Se a conversão falhar, adiciona um erro ao ModelState
                 ModelState.AddModelError("Preco", "Preço inválido.");
             }
             
+            // Verifica se o ModelState é válido
             if (ModelState.IsValid) {
+                // Verifica se a imagem não é nula 
                 if (imagem != null) {
+                    // Tenta guardar a imagem e obter o nome do arquivo
                     var nomeImagem = await GuardarImagemAsync(imagem);
+                    // Verifica se o nome da imagem não é nulo
                     if (nomeImagem != null) {
+                        // Atribui o nome da imagem ao item
                         item.FotoItem = nomeImagem;
                     }
                     else {
+                        // Se o nome da imagem for nulo, define FotoItem como uma string vazia
                         item.FotoItem = string.Empty;
                     }
                 }
                 else {
+                    // Se a imagem for nula, define FotoItem como uma string vazia
                     Console.WriteLine("image  null");
                     item.FotoItem = string.Empty;
                 }
@@ -162,14 +198,23 @@ namespace byte_hunt.Controllers {
         }
 
         // GET: Itens/Edit/5
+        /// <summary>
+        /// Exibe o formulário para editar um item.
+        /// </summary>
+        /// <param name="id">ID do item.</param>
+        /// <returns>View para editar o item.</returns>
         public async Task<IActionResult> Edit(int? id) {
+            // Verifica se o ID é nulo
             if (id == null) {
+                // Se o ID for nulo, retorna NotFound
                 return NotFound();
             }
             
             // Procura o item pelo ID
             var item = await _context.Itens.FindAsync(id);
+            // Verifica se o item foi encontrado
             if (item == null) {
+                // Se o item não existir, retorna NotFound
                 return NotFound();
             }
             
@@ -187,53 +232,73 @@ namespace byte_hunt.Controllers {
         /// <param name="id"></param>
         /// <param name="item"></param>
         /// <param name="imagem"></param>
-        /// <returns></returns>
+        /// <returns>Redireciona para a lista de itens se bem-sucedido, senão retorna a view de edição.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id,
             [Bind("Id,Nome,Marca,Descricao,CategoriaId,AttrsJson")] Item item, IFormFile imagem) {
+            
+            // Verifica se o ID do item no formulário corresponde ao ID passado por parâmetro
             if (id != item.Id) {
+                // Se não corresponder, retorna NotFound
                 return NotFound();
             }
             
             // Obtem o item original da base de dados
             var itemExistente = await _context.Itens.AsNoTracking().FirstOrDefaultAsync(i => i.Id == id);
+            // Verifica se o item existe
             if (itemExistente == null) {
+                // Se o item não existir, retorna NotFound
                 return NotFound();
             }
-
+            
+            // Remove a validação do campo imagem do ModelState
             ModelState.Remove("imagem");
             
             // validacao json
             try
             {
+                // Verifica se o JSON de atributos não está vazio
                 if (!string.IsNullOrWhiteSpace(item.AttrsJson))
                 {
-                    using var doc = JsonDocument.Parse(item.AttrsJson); // excecao se invalido
-                    item.AttrsJson = JsonSerializer.Serialize(doc.RootElement); // minifica
+                    // Tenta analisar o JSON para verificar se é válido
+                    using var doc = JsonDocument.Parse(item.AttrsJson); // Exceção se inválido
+                    // Serializa o JSON para garantir que não está minificado ("expandido") ou formatado de forma inadequada
+                    item.AttrsJson = JsonSerializer.Serialize(doc.RootElement); 
                 }
             }
             catch (JsonException)
-            {
+            {   
+                // Adiciona um erro ao ModelState se o JSON não for válido
                 ModelState.AddModelError("AttrsJson", "O conteúdo não é um JSON válido.");
             }
             
+            // Remove a validação do campo Preco do ModelState
             ModelState.Remove("Preco");
+            // Tenta obter o valor do campo Preco do formulário
             var precoStr = Request.Form["Preco"];
+            // Tenta converter o valor do campo Preco para decimal
             if (decimal.TryParse(precoStr, NumberStyles.Any, CultureInfo.CurrentCulture, out var precoParsed))
             {
+                // Se a conversão for bem-sucedida, atribui o valor ao item
                 item.Preco = precoParsed;
             }
             else
             {
+                // Se a conversão falhar, adiciona um erro ao ModelState
                 ModelState.AddModelError("Preco", "Preço inválido.");
             }
             
+            // Verifica se o ModelState é válido
             if (ModelState.IsValid) {
                 try {
+                    // Verifica se a imagem não é nula e tem tamanho maior que zero
                     if (imagem != null && imagem.Length > 0) {
+                        // Tenta guardar a imagem e obter o nome do arquivo
                         var nomeImagem = await GuardarImagemAsync(imagem);
+                        // Verifica se o nome da imagem não é nulo
                         if (nomeImagem != null) {
+                            // Atribui o nome da imagem ao item
                             item.FotoItem = nomeImagem;
                         }
                     }
@@ -249,11 +314,15 @@ namespace byte_hunt.Controllers {
                     // Redireciona para a ação Index após a edição bem-sucedida
                     return RedirectToAction(nameof(Index));
                 }
+                // Captura exceções de concorrência
                 catch (DbUpdateConcurrencyException) {
+                    // Verifica se o item ainda existe na base de dados
                     if (!ItemExists(item.Id)) {
+                        // Se o item não existir, retorna NotFound
                         return NotFound();
                     }
                     else {
+                        // Lancça uma execeção
                         throw;
                     }
                 }
@@ -266,8 +335,15 @@ namespace byte_hunt.Controllers {
         }
 
         // GET: Itens/Delete/5
+        /// <summary>
+        /// Exibe a confirmação para eliminar um item.
+        /// </summary>
+        /// <param name="id">ID do item.</param>
+        /// <returns>View de confirmação de eliminação.</returns>
         public async Task<IActionResult> Delete(int? id) {
+            // Verifica se o ID é nulo
             if (id == null) {
+                // Se o ID for nulo, retorna NotFound
                 return NotFound();
             }
             
@@ -275,56 +351,99 @@ namespace byte_hunt.Controllers {
             var item = await _context.Itens
                 .Include(i => i.Categoria)
                 .FirstOrDefaultAsync(m => m.Id == id);
+            // Verifica se o item foi encontrado
             if (item == null) {
+                // Se o item não existir, retorna NotFound
                 return NotFound();
             }
-
+            
+            // Retorna a View de confirmação de eliminação com o item encontrado
             return View(item);
         }
 
         // POST: Itens/Delete/5
+        /// <summary>
+        /// Elimina um item.
+        /// </summary>
+        /// <param name="id">ID do item.</param>
+        /// <returns>Redireciona para a lista de itens.</returns>
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id) {
+            // Procura o item pelo ID
             var item = await _context.Itens.FindAsync(id);
+            // Verifica se o item foi encontrado
             if (item != null) {
+                // Se o item existir, remove-o do contexto
                 _context.Itens.Remove(item);
             }
-
+            
+            // Salva as alterações no contexto
             await _context.SaveChangesAsync();
+            
+            // Redireciona para a ação Index após a eliminação bem-sucedida
             return RedirectToAction(nameof(Index));
         }
-
+        
+        /// <summary>
+        /// Verifica se um item existe.
+        /// </summary>
+        /// <param name="id">ID do item.</param>
+        /// <returns>True se existir, false caso contrário.</returns>
         private bool ItemExists(int id) {
+            // Verifica se existe algum item com o ID fornecido
             return _context.Itens.Any(e => e.Id == id);
         }
-
+        
+        /// <summary>
+        /// Guarda uma imagem enviada e retorna o nome do ficheiro.
+        /// </summary>
+        /// <param name="ficheiro">Arquivo de imagem enviado.</param>
+        /// <returns>Nome do ficheiro guardado ou null se inválido.</returns>
         private async Task<string> GuardarImagemAsync(IFormFile ficheiro) {
             if (ficheiro != null && ficheiro.Length > 0) {
+                // Obtém a extensão do ficheiro 
                 var extensao = Path.GetExtension(ficheiro.FileName).ToLower();
+                // Lista de extensões permitidas
                 var permitidas = new[] { ".jpg", ".jpeg", ".png", ".gif" };
-
-                if (!permitidas.Contains(extensao)) return null;
-
-                if (!ficheiro.ContentType.StartsWith("image/")) return null;
-
+                
+                // Verifica se a extensão é permitida
+                if (!permitidas.Contains(extensao)) 
+                    // Se não for permitida, retorna null
+                    return null;
+                
+                // Verifica se o tipo de conteúdo começa com "image/"
+                if (!ficheiro.ContentType.StartsWith("image/")) 
+                    // Se não for uma imagem, retorna null
+                    return null;
+                
+                // Verifica se o tamanho do ficheiro é maior que 5MB
                 if (ficheiro.Length > 5 * 1024 * 1024) return null; // Limite de 5MB
-
+                
+                // Gera um nome único para o ficheiro usando Guid e combina com a extensão
                 var nomeUnico = Guid.NewGuid().ToString() + extensao;
+                // Define o caminho onde as imagens serão guardadas
                 var pastaUploads = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "itens_Imagens");
-
+                
+                // Verifica se a pasta de uploads existe, se não existir, cria-a
                 if (!Directory.Exists(pastaUploads)) {
+                    // Cria a pasta de uploads
                     Directory.CreateDirectory(pastaUploads);
                 }
-
+                
+                // Combina o caminho da pasta de uploads com o nome único do ficheiro
                 var caminho = Path.Combine(pastaUploads, nomeUnico);
-
+                
+                // Abre um FileStream para escrever o ficheiro na pasta de uploads
                 using var stream = new FileStream(caminho, FileMode.Create);
+                // Copia o conteúdo do ficheiro enviado para o FileStream
                 await ficheiro.CopyToAsync(stream);
-
+                
+                // Retorna o nome único do ficheiro guardado
                 return nomeUnico;
             }
-
+            
+            // Se o ficheiro for nulo ou inválido, retorna null
             return null;
         }
     }
