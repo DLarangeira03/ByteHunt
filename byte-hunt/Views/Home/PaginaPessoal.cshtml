@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="~/css/pagina_pessoal.css" asp-append-version="true"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
 }
 
 <div class="pp-fundo"></div>
@@ -109,67 +110,77 @@
 
             <h3 class="mt-4">Tecnologias Utilizadas</h3>
             <div class="text-center">
-                <ul class="list-inline">
-                    <li class="list-inline-item m-1">
-                        <a href="https://learn.microsoft.com/aspnet/core" target="_blank"
-                           class="badge bg-dark px-3 py-2 fs-6 text-decoration-none">
-                            ASP.NET Core
-                        </a>
-                    </li>
-                    <li class="list-inline-item m-1">
-                        <a href="https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity?view=aspnetcore-9.0&tabs=visual-studio"
-                           target="_blank" class="badge bg-dark px-3 py-2 fs-6 text-decoration-none">
-                            ASP.NET Core Identity
-                        </a>
-                    </li>
-                    <li class="list-inline-item m-1">
-                        <a href="https://getbootstrap.com/" target="_blank"
-                           class="badge bg-dark px-3 py-2 fs-6 text-decoration-none">
-                            Bootstrap
-                        </a>
-                    </li>
-                    <li class="list-inline-item m-1">
-                        <a href="https://learn.microsoft.com/ef/" target="_blank"
-                           class="badge bg-dark px-3 py-2 fs-6 text-decoration-none">
-                            Entity Framework
-                        </a>
-                    </li>
-                    <li class="list-inline-item m-1">
-                        <a href="https://jwt.io/introduction" target="_blank"
-                           class="badge bg-dark px-3 py-2 fs-6 text-decoration-none">
-                            JWT
-                        </a>
-                    </li>
-                </ul>
-            </div>
-            <div class="text-center">
-                <ul class="list-inline">
-                    <li class="list-inline-item m-1">
-                        <a href="https://github.com/jstedfast/MailKit" target="_blank"
-                           class="badge bg-dark px-3 py-2 fs-6 text-decoration-none">
-                            MailKit
-                        </a>
-                    </li>
-                    <li class="list-inline-item m-1">
-                        <a href="https://azure.microsoft.com/" target="_blank"
-                           class="badge bg-dark px-3 py-2 fs-6 text-decoration-none">
-                            Microsoft Azure
-                        </a>
-                    </li>
-                    <li class="list-inline-item m-1">
-                        <a href="https://learn.microsoft.com/sql/sql-server/" target="_blank"
-                           class="badge bg-dark px-3 py-2 fs-6 text-decoration-none">
-                            SQL Server
-                        </a>
-                    </li>
-                    <li class="list-inline-item m-1">
-                        <a href="https://swagger.io/tools/swagger-ui/" target="_blank"
-                           class="badge bg-dark px-3 py-2 fs-6 text-decoration-none">
-                            Swagger
-                        </a>
-                    </li>
-                </ul>
-            </div>
+    <ul class="list-inline">
+        <li class="list-inline-item m-1">
+            <a href="https://learn.microsoft.com/aspnet/core" target="_blank"
+               class="tech-badge px-3 py-2 fs-6 text-decoration-none d-inline-flex align-items-center">
+                <img src="~/icons/aspnetcore.svg" class="tech-icon me-2" style="height: 24px;" />
+                ASP.NET Core
+            </a>
+        </li>
+        <li class="list-inline-item m-1">
+            <a href="https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity?view=aspnetcore-9.0&tabs=visual-studio" target="_blank"
+               class="tech-badge px-3 py-2 fs-6 text-decoration-none d-inline-flex align-items-center">
+                <img src="~/icons/aspidentity.png" class="tech-icon me-2" style="height: 24px;" />
+                ASP.NET Core Identity
+            </a>
+        </li>
+        <li class="list-inline-item m-1">
+            <a href="https://getbootstrap.com/" target="_blank"
+               class="tech-badge px-3 py-2 fs-6 text-decoration-none d-inline-flex align-items-center">
+                <img src="~/icons/bootstrap.svg" class="tech-icon me-2" style="height: 24px;" />
+                Bootstrap
+            </a>
+        </li>
+        <li class="list-inline-item m-1">
+            <a href="https://learn.microsoft.com/ef/" target="_blank"
+               class="tech-badge px-3 py-2 fs-6 text-decoration-none d-inline-flex align-items-center">
+                <img src="~/icons/unicorn-icon.svg" class="tech-icon me-2" style="height: 24px;" />
+                Entity Framework
+            </a>
+        </li>
+        <li class="list-inline-item m-1">
+            <a href="https://jwt.io/introduction" target="_blank"
+               class="tech-badge px-3 py-2 fs-6 text-decoration-none d-inline-flex align-items-center">
+                <img src="~/icons/jwt.svg" class="tech-icon me-2" style="height: 24px;" />
+                JWT
+            </a>
+        </li>
+    </ul>
+</div>
+
+<div class="text-center">
+    <ul class="list-inline">
+        <li class="list-inline-item m-1">
+            <a href="https://github.com/jstedfast/MailKit" target="_blank"
+               class="tech-badge px-3 py-2 fs-6 text-decoration-none d-inline-flex align-items-center">
+                <img src="~/icons/mailkit-icon-clean.svg" class="tech-icon me-2" style="height: 24px;" />
+                MailKit
+            </a>
+        </li>
+        <li class="list-inline-item m-1">
+            <a href="https://azure.microsoft.com/" target="_blank"
+               class="tech-badge px-3 py-2 fs-6 text-decoration-none d-inline-flex align-items-center">
+                <img src="~/icons/azure-icon.svg" class="tech-icon me-2" style="height: 24px;" />
+                Microsoft Azure
+            </a>
+        </li>
+        <li class="list-inline-item m-1">
+            <a href="https://learn.microsoft.com/sql/sql-server/" target="_blank"
+               class="tech-badge px-3 py-2 fs-6 text-decoration-none d-inline-flex align-items-center">
+                <img src="~/icons/sqlserver.svg" class="tech-icon me-2" style="height: 24px;" />
+                SQL Server
+            </a>
+        </li>
+        <li class="list-inline-item m-1">
+            <a href="https://swagger.io/tools/swagger-ui/" target="_blank"
+               class="tech-badge px-3 py-2 fs-6 text-decoration-none d-inline-flex align-items-center">
+                <img src="~/icons/swagger.svg" class="tech-icon me-2" style="height: 24px;" />
+                Swagger
+            </a>
+        </li>
+    </ul>
+</div>
         </div>
 
         <hr class="my-5 border-dark">
