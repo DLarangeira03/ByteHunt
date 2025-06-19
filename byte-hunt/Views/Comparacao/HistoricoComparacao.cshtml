@@ -16,7 +16,7 @@
     <p>Você ainda não realizou nenhuma comparação.</p>
 } else {
     <div class="d-flex justify-content-end mb-3">
-        <form asp-action="DeletarHistoricoAll" method="post">
+        <form asp-action="EliminarHistoricoAll" method="post">
             @Html.AntiForgeryToken()
             <button type="submit" class="btn btn-danger">Apagar Todo o Histórico</button>
         </form>
@@ -52,7 +52,7 @@
                             <button type="submit" class="btn btn-sm btn-outline-success">Comparar Novamente</button>
                         </form>
 
-                        <form asp-action="DeletarHistorico" method="post">
+                        <form asp-action="EliminarHistorico" method="post">
                             @Html.AntiForgeryToken()
                             <input type="hidden" name="id" value="@comp.Id" />
                             <button type="submit" class="btn btn-sm btn-outline-danger">Apagar</button>
