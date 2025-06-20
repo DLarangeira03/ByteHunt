@@ -1,24 +1,32 @@
 ﻿@{
-    if (ViewData.TryGetValue("ParentLayout", out var parentLayout) && parentLayout !=  null)
+    if (ViewData.TryGetValue("ParentLayout", out var parentLayout) && parentLayout != null)
     {
         Layout = parentLayout.ToString();
     }
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="~/css/fundo_container.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 }
+<div class="vw-fundo"></div>
 
-<h1>Gerir sua Conta</h1>
+<div class="container vw-container" style="padding-bottom:8.342rem; " >
+    <h1>A minha Conta</h1>
 
-<div>
-    <h2>Altere aqui os dados da sua conta:</h2>
-    <hr />
-    <div class="row">
-        <div class="col-md-3">
-            <partial name="_ManageNav" />
-        </div>
-        <div class="col-md-9">
-            @RenderBody()
+    <div>
+        <h2>Altere aqui os dados da  conta:</h2>
+        <hr/>
+        <div class="row">
+            <div class="col-md-3">
+                <partial name="_ManageNav"/>
+            </div>
+            <div class="col-md-9">
+                @RenderBody()
+            </div>
         </div>
     </div>
 </div>
+
 
 @section Scripts {
     @RenderSection("Scripts", required: false)

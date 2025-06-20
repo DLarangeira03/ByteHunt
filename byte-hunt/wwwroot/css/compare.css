@@ -1,0 +1,5 @@
+﻿tr.info-row td,
+tr.info-row th {
+    border-left: none !important;
+    border-right: none !important;
+}

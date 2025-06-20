@@ -8,15 +8,14 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace byte_hunt.Areas.Identity.Pages.Account
 {
     /// <summary>
-    ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-    ///     directly from your code. This API may change or be removed in future releases.
+    ///     Modelo da página de confirmação de recuperação de palavra-passe.
+    ///     Exibida após o utilizador solicitar a alteração da sua palavra-passe.
     /// </summary>
     [AllowAnonymous]
     public class ForgotPasswordConfirmation : PageModel
     {
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        ///     Processa o carregamento da página de confirmação de recuperação de palavra-passe.
         /// </summary>
         public void OnGet()
         {

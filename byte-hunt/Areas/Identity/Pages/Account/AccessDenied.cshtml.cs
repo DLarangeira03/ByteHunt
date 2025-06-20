@@ -7,14 +7,13 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace byte_hunt.Areas.Identity.Pages.Account
 {
     /// <summary>
-    ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-    ///     directly from your code. This API may change or be removed in future releases.
+    ///     Modelo da página de acesso negado.
+    ///     Exibida quando um utilizador tenta aceder a um recurso para o qual não tem permissão.
     /// </summary>
     public class AccessDeniedModel : PageModel
     {
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        ///     Carrega a página de acesso negado.
         /// </summary>
         public void OnGet()
         {

@@ -2,7 +2,17 @@
 
 namespace byte_hunt.Models.Comparador;
 
+/// <summary>
+///     Registo estático de regras de comparação para diferentes atributos.
+///     Define como cada tipo de atributo deve ser comparado e destacado.
+/// </summary>
 public static class AttributeRulesRegistry {
+    /// <summary>
+    ///     Dicionário de regras para diferentes atributos de itens.
+    ///     A chave é o nome do atributo e o valor é a regra de comparação.
+    ///     Cada regra define se valores mais altos ou mais baixos são melhores,
+    ///     e a unidade de medida do atributo quando aplicável.
+    /// </summary>
     public static Dictionary<string, AttributeComparer.AttributeRule> Rules = new() {
         {
             "Memória RAM", new() {

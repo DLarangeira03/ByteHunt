@@ -9,15 +9,15 @@
 
 <div class="row">
     <div class="col-md-6">
-        <p>Os dados da sua conta contém apenas dados que você nos forneceu. Aqui voce pode fazer o download deles:</p>
+        <p>Os dados da sua conta contêm apenas dados que foram fornecidos à Byte Hunt. Aqui pode fazer o download dos mesmos:</p>
         <form id="download-data" asp-page="DownloadPersonalData" method="post">
             <button class="btn btn-primary" type="submit">Download</button>
         </form>
         <p style="margin-top: 1rem">
-            <strong>Deletar seus dados irá resultar na remoção permanente da sua conta. Essa ação não poderá ser desfeita!</strong>
+            <strong>A eliminação dos seus dados irá resultar na remoção permanente da sua conta. Esta ação não é reversível!</strong>
         </p>
         <p>
-            <a id="delete" asp-page="DeletePersonalData" class="btn btn-danger">Excluir dados e Deletar conta</a>
+            <a id="delete" asp-page="DeletePersonalData" class="btn btn-danger">Eliminar conta</a>
         </p>
     </div>
 </div>

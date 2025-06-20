@@ -16,11 +16,14 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Seed roles
-async Task SeedRoles(IServiceProvider serviceProvider) {
+async Task SeedRoles(IServiceProvider serviceProvider)
+{
     var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
     string[] roleNames = { "User", "Moderator", "Administrator" };
-    foreach (var roleName in roleNames) {
-        if (!await roleManager.RoleExistsAsync(roleName)) {
+    foreach (var roleName in roleNames)
+    {
+        if (!await roleManager.RoleExistsAsync(roleName))
+        {
             await roleManager.CreateAsync(new IdentityRole(roleName));
         }
     }
@@ -35,7 +38,9 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddDefaultIdentity<Utilizador>(options => {
+// Identity setup (cookies para o site)
+builder.Services.AddDefaultIdentity<Utilizador>(options =>
+    {
         options.SignIn.RequireConfirmedAccount = true;
         options.Password.RequireUppercase = false;
         options.Password.RequireNonAlphanumeric = false;
@@ -43,18 +48,24 @@ builder.Services.AddDefaultIdentity<Utilizador>(options => {
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
+// Configurar caminhos de redirecionamento (para acesso negado ou login no MVC)
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Identity/Account/Login";
+    options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+});
+
 builder.Services.AddRazorPages();
 builder.Services.AddTransient<IEmailSender, SmtpEmailSender>();
 
 var jwtKey = builder.Configuration["JwtSettings:SecretKey"];
 
-//auth setup sem conflitos do Identity com o JWT
-builder.Services.AddAuthentication(options => {
-        options.DefaultScheme = IdentityConstants.ApplicationScheme;
-        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    })
-    .AddJwtBearer(options => {
-        options.TokenValidationParameters = new TokenValidationParameters {
+// Adiciona JWT para APIs (sem sobrescrever esquema padrão do Identity)
+builder.Services.AddAuthentication()
+    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
             ValidateIssuer = true,
             ValidateAudience = true,
             ValidateLifetime = true,
@@ -68,11 +79,13 @@ builder.Services.AddAuthentication(options => {
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c => {
+builder.Services.AddSwaggerGen(c =>
+{
     var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
 
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme {
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
         Description = @"Autenticação JWT. 
                       Insira o token JWT com o prefixo 'Bearer '.
                       Exemplo: Bearer eyJhbGciOiJIUzI1NiIs...",
@@ -82,10 +95,13 @@ builder.Services.AddSwaggerGen(c => {
         Scheme = "Bearer"
     });
 
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement {
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
         {
-            new OpenApiSecurityScheme {
-                Reference = new OpenApiReference {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
                     Type = ReferenceType.SecurityScheme,
                     Id = "Bearer"
                 },
@@ -101,7 +117,8 @@ builder.Services.AddSwaggerGen(c => {
 var app = builder.Build();
 
 // Middleware pipeline
-if (!app.Environment.IsDevelopment()) {
+if (!app.Environment.IsDevelopment())
+{
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
@@ -125,7 +142,8 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 // Seed roles
-using (var scope = app.Services.CreateScope()) {
+using (var scope = app.Services.CreateScope())
+{
     var services = scope.ServiceProvider;
     await SeedRoles(services);
 }
