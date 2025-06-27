@@ -169,11 +169,11 @@ namespace byte_hunt.Controllers
                 });
             }
 
-            // Retorna o modelo de comparação com os itens e as linhas de atributos
+            // Retorna o modelo de comparação com os itens e as linhas de atributos em ordem alfabetica
             return new ItemComparisonViewModel
             {
                 Items = items,
-                AttrRows = rows
+                AttrRows = rows.OrderBy(r => r.Key, StringComparer.OrdinalIgnoreCase).ToList()
             };
         }
 

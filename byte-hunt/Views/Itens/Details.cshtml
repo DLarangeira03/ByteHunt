@@ -81,13 +81,13 @@
 
 @functions {
     string FormatValue(string key, string rawValue) {
-        // Handle Sim/Não first
+        // Sim/Não direto
         if (rawValue.Trim().Equals("Sim", StringComparison.OrdinalIgnoreCase) ||
             rawValue.Trim().Equals("Não", StringComparison.OrdinalIgnoreCase)) {
             return rawValue;
         }
 
-        // Try parse number
+        // Tentativa de conversão numérica
         if (!decimal.TryParse(
                 rawValue.Replace(",", ".").Trim(),
                 System.Globalization.NumberStyles.Number,
@@ -95,19 +95,32 @@
                 out var val))
             return rawValue;
 
+        // Formatação especial
         return key switch {
             "Armazenamento" => FormatStorage(val),
-            "Memória RAM" => $"{val:0.#} GB",
-            "Autonomia da Bateria" => $"{val} mAh",
+            "RAM" => $"{val:0.#} GB",
+            "Autonomia" => $"{val} mAh",
             "Peso" => $"{val} g",
-            "Câmera" => $"{val} MP",
-            "Ecrã" or "Tamanho do Ecrã" => $"{val:0.#}\"",
-            "Preço" => $"{val:0.00} €",
-            "Tempo de Resposta" => $"{val:0.#} ms",
-            "Taxa de Atualização" => $"{val:0.#} Hz",
+            "Peso com suporte" => $"{val} kg",
+            "Peso sem suporte" => $"{val} kg",
+            "Câmara principal" or "Câmara frontal" or "Câmara traseira" => $"{val} MP",
+            "Zoom ótico" => $"{val}x",
+            "Carregamento" or "Carregamento wireless" => $"{val} W",
             "Brilho" => $"{val} nits",
             "Contraste" => $"{val}",
+            "Ecrã" or "Tamanho do ecrã" => $"{val:0.#}\"",
+            "Preço" => $"{val:0.00} €",
+            "Resposta" => $"{val:0.#} ms",
+            "Taxa de atualização" => $"{val:0.#} Hz",
             "Bluetooth" => $"v{val:0.#}",
+            "Frequência base" or "Frequência turbo" or "Frequência base (P)" or "Frequência base (E)" => $"{val:0.##} GHz",
+            "CacheL2" or "CacheL3" => $"{val:0.#} MB",
+            "BoostClock" => $"{val:0.#} MHz",
+            "Bus Width" => $"{val:0} bit",
+            "Largura de banda" => $"{val:0.#} GB/s",
+            "TDP" or "TGP GPU" => $"{val:0.#} W",
+            "Memória máxima" => $"{val:0.#} GB",
+            "VRAM" => $"{val:0.#} GB",
             _ => $"{val:0.#}"
         };
     }

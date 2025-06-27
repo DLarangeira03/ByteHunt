@@ -12,8 +12,8 @@ using byte_hunt.Data;
 namespace byte_hunt.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250620164515_Recreate")]
-    partial class Recreate
+    [Migration("20250627162104_publishPrep")]
+    partial class publishPrep
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
