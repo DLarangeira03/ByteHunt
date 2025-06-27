@@ -40,6 +40,26 @@
                            placeholder="password"/>
                     <label asp-for="Input.Password">Palavra-Passe:</label>
                     <span asp-validation-for="Input.Password" class="text-danger"></span>
+                    
+                    <i class="bi bi-info-circle-fill"
+                       id="passwordInfo"
+                       data-bs-toggle="popover"
+                       data-bs-trigger="hover focus" 
+                       data-bs-html="true"
+                        data-bs-placement="right"
+                        title="Requisitos da Palavra-Passe"
+                       data-bs-content="
+                        <ul style='padding-left: 1.5rem; margin: 0;'>
+                            <li>Mínimo 6 caracteres</li>
+                            <li>Pelo menos uma letra maiúscula (A-Z)</li>
+                            <li>Pelo menos uma letra minúsculca (a-z)</li>
+                            <li>Pelo menos um número (1-9)</li>
+                            <li>Pelo menos um símbolo especial (!, @@, #, etc.)</li>
+                        </ul>"
+                        tabindex="0"
+                        style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%); cursor: pointer;"></i>
+
+                    
                 </div>
                 <div class="form-floating mb-3">
                     <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password"
@@ -56,4 +76,13 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial"/>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const popoverTrigger = document.getElementById('passwordInfo');
+        new bootstrap.Popover(popoverTrigger, {
+            offset: [0, 25]  
+        });
+    });
+    </script>
+
 }
