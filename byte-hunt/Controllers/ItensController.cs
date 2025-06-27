@@ -366,7 +366,7 @@ namespace byte_hunt.Controllers {
         /// </summary>
         /// <param name="id">ID do item.</param>
         /// <returns>Redireciona para a lista de itens.</returns>
-        [HttpPost, ActionName("Delete")]
+        [HttpPost, ActionName("DeleteConfirmed")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> DeleteConfirmed(int id) {

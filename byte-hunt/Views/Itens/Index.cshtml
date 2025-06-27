@@ -109,7 +109,7 @@
                                 </a>
                             </div>
                         </div>
-                        @if (User.IsInRole("Moderator")) {
+                        @if (User.IsInRole("Moderator") || User.IsInRole("Administrator")) {
                             <div class="card-footer d-flex justify-content-between">
                                 <div class="d-inline-flex gap-1"></div>
 
