@@ -33,7 +33,6 @@
 
     <ItemGroup>
       <Folder Include="wwwroot\fotosPerfil\" />
-      <Folder Include="wwwroot\itens_Imagens\" />
     </ItemGroup>
 
 </Project>

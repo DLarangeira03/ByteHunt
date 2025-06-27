@@ -81,7 +81,7 @@
                     <div class="card h-100 shadow-sm">
                         @if (!string.IsNullOrEmpty(item.FotoItem)) {
                             <img src="~/itens_Imagens/@item.FotoItem" class="card-img-top" alt="@item.Nome"
-                                 style="height: 200px; width: 100%; object-fit: contain; border: 1px solid #333; border-radius: 5px;"
+                                 style="height: 250px; width: 100%; object-fit: fill; border: 1px solid #333; border-radius: 5px;"
                                  onerror="this.onerror=null; this.src='/images/no_image.jpg';"
                             />
                         }
