@@ -131,6 +131,11 @@ namespace byte_hunt.Areas.Identity.Pages.Account {
                     ModelState.AddModelError(string.Empty, "Utilizador não encontrado!");
                 }
                 else {
+                    if (!await _signInManager.UserManager.IsEmailConfirmedAsync(user)) {
+                        ModelState.AddModelError(string.Empty, "Por favor, confirme o seu email antes de iniciar sessão.");
+                        return Page();
+                    }
+                    
                     // Tenta iniciar sessão com o nome de utilizador e palavra-passe fornecidos
                     var result = await _signInManager.PasswordSignInAsync(user.UserName, Input.Password,
                         Input.RememberMe, lockoutOnFailure: false);
