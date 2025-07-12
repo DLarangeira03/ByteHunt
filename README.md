@@ -1,29 +1,75 @@
-# ByteHunt
+# 🔍 ByteHunt
 
-## Sobre o Projeto:
+**ByteHunt** is an interactive platform that allows users to explore and compare tech products side by side. With a clean and responsive design, it helps users make informed decisions by automatically highlighting the best and worst attributes of each item. 
 
-A ByteHunt é uma plataforma interativa que permite aos utilizadores comparar produtos tecnológicos de forma clara e dinâmica, além de aceder a uma vasta galeria de itens organizados por categorias. Os produtos podem ser comparados lado a lado, com realce automático dos atributos mais vantajosos ou desfavoráveis, facilitando decisões informadas na escolha de tecnologia.
+Registered users can also suggest new products to be added to the catalog, while moderators and administrators manage the platform through powerful tools and access levels. ByteHunt also includes a secure public REST API with JWT authentication and full Swagger documentation.
 
-Para além das comparações e da galeria, a ByteHunt oferece funcionalidades exclusivas para membros registados. Utilizadores com conta podem submeter sugestões de novos produtos, contribuindo ativamente para o crescimento da plataforma. Cada sugestão é analisada por moderadores, que garantem a qualidade e a consistência das informações publicadas. Já os administradores têm acesso completo à gestão da aplicação — desde categorias e utilizadores até permissões e validações. Com esta vertente colaborativa, a ByteHunt transforma-se numa plataforma viva e em constante evolução, alimentada pela própria comunidade.
-
-A aplicação disponibiliza ainda uma API REST pública e segura, com autenticação via JWT e documentação integrada através do Swagger.
-
-## Características principais:
-- Comparação inteligente de atributos com base em valores quantitativos e qualitativos;
-- Armazenamento dinâmico de especificações em formato JSON, garantindo flexibilidade na gestão de dados;
-- Interface moderna e responsiva, com suporte a pesquisa, filtros e paginação
-- Sistema de autenticação e autorização com gestão de papéis: Utilizador, Moderador e Administrador;
-- Painel de administração para gestão de conteúdos e aprovações;
-- **API REST pública e protegida** com suporte a autenticação JWT e documentação via **Swagger**:
-  - Endpoints abertos a todos os utilizadores;
-  - Endpoints reservados para utilizadores autenticados;
-  - Endpoints exclusivos para moderadores e administradores.
+> 🎓 This project was developed as the final assignment for the **Web Development** course at **Instituto Politécnico de Tomar (IPT)** during the 2024/2025 academic year.
 
 ---
-### Autores: 
-[André Benquerer](https://github.com/Benquerer) & [Diogo Larangeira](https://github.com/DLarangeira03)  
-**Curso:** Licenciatura em Engenharia Informática  
-**Instituição:** [Instituto Politécnico de Tomar](https://portal2.ipt.pt/pt/cursos/licenciaturas/l_-_ei/)  
 
-**Este projeto foi desenvolvida para a unidade curricular de Desenvolvimento Web, no ano letivo de 2024/2025.**
+## 🚀 Features
 
+- 🧠 **Smart Attribute Comparison**  
+  Compare tech products side-by-side with automatic highlighting of better or worse attributes (qualitative and quantitative).
+
+- 📂 **Dynamic JSON-Based Specs**  
+  Store and manage product specifications using a flexible and scalable JSON structure.
+
+- 📱 **Modern & Responsive Interface**  
+  Built with usability in mind, including search, filters, and pagination.
+
+- 🔐 **Authentication & Authorization**  
+  Role-based system with:
+  - **User**: Browse, compare, and suggest products  
+  - **Moderator**: Approve product suggestions  
+  - **Administrator**: Full access to platform management
+
+- 🛠️ **Admin Dashboard**  
+  Manage categories, users, suggestions, and access levels.
+
+- 🌐 **Public REST API**  
+  - Authenticated with **JWT tokens**  
+  - Documented using **Swagger**  
+  - Includes:
+    - Open endpoints
+    - User-only endpoints
+    - Moderator/Admin-only endpoints
+
+---
+
+## 🧰 Tech Stack
+
+- **Frontend**: React, React-Bootstrap, React-Router-DOM, React-Icons
+- **Backend/API**: Sheety (API)
+- **IDE**: Visual Studio Code
+- **Documentation**: Swagger (OpenAPI)
+- **Authentication**: JWT
+
+---
+
+## 🔗 Original Repository
+
+[![Original Repository](https://img.shields.io/badge/GitHub-ByteHunt-blue?logo=github)](https://github.com/Benquerer/byte-hunt)
+
+---
+
+## 🧑‍💻 Authors
+
+- [**André Benquerer**](https://github.com/Benquerer)  
+- **Diogo Larangeira**
+
+---
+
+## 🏫 Academic Information
+
+- **Course**: Bachelor's Degree in Computer Engineering  
+- **Subject**: Web Development  
+- **Institution**: Instituto Politécnico de Tomar (IPT)  
+- **Academic Year**: 2024/2025
+
+---
+
+## 📄 License
+
+This project was created for academic purposes only. All rights to external data, logos, or trademarks used for demonstration belong to their respective owners.
